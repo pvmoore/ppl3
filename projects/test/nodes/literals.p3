@@ -1,0 +1,70 @@
+
+fn new() {}
+
+pub fn testLiterals() {
+    booleans()
+    integers()
+    realNumbers()
+    chars()
+    strings()
+}
+
+fn booleans() {
+    bool b
+    bool b2 = true
+
+    bool b3 = true
+    #assert 1==0  # fails
+}
+fn integers() {
+    byte by
+    byte by2 = 100 as byte
+
+    short s
+    short s2 = 1 as short
+
+    int i
+    int i2 = 3
+
+    long l
+    long l2 = 45
+}
+fn realNumbers() {
+    half h
+    half h2 = 3.14h
+    half h3 = 3
+
+    float f
+    float f2 = 3.14f
+    float f3 = 3.14
+    float f4 = 3
+
+    double d
+    double d2 = 3.14
+    double d3 = 3.14f
+    double d4 = 3
+    double d5 = 3.14d
+}
+fn chars() {
+    int ch1 = 'a'   ;   assert ch1 == 97
+    int ch2 = '\n'  ;   assert ch2 == 10
+}
+fn strings() {
+    string s    # set to an empty string
+    string s1 = "hello"
+    const s2    = r"there"
+
+    const len = "stringy".length
+    const ptr = "stringy".ptr()
+
+    const ch = "stringy"[0] ; assert ch == 's'
+    
+    assert "abcd\tefg\0".length == 9
+    assert r"abcd\tefg\0".length == 11
+    
+    assert "a\n"[1] == 10
+    
+    const s3 = "a" "b" ; assert s3=="ab"
+    
+    #"stringy"[0] = 'S' # readonly
+}

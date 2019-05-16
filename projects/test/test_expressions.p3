@@ -1,0 +1,6 @@
+
+pub fn testExpressions() { 
+    const a = 2
+    const a2 = 10 <> a and true  
+
+}

@@ -1,0 +1,5 @@
+
+pub fn testMisc() {
+    alias A = struct(int,int)
+
+}

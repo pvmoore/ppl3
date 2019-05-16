@@ -1,0 +1,8 @@
+{
+	"fileVersion": 1,
+	"versions": {
+		"common": "~master",
+		"llvm": "~master",
+		"toml": "1.0.0-rc.3"
+	}
+}

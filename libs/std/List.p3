@@ -1,0 +1,92 @@
+[[module priority=-100000]]
+
+pub struct List <T> {
+    T* array
+    int arrayLength
+    pub int length
+    
+    pub fn new(int reserve) {
+        expand(reserve)
+    }
+    pub fn ptr() { ret array }
+    pub fn empty() {
+        ret length==0
+    }
+    pub fn add(T value) { 
+        expand(1)
+        array[length] = value
+        length += 1
+        ret this
+    }
+    pub fn operator[] (int index) {
+        ret array[index]
+    }
+    pub fn operator[] (int index, T value) {
+        array[index] = value
+    }
+    pub fn operator== (List<T> other) {
+        if(length <> other.length) ret false
+        ret memcmp(array, other.array, length*@sizeOf(T))==0
+    }
+    pub fn first() {
+        assert length > 0
+        ret array[0]
+    }
+    pub fn last() {
+        assert length > 0
+        ret array[length-1]
+    }
+    pub fn each(fn(T)void closure) {
+        loop(var i = 0; i<length; i+=1) {
+            closure(array[i])
+        }
+    }
+    pub fn each(fn(int,T)void closure) {
+        loop(var i = 0; i<length; i+=1) {
+            closure(i,array[i])
+        }
+    }
+    pub fn eachReverse(fn(T)void closure) {
+        loop(var i = length-1; i>=0; i-=1) {
+            closure(array[i])
+        }
+    }
+    pub fn eachReverse(fn(int,T)void closure) {
+        loop(var i = length-1; i>=0; i-=1) {
+            closure(i, array[i])
+        }
+    }
+    pub fn removeAt(int index) {
+
+    }
+    pub fn insertAt(int index, T value) {
+        ret this
+    }
+    pub fn clear() {
+        length = 0
+        ret this
+    }
+    pub fn pack() {
+        # todo
+        ret this
+    }
+    pub fn reversed() {
+        var copy = List<T>(length)
+        loop(var dest = 0, var src=length-1; src>=0; src -= 1) {
+            copy.array[dest] = array[src] 
+        }
+        ret copy   
+    }
+    fn expand(int required) {
+        if(required < 1) ret
+        if(not array) {
+            arrayLength = required + 7
+            array       = malloc(arrayLength*@sizeOf(T)) as T*
+            assert array
+        } else if(length+required > arrayLength) {
+            arrayLength = (length+required) * 2
+            array       = realloc(array, arrayLength*@sizeOf(T)) as T*
+            assert array
+        }
+    }
+}

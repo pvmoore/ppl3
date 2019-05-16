@@ -1,0 +1,303 @@
+
+/*
+main {
+    import test_implicit_template_funcs
+    testImplicitTemplateFunctions()
+} 
+*/
+
+var s = "hello"
+
+import imports::imports             # Bat, Cat, Dog, IntPtrPtr, Wolf, importedFunc()
+import nodes::literals       
+import test_arrays  
+import misc::test_constant_folding   
+
+alias AA = int 
+alias BB = AA*     # int*  
+alias CC = BB      # int*
+alias DD = CC*     # int**
+DD dd              # int**
+alias EE = IntPtrPtr* 
+EE ee              # int*** 
+
+# declare for later
+struct Gold
+struct Gold # ok 
+
+struct Silver {
+    Gold* gold
+}
+struct Gold { # definition
+    Silver* silver
+}
+Gold gold
+
+# Module init function
+fn new() {
+    # All module variable initialisation
+    # code will be put in here
+    boop += 7
+}
+
+struct Goal {
+    int scorer
+}
+
+struct Animal {
+    int age
+    int[4] s
+    Goal g
+    struct(int,bool) anon
+    
+    pub fn bark() { # Animal* this
+        assert true
+    }
+}
+alias AnimalPtr = Animal*
+alias IntPtr    = int*
+
+fn dothings(int a, Animal animal) {
+    int local
+    ret animal
+}
+
+int boop = 1
+
+alias Unref = int
+Unref unr = 77
+
+fn unreferencedFunc() {
+    struct(bool,bool) a
+}
+
+struct Thingy {
+    pub int a
+    pub fn()int b = { ret 1 }
+    #new = { Thingy* this }    # implicit
+}
+
+fn myfunc(bool flag) { 
+    ret flag
+}
+
+fn someArrays() {
+    int[5] array
+    var a2 = @arrayOf(int, 1,2)  # int[2]
+}
+
+struct Array <A,B> {
+    A a
+    B b 
+}
+
+fn noofoo(int a) {
+    var b = a
+    ret b
+}
+fn tempfoo<T>(T a, int b) void {
+    
+}  
+
+#pub WinMain {   
+pub fn main() {
+
+    fn()int fptr      = { ret 1 }
+    fn(int)void fptr2 = |int a| {}
+    
+    const noobar = {
+        ret 1
+    }
+
+    noofoo(1)
+    noobar()
+    tempfoo(true, 1)
+    
+    ####
+
+    import misc::misc;              testMisc()
+    import misc::builtin_funcs;     testBuiltinFuncs() 
+    import nodes::select;           testSelect()
+    import functions::closures;     testClosures()
+    import test_enum;               testEnum()
+    import misc::attributes;        testAttributes()
+    import misc::ptr_arithmetic;    testPtrArithmetic()
+    import misc::escape_analysis;   testEscapees()
+    
+    import texpr = test_expressions;    texpr.testExpressions()
+    
+    testLiterals()
+    testConsts()
+    testArrays()
+	
+    const testGlobals = {
+        assert @typeOf(dd) is int**
+        assert @typeOf(ee) is int***
+    }
+    const test0 = {
+        int a1 = 3
+        int b1 = a1 - 2
+
+        myfunc(true)
+
+        struct(int, float) anon
+
+        Animal* animal
+        Animal** animal2
+        AnimalPtr animalPtr
+        IntPtr ip
+        
+        var animal3 = Animal()
+        animal3.bark()
+        dothings(0, animal3)
+
+        Thingy thingy = Thingy()
+        var thingyA = thingy.a
+
+        someArrays()
+    }
+    const test1 = {
+        fn()int b = { ret 1 }
+    }
+    const test2 = {
+        fn()struct(int a,int b) f = {
+            ret @structOf(1,2)
+        }
+
+        var r = f()
+        struct(int a, float b) r2 = r as struct(int,float)
+
+        var a = r.a
+        var b = r.b
+        assert a==1
+        assert b==2
+
+        assert r2.a==1
+
+        # reinterpret cast int to float won't be 2
+        #assert r2.b==2
+    }
+    const test3 = {
+        struct Listy <T> {
+            T length
+        }
+
+        Listy<int> list = Listy<int>()
+        Array<int,float> array
+        Rose<int> rose
+        ANiceRose anicerose
+        Listy<BlueRose> blueList
+        Listy<Listy<int>> listoflist
+    }
+    const test4 = {
+        #float2 v2
+        #float3 v3
+        #float4 v4
+        #float8 v8
+    }
+    const testInnerImport = {
+        import imports::imports3
+
+        assert 77 == i3func()
+        I3Object obj = I3Object()
+    }
+
+    testGlobals()
+    test0()
+    test1()
+    test2()
+    test3()
+    test4()
+    testInnerImport()
+
+    import access::access
+    testAccess()
+
+    testModules()
+    testStatements()
+    testExpressions() 
+    testFunctions()
+    testStructures()
+    testTemplates()
+    testCore()
+    GC.dump()
+}
+bool yop
+
+fn testModules() {
+    import misc::unreferenced_module
+
+    testImports()
+    
+    importedFunc()  
+    
+    Cat cat             # from test_imports
+    Dog dog1 = Dog()
+    var dogsAge = dog1.age + 1
+    
+    Dog* dog2 = null     # from test_imports
+    dog2 = &dog1
+    dog2 = null
+    
+    var dog3 = Dog*()
+    
+    alias GreyWolf = Wolf
+    GreyWolf wolf
+    
+    struct(int, Bat berty) bertyStruct
+}
+fn testStatements() {
+    import l = nodes::loop, 
+           v = nodes::variable
+
+    l.testLoop()
+    v.testVariables()
+}
+fn testExpressions() {
+    import nodes::as, 
+           nodes::if, 
+           tuples::literal_tuple,
+           tuples::tuple_decl
+    
+    testAs()
+    testIf()
+    testLiteralTuple()
+    testTupleDecl()
+}
+fn testFunctions() {
+    import functions::calls
+
+    testCalls()
+}
+fn testStructures() {
+    import structs::structs, 
+           structs::constructors, 
+           structs::statics, 
+           structs::operator_overloading
+
+    testStructs()
+    testConstructors()
+    testStatics()
+    testOperatorOverloading()
+}
+fn testTemplates() {
+    import templates::template_functions, 
+           templates::template_structs,
+           templates::implicit_template_funcs
+           
+    testTemplateStructs()
+    testTemplateFunctions()
+    testImplicitTemplateFunctions()
+}
+fn testCore() {
+    import core_::console, 
+           core_::list, 
+           core_::string, 
+           core_::unsigned
+
+    testConsole()   
+    testList()   
+    testString()
+    testUnsigned()
+}
+

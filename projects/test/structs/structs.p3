@@ -1,0 +1,69 @@
+/**
+ *  Test accessing struct members.
+ */
+struct Fruit {
+    pub int a
+    pub int b = 1   # This initialisation will be moved to 'new' func
+    #short b # duplicate
+    pub bool isABanana
+    #pub static int ss = 3
+
+    pub fn new(/* Fruit* this */) {
+        # All struct var initialisers will be put in here
+        # This will be called before properties are set manually during initialisation
+
+        b += 3
+    }
+    pub fn foo(/* Fruit* this */) {
+        boo(inc:1)
+    }
+    pub fn bar(/* Fruit* this, */ int a) {
+        struct Vegetable {bool isGreen}
+        isABanana = true
+        ret a
+    }
+    pub fn baz(/* Fruit* this, */ bool sing) {
+        int loc
+        const localFunc = /* Fruit* this, */ {
+            # inner func
+        }
+
+        z += 1
+    }
+    pub int z
+    pub fn boo(/* Fruit* this, */ float inc) {
+
+        this.a += 1
+    }
+    pub fn retThis() {
+        ret this
+    }
+    #static foobar = { int a ->
+    #}
+}
+struct Colour {
+
+    fn new() {}
+    fn new(int a) {}
+    fn new(int thing, bool a, int b) {}
+}
+
+int global = 99
+
+pub fn testStructs() {
+    Fruit t
+
+    const a = t.a + 2
+
+    t.foo()
+    #t.boo(3.1)
+    
+    #Fruit::foobar(1)
+
+    t.retThis().foo()
+
+    #Colour col
+    
+    import structs::inner_structs
+    testInnerStructs()
+}

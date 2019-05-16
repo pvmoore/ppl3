@@ -1,0 +1,58 @@
+#
+#   How the interpreter works (incluing IR)
+#
+#   Single threaded
+#
+#   Data stack
+#   Instruction ptr
+#   Current function (which has):
+#       Function variable slots
+
+# Data stack (64 byte aligned, 8 bytes per slot)
+
+
+#
+# Instructions
+#
+PUSH_CONST - push number/null to stack
+    value
+PUSH_LOCAL - push to stack
+    index
+POP_LOCAL - pop from stack
+    index
+PUSH_MEMBER - push struct[index] to stack
+    struct
+    index
+POP_MEMBER - pop value and set struct[index]
+    struct
+    index
+PUSH_ARRAY_ITEM - push array[index]
+    index
+POP_ARRAY_ITEM - pop value and set array[index]
+    index
+
+ADD - pop 2 items off stack, push result
+SUB -
+MUL -
+DIV -
+MOD -
+SHL -
+SHR -
+USHR -
+BITOR -
+BITAND -
+BITXOR -
+
+BITNOT - not value on stack
+NEG - negate value on stack
+
+RET - exit function
+
+CALL - push args onto the stack, push return instruction_ptr
+    function
+
+JMPC - conditional jump - pop bool off stack
+    then label
+    else label
+JMP
+    label

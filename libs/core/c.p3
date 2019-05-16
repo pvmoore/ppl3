@@ -1,0 +1,45 @@
+[[module priority=-900_000]]
+
+# Externs are assumed to be C calling convention/mangling
+
+pub alias size_t    = long
+pub alias ptrdiff_t = long
+
+pub struct FILE {
+    void* _Placeholder  
+}
+
+# stdio.h
+pub extern fn fopen(byte* filename, byte* mode) FILE* 
+pub extern fn fclose(FILE*) int
+pub extern fn fflush(FILE*) int 
+pub extern fn fputs(byte* str, FILE* stream) int 
+pub extern fn fread(byte* ptr, long size, long count, FILE* stream) long 
+pub extern fn fwrite(byte* ptr, long size, long count, FILE* stream) long 
+pub extern fn getchar() int
+pub extern fn putchar(int ch) int
+pub extern fn puts(byte* str) int
+
+# stdlib
+pub extern fn _itoa(int value,byte* str,int base) byte*
+pub extern fn atoi(byte* str) int 
+pub extern fn calloc(long numElements, long elementSize) void*
+pub extern fn exit(int status) void
+pub extern fn free(void* ptr) void
+pub extern fn malloc(long size) void*
+pub extern fn realloc(void* ptr, long size) void*
+
+pub extern fn __argc() int
+pub extern fn __argv() byte**
+pub extern fn __wargv() short**
+
+# string.h
+pub extern fn memchr(void* ptr, int value, long num) void*
+pub extern fn memcmp(void* ptr1,void* ptr2, long numBytes) int
+pub extern fn memcpy(void* destination, void* source, long num) void*
+pub extern fn memmove(void* dest, void* src, long numBytes) void*
+pub extern fn memset(void* ptr, int value, long num) void*
+pub extern fn strcmp(byte* str1, byte* str2) byte*
+pub extern fn strlen(byte* str) long
+pub extern fn strstr(byte* str1, byte* str2) byte*
+

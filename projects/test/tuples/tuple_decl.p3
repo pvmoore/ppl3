@@ -1,0 +1,21 @@
+
+
+
+pub fn testTupleDecl() {
+    struct(int t, bool b) a
+    alias tupe = struct(int s)
+    
+    tupe tup           = @structOf(1)
+    struct(int s) tup2 = @structOf(2)
+    @typeOf(a) tup3    = @structOf(3, false)
+    
+    const r = returnTuple();    assert @typeOf(r) is struct(int)
+    const r2 = returnTuple2();
+}
+
+fn returnTuple() struct(int) {
+    ret @structOf(1)
+}
+fn returnTuple2() struct(fn(int)void) {
+    ret @structOf(|int a| {})
+}

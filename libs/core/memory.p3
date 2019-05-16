@@ -1,0 +1,106 @@
+# This module should be first
+[[module priority=-1_000_000]]
+
+pub alias Destructor = fn(void*)void
+
+struct tgc_ptr_t {
+    void* ptr
+    int flags
+    long size
+    long hash
+    Destructor dtor
+} 
+struct tgc_t {
+    void* bottom
+    int paused
+    long* minptr
+    long* maxptr
+    tgc_ptr_t* items
+    tgc_ptr_t* frees
+    double loadfactor double sweepfactor
+    long nitems long nslots long mitems long nfrees
+}
+
+extern fn tgc_start(tgc_t* gc, void* stk) void 
+extern fn tgc_stop(tgc_t* gc) void 
+extern fn tgc_pause(tgc_t* gc) void 
+extern fn tgc_resume(tgc_t* gc) void 
+extern fn tgc_run(tgc_t* gc) void 
+
+extern fn tgc_alloc      (tgc_t* gc, long size) void* 
+extern fn tgc_calloc     (tgc_t* gc, long num, long size) void* 
+extern fn tgc_realloc    (tgc_t* gc, void* ptr, long size) void* 
+extern fn tgc_alloc_opt  (tgc_t* gc, long size, int flags, Destructor dtor) void* 
+extern fn tgc_calloc_opt (tgc_t* gc, long num, long size, int flags, Destructor dtor) void* 
+extern fn tgc_free       (tgc_t* gc, void* ptr) void 
+
+extern fn tgc_set_flags (tgc_t* gc, void* ptr, int flags) void
+extern fn tgc_get_flags (tgc_t* gc, void *ptr) int 
+
+extern fn tgc_get_size (tgc_t* gc, void* ptr) long 
+
+extern fn tgc_set_dtor ( tgc_t* gc, void* ptr, Destructor dtor) void
+extern fn tgc_get_dtor ( tgc_t* gc, void* ptr) Destructor 
+
+# todo - This needs to be thread-local
+tgc_t gc
+
+pub struct GC {
+    static long numAllocs 
+    static long numFrees  
+    static long totalAlloced
+    
+    pub static fn start() {
+        int local
+        tgc_start(&gc, &local)
+    }
+    pub static fn stop() {
+        tgc_stop(&gc)
+    }
+    pub static fn collect() {
+        tgc_run(&gc)
+    }
+    pub static fn alloc(long size) {
+        numAllocs    += 1
+        totalAlloced += size
+        ret tgc_alloc(&gc, size)
+    }
+    pub static fn alloc(long size, Destructor d) {
+        numAllocs    += 1
+        totalAlloced += size
+        ret tgc_alloc_opt(&gc, size, 0, d)
+    }
+    pub static fn calloc(long size) {
+        numAllocs    += 1
+        totalAlloced += size
+        ret tgc_calloc(&gc, 1, size)
+    }
+    pub static fn calloc(long size, Destructor d) {
+        numAllocs    += 1
+        totalAlloced += size
+        ret tgc_calloc_opt(&gc, 1, size, 0, d)
+    }
+    pub static fn realloc(void* ptr, long size) {
+        ret tgc_realloc(&gc, ptr, size)
+    }
+    pub static fn free(void* ptr) {
+        numFrees += 1
+        tgc_free(&gc, ptr)
+    } 
+    pub static fn getSize(void* ptr) {
+        ret tgc_get_size(&gc, ptr)
+    }
+    pub static fn dump() {
+        println("")
+        println("")
+        println("== GC Stats =====================")
+        print("Num allocs ... "); print(numAllocs); print(" ("); print(totalAlloced/1); println(" bytes)")
+        print("Num Frees .... "); println(numFrees)
+        println("=================================")
+    }
+}
+
+pub fn new() {
+    
+}
+
