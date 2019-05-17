@@ -34,6 +34,11 @@ public:
                 remove(f);
             } else if(f.numRefs==0 && f.name!="new") {
                 log("\t  unreferenced func %s", f);
+
+                if(f.access.isPrivate) {
+                    module_.addError(f, "Unreferenced function %s should have been removed during resolve phase".format(f), true);
+                }
+
                 remove(f);
             }
         }
@@ -84,7 +89,7 @@ public:
             remove(imp);
         }
 
-        /// Remove asserts
+        /// Remove asserts if they are not enabled
         if(!module_.config.enableAsserts) {
             module_.recurse!Assert((n) {
                 n.detach();
@@ -94,6 +99,9 @@ public:
         /// Unreferenced module scope variables
         foreach(v; module_.getVariables()) {
             if(v.numRefs==0) {
+
+                warn(v, "Unreferenced variable %s could be removed during resolve phase".format(v));
+
                 v.detach();
             }
         }

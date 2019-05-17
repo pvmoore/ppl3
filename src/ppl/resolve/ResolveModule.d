@@ -107,6 +107,8 @@ public:
             recursiveVisit(r);
         }
 
+        tryToFoldScope(module_);
+
         this.isResolved = unresolved.length==0 &&
                           modified==false &&
                           addedModuleScopeElements &&
@@ -652,15 +654,13 @@ private:
         if(!m.isResolved) unresolved.add(m);
 
         /// If this is a scope, do some extra housekeeping
-        bool isScope = m.isModule |
-                       m.isLiteralFunction |
+        bool isScope = m.isLiteralFunction |
                       (m.isComposite && m.as!Composite.usage==Composite.Usage.INNER_KEEP) |
                       (m.isComposite && m.as!Composite.usage==Composite.Usage.INNER_REMOVABLE);
 
         /// Remove any unused nodes in this scope
         if(isScope) {
-            foldUnreferencedTargets(m);
-            foldUnusedFunctions(m);
+            tryToFoldScope(m);
         }
     }
     void recursiveDereference(ASTNode n) {
@@ -678,85 +678,93 @@ private:
             recursiveDereference(ch);
         }
     }
-    void foldUnreferencedTargets(ASTNode scope_) {
+    void tryToFoldScope(ASTNode scope_) {
+
+        /// We need all targets inside this scope to be resolved
         Target[] targets;
         scope_.collectTargets(targets);
+        if(!targets.all!(it=>it.isResolved)) return;
 
-        /// If all targets inside this scope are resolved:
-        if(targets.all!(it=>it.isResolved)) {
-
-            /// For each local variable in this scope:
-            scope_.recurse!Variable( (v) {
-                if(v.isLocalAlloc) {
-
-                    if(v.numRefs==0) {
-                        /// If numRefs==0 then remove it
-                        fold(v);
-
-                    } else if(v.numRefs==1) {
-
-                        //'b' Variable[refs=1] (type=int) LOCAL PRIVATE
-                        //    Initialiser var=b, type=int
-                        //       ASSIGN (type=int)
-                        //          ID:b (type=int) Target: VAR b int
-                        //          2 (type=const int)
-
-                        /// If the only reference is the initialiser and the
-                        /// initialiser is a CompileTimeConstant then the Variable can be removed
-                        if(v.hasInitialiser) {
-                            auto lit = v.initialiser().getLiteral();
-                            auto ctc = lit.as!CompileTimeConstant;
-                            if(ctc) {
-                                fold(v);
-                            }
-                        }
-                    }
-                }
-            });
-
-            /// For each call in this scope:
-            scope_.recurse!Call( (call) {
-                assert(call.target.isResolved);
-
-                if(call.target.isFunction) {
-                    auto func  = call.target.getFunction;
-                    auto body_ = func.hasBody() ? func.getBody() : null;
-                    if(body_) {
-                        if(body_.isEmpty()) {
-                            /// Function has nothing in it so the call can be removed
-
-                            //dd("---->", module_.canonicalName, call.line+1, call);
-
-                            fold(call);
-
-                        } else if(body_.numStatements()==1) {
-                            if(body_.second().isA!Return) {
-                                /// Function only has a single statement which is a return.
-                                /// If it returns void or a compile time constant
-                                /// then we can fold the call
-                                auto ret = body_.second().as!Return;
-                                if(ret.hasExpr) {
-                                    auto ctc = ret.expr().as!CompileTimeConstant;
-                                    if(ctc) {
-                                        fold(call, ctc.copy());
-                                    }
-                                } else {
-                                    fold(call);
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-        }
+        foldUnreferencedVariables(scope_);
+        foldUnreferencedCalls(scope_);
+        foldUnreferencedFunctions(scope_);
     }
-    void foldUnusedFunctions(ASTNode scope_) {
-        scope_.recurse!Function( (f) {
-            if(f.access.isPrivate) {
-                if(f.numRefs==0) {
-                    fold(f);
-                } else {
+    void foldUnreferencedVariables(ASTNode scope_) {
+        scope_.recurse!Variable( (v) {
+            if(v.isLocalAlloc) {
 
+                if(v.numRefs==0) {
+                    /// If numRefs==0 then remove it
+                    fold(v);
+
+                } else if(v.numRefs==1) {
+
+                    //'b' Variable[refs=1] (type=int) LOCAL PRIVATE
+                    //    Initialiser var=b, type=int
+                    //       ASSIGN (type=int)
+                    //          ID:b (type=int) Target: VAR b int
+                    //          2 (type=const int)
+
+                    /// If the only reference is the initialiser and the
+                    /// initialiser is a CompileTimeConstant then the Variable can be removed
+                    if(v.hasInitialiser) {
+                        auto lit = v.initialiser().getLiteral();
+                        auto ctc = lit.as!CompileTimeConstant;
+                        if(ctc) {
+                            fold(v);
+                        }
+                    }
+                }
+            }
+        });
+    }
+    void foldUnreferencedCalls(ASTNode scope_) {
+        scope_.recurse!Call( (call) {
+            assert(call.target.isResolved);
+
+            if(call.target.isFunction) {
+                auto func  = call.target.getFunction;
+                auto body_ = func.hasBody() ? func.getBody() : null;
+                if(body_) {
+                    if(body_.isEmpty()) {
+                        /// Function has nothing in it so the call can be removed
+
+                        fold(call);
+
+                    } else if(body_.numStatements()==1) {
+                        if(body_.second().isA!Return) {
+                            /// Function only has a single statement which is a return.
+                            /// If it returns void or a compile time constant
+                            /// then we can fold the call
+                            auto ret = body_.second().as!Return;
+                            if(ret.hasExpr) {
+                                auto ctc = ret.expr().as!CompileTimeConstant;
+                                if(ctc) {
+                                    fold(call, ctc.copy());
+                                }
+                            } else {
+                                fold(call);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+    void foldUnreferencedFunctions(ASTNode scope_) {
+        scope_.recurse!Function( (f) {
+
+            /// Don't get rid of any constructors
+            if(f.name!="new") {
+
+                /// Only look at private functions
+                if(f.access.isPrivate) {
+
+                    if(f.numRefs==0) {
+                        fold(f);
+                    } else {
+
+                    }
                 }
             }
         });
