@@ -691,7 +691,10 @@ private:
     }
     void foldUnreferencedVariables(ASTNode scope_) {
         scope_.recurse!Variable( (v) {
-            if(v.isLocalAlloc) {
+
+            bool viableFold = (scope_.isModule && v.isGlobal) || v.isLocalAlloc;
+
+            if(viableFold) {
 
                 if(v.numRefs==0) {
                     /// If numRefs==0 then remove it

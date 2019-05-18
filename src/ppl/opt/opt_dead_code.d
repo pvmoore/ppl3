@@ -74,6 +74,7 @@ public:
                 /// The struct is referenced but some of the functions may not be
                 foreach(f; ns.getMemberFunctions()) {
                     if(f.numRefs==0) {
+
                         log("\t  unreferenced func %s.%s", ns.name, f.name);
                         remove(f);
                     }
@@ -100,7 +101,7 @@ public:
         foreach(v; module_.getVariables()) {
             if(v.numRefs==0) {
 
-                warn(v, "Unreferenced variable %s could be removed during resolve phase".format(v));
+                module_.addError(v, "Unreferenced variable %s should have been removed during resolve phase".format(v), true);
 
                 v.detach();
             }
