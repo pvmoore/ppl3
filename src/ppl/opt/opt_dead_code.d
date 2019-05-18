@@ -56,6 +56,11 @@ public:
         module_.selectDescendents!Enum(enums);
         foreach(e; enums) {
             if(e.numRefs==0) {
+
+                if(e.access.isPrivate) {
+                    module_.addError(e, "Unreferenced enum %s should have been removed during the resolve phase".format(e), true);
+                }
+
                 remove(e);
             }
         }

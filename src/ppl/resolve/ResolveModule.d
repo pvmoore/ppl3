@@ -686,6 +686,7 @@ private:
         if(!targets.all!(it=>it.isResolved)) return;
 
         foldUnreferencedVariables(scope_);
+        foldUnreferencedEnums(scope_);
         foldUnreferencedCalls(scope_);
         foldUnreferencedFunctions(scope_);
     }
@@ -769,6 +770,13 @@ private:
 
                     }
                 }
+            }
+        });
+    }
+    void foldUnreferencedEnums(ASTNode scope_) {
+        scope_.recurse!Enum( (e) {
+            if(e.access.isPrivate && e.numRefs==0) {
+                fold(e);
             }
         });
     }
