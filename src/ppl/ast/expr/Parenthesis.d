@@ -1,4 +1,4 @@
-module ppl.ast.Parenthesis;
+module ppl.ast.expr.Parenthesis;
 
 import ppl.internal;
 

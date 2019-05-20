@@ -78,22 +78,51 @@ public:
         if(n.isResolved && n.isConst) {
             auto type = n.target.getType;
             auto var  = n.target.getVariable;
+            auto ini  = var.initialiser();
+            auto expr = ini.getExpr();
 
-            //if(n.line==102 && module_.canonicalName=="misc::test_constant_folding") {
-            //    dd("!!!!!!",n);
-            //}
+            if(!expr.isResolved) return;
 
-            if(type.isValue && (type.isInteger || type.isReal || type.isBool)) {
-                assert(var.hasInitialiser);
+            /// Don't modify n = expr
+            if(n.parent.isBinary && n.parent.as!Binary.op==Operator.ASSIGN && n.parent.as!Binary.left() is n) {
+                return;
+            }
 
-                Initialiser ini = var.initialiser();
-                auto lit        = ini.getLiteral();
-                auto cct        = lit.as!CompileTimeConstant;
+            if(type.isValue) {
 
-                if(cct && lit.isResolved) {
+                if(type.isEnum) {
+                    //dd("....", n.name, ini, module_.canonicalName, n.line+1);
+                    //ini.dumpToConsole();
 
-                    resolver.fold(n, cct.copy());
-                    return;
+                    if(n.parent.isA!EnumMemberValue) {
+
+                        /// Extract the EnumMember value (which may be a literal)
+
+                        expr = expr.isA!ExpressionRef &&
+                               expr.as!ExpressionRef.reference.isA!EnumMember ?
+                               expr.as!ExpressionRef.reference.as!EnumMember.expr() : null;
+
+                        if(!expr || !expr.isResolved) return;
+
+                        type = expr.getType();
+
+                    } else if(expr.isA!ExpressionRef && expr.as!ExpressionRef.reference.isA!EnumMember) {
+
+                        auto em     = expr.as!ExpressionRef.reference.as!EnumMember;
+                        auto newRef = ExpressionRef.make(expr.as!ExpressionRef.reference);
+
+                        resolver.fold(n, newRef);
+                        return;
+                    }
+                }
+
+                if(type.isInteger || type.isReal || type.isBool) {
+
+                    auto cct = expr.as!CompileTimeConstant;
+                    if(cct) {
+                        resolver.fold(n, cct.copy());
+                        return;
+                    }
                 }
             }
         }

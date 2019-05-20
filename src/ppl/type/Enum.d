@@ -64,6 +64,7 @@ public:
         return members().filter!(it=>it.name==name).frontOrNull!EnumMember;
     }
 
+
     bool allMembersAreResolved() {
         return members().all!(it=>it.isResolved);
     }
@@ -76,10 +77,13 @@ public:
         return name;
     }
 }
+///
+/// EnumMember
+///     expr
+///
 final class EnumMember : Expression {
     string name;
     Enum type;
-    //bool isCompilerGenerated;   /// true if we created this as the result of a binary operation for eg
 
     override bool isResolved()    { return hasChildren && expr().isResolved; }
     override NodeID id() const    { return NodeID.ENUM_MEMBER; }

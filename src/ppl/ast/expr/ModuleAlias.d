@@ -1,4 +1,4 @@
-module ppl.ast.ModuleAlias;
+module ppl.ast.expr.ModuleAlias;
 
 import ppl.internal;
 

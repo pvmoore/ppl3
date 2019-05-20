@@ -1,4 +1,4 @@
-module ppl.ast.If;
+module ppl.ast.expr.If;
 
 import ppl.internal;
 ///

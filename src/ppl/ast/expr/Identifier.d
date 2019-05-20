@@ -1,4 +1,4 @@
-module ppl.ast.Identifier;
+module ppl.ast.expr.Identifier;
 
 import ppl.internal;
 
@@ -17,7 +17,7 @@ final class Identifier : Expression {
 
         if(r) {
             auto init = target.getVariable.initialiser();
-            auto lit  = init.getLiteral();
+            auto lit  = init.getExpr();
 
             return lit !is null;
         }

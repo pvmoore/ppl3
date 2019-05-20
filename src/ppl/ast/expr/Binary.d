@@ -1,4 +1,4 @@
-module ppl.ast.Binary;
+module ppl.ast.expr.Binary;
 
 import ppl.internal;
 /**

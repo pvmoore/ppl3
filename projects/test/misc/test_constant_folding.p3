@@ -88,11 +88,13 @@ fn unaryExpressions() {
 }
 fn arrayInit() {
     const ARRAY_LEN = 2
-    int[ARRAY_LEN] array; assert @typeOf(array) is int[2]   
+    int[ARRAY_LEN] array
+        assert @typeOf(array) is int[2]   
 
     const L1 = 1
     const L2 = L1+1
-    int[L1][L2] array2; assert @typeOf(array2) is int[1][2]
+    int[L1][L2] array2
+        assert @typeOf(array2) is int[1][2]
 }
 fn ifStatements() {
     if(true) {

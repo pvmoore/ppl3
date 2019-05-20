@@ -1,4 +1,4 @@
-module ppl.ast.LiteralArray;
+module ppl.ast.expr.LiteralArray;
 
 import ppl.internal;
 ///

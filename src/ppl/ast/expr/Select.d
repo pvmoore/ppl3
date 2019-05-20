@@ -1,4 +1,4 @@
-module ppl.ast.Select;
+module ppl.ast.expr.Select;
 
 import ppl.internal;
 /// Select switch:

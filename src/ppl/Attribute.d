@@ -9,8 +9,9 @@ T get(T)(Attribute[] attribs) {
 
 abstract class Attribute {
     enum Type {
-        INLINE, NOINLINE, LAZY, MEMOIZE, MODULE, NOTNULL, PACKED, POD, PROFILE, RANGE,
-        NOOPT
+        INLINE, NOINLINE,
+        LAZY, MEMOIZE, MODULE, NOTNULL,
+        PACKED, POD, PROFILE, RANGE, NOOPT
     }
     string name;
     Type type;
@@ -32,7 +33,7 @@ final class NoInlineAttribute : Attribute {
         type = Type.NOINLINE;
     }
 }
-/// @lazy
+/// [[lazy]]
 /// Applies to function parameters
 final class LazyAttribute : Attribute {
     this() {
@@ -40,7 +41,7 @@ final class LazyAttribute : Attribute {
         type = Type.LAZY;
     }
 }
-/// @memoize
+/// [[memoize]]
 /// Applies to functions
 final class MemoizeAttribute : Attribute {
     this() {
@@ -48,7 +49,7 @@ final class MemoizeAttribute : Attribute {
         type = Type.MEMOIZE;
     }
 }
-/// @module(priority=1)
+/// [[module priority=1]]
 /// Applies to current module
 final class ModuleAttribute : Attribute {
     int priority;
@@ -57,14 +58,15 @@ final class ModuleAttribute : Attribute {
         type = Type.MODULE;
     }
 }
-/// @notnull
+/// [[notnull]]
+/// Applies to functionparameters
 final class NotNullAttribute : Attribute {
     this() {
         name = "[[notnull]]";
         type = Type.NOTNULL;
     }
 }
-/// @pack(true)
+/// [[packed]]
 /// Applies to structs
 final class PackedAttribute : Attribute {
     this() {
@@ -72,13 +74,15 @@ final class PackedAttribute : Attribute {
         type = Type.PACKED;
     }
 }
+/// [[pod]]
+/// Applies to structs
 final class PodAttribute : Attribute {
     this() {
         name = "[[pod]]";
         type = Type.POD;
     }
 }
-/// @profile
+/// [[profile]]
 /// Applies to functions
 final class ProfileAttribute : Attribute {
     this() {
@@ -86,15 +90,17 @@ final class ProfileAttribute : Attribute {
         type = Type.PROFILE;
     }
 }
-/// @bounds(min=0, max=200)
+/// [[range min=0, max=200]]
 /// Applies to variables
 final class RangeAttribute : Attribute {
+    long min, max;
     this() {
         name = "[[range]]";
         type = Type.RANGE;
     }
 }
-
+/// [[noopt]]
+/// Applies to functions
 final class NoOptAttribute : Attribute {
     this() {
         name = "[[noopt]]";

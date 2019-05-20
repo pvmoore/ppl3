@@ -1,4 +1,4 @@
-module ppl.ast.Lambda;
+module ppl.ast.expr.Lambda;
 
 import ppl.internal;
 ///

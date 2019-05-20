@@ -1,4 +1,4 @@
-module ppl.ast.LiteralNull;
+module ppl.ast.expr.LiteralNull;
 
 import ppl.internal;
 

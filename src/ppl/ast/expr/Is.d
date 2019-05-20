@@ -1,4 +1,4 @@
-module ppl.ast.Is;
+module ppl.ast.expr.Is;
 
 import ppl.internal;
 ///

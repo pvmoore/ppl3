@@ -1,4 +1,4 @@
-module ppl.ast.LiteralMap;
+module ppl.ast.expr.LiteralMap;
 
 import ppl.internal;
 

@@ -26,6 +26,30 @@ public:
 
         setImplicitValues(n);
     }
+    void resolve(EnumMemberValue n) {
+        if(n.isResolved) {
+            if(n.expr.isConst) {
+
+                CompileTimeConstant ctc;
+
+                if(n.expr.isA!ExpressionRef) {
+                    auto er = n.expr.as!ExpressionRef;
+                    if(er.reference.isA!EnumMember) {
+                        auto expr = er.reference.as!EnumMember.expr();
+                        if(!expr.isResolved) return;
+
+                        ctc = expr.as!CompileTimeConstant;
+                    }
+                } else {
+                    ctc = n.expr().as!CompileTimeConstant;
+                }
+
+                if(ctc) {
+                    resolver.fold(n, ctc.copy());
+                }
+            }
+        }
+    }
 private:
     void setImplicitValues(Enum n) {
 

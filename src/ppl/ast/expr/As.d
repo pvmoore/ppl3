@@ -1,4 +1,4 @@
-module ppl.ast.As;
+module ppl.ast.expr.As;
 
 import ppl.internal;
 ///

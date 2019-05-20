@@ -1,4 +1,4 @@
-module ppl.ast.LiteralString;
+module ppl.ast.expr.LiteralString;
 
 import ppl.internal;
 ///

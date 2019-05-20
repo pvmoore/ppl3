@@ -278,7 +278,7 @@ public:
         auto rt      = n.rightType();
         auto builder = module_.builder(n);
 
-        /// Rewrite Enum::A where A is also a type declared elsewhere
+        /// Rewrite Enum.A where A is also a type declared elsewhere
         //if(lt.isEnum && n.right().isTypeExpr) {
         //    auto texpr = n.right().as!TypeExpr;
         //    if(texpr.isResolved) {
@@ -295,10 +295,17 @@ public:
 
     }
     void visit(EnumMemberValue n) {
-
+        enumResolver.resolve(n);
     }
     void visit(ExpressionRef n) {
-
+        if(n.reference.isA!EnumMember) {
+            auto em  = n.reference.as!EnumMember;
+            auto ctc = em.expr.as!CompileTimeConstant;
+            if(ctc) {
+                // todo - can't do this until possible call is resolved
+                //fold(n, ctc.copy());
+            }
+        }
     }
     void visit(Function n) {
 
@@ -712,7 +719,7 @@ private:
                     /// If the only reference is the initialiser and the
                     /// initialiser is a CompileTimeConstant then the Variable can be removed
                     if(v.hasInitialiser) {
-                        auto lit = v.initialiser().getLiteral();
+                        auto lit = v.initialiser().getExpr();
                         auto ctc = lit.as!CompileTimeConstant;
                         if(ctc) {
                             fold(v);
@@ -775,9 +782,36 @@ private:
     }
     void foldUnreferencedEnums(ASTNode scope_) {
         scope_.recurse!Enum( (e) {
-            if(e.access.isPrivate && e.numRefs==0) {
-                fold(e);
+            if(e.access.isPrivate) {
+                if(e.numRefs==0) {
+                    fold(e);
+                } else {
+                    bool allKnown;
+                    int usages = getNumUsagesInScope(scope_, e, allKnown);
+                    if(allKnown) {
+                        // todo
+                        dd("=====>", module_.canonicalName, e.line+1, e, "usages =", usages);
+                    }
+                }
             }
         });
+    }
+    int getNumUsagesInScope(ASTNode scope_, Enum e, ref bool allKnown) {
+        int count = 0;
+        allKnown = true;
+        scope_.recurse!Variable( (v) {
+            auto type = v.getType;
+            if(type.isKnown) {
+                if(type.isEnum) count++;
+            } else {
+                allKnown = false;
+            }
+        });
+        if(allKnown) {
+            //scope_.recurse!Dot( (d) {
+            //
+            //});
+        }
+        return count;
     }
 }

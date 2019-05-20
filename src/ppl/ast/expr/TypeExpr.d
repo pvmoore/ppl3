@@ -1,4 +1,4 @@
-module ppl.ast.TypeExpr;
+module ppl.ast.expr.TypeExpr;
 
 import ppl.internal;
 

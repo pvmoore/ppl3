@@ -181,7 +181,8 @@ public:
         // todo - should have been removed
     }
     void visit(EnumMemberValue n) {
-
+        //dd("!!!!!! we got here", module_.canonicalName, n.line+1, n, ",", n.expr);
+        // todo - should have been removed
     }
     void visit(ExpressionRef n) {
 

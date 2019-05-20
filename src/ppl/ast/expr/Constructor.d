@@ -1,4 +1,4 @@
-module ppl.ast.Constructor;
+module ppl.ast.expr.Constructor;
 
 import ppl.internal;
 

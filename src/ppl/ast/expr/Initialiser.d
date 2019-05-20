@@ -1,4 +1,4 @@
-module ppl.ast.Initialiser;
+module ppl.ast.expr.Initialiser;
 
 import ppl.internal;
 ///
@@ -24,7 +24,7 @@ public:
         }
         return TYPE_UNKNOWN;
     }
-    Expression getLiteral() {
+    Expression getExpr() {
         if(astGenerated) {
             auto b = last().as!Binary;
             assert(b);

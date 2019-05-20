@@ -1,4 +1,4 @@
-module ppl.ast.BuiltinFunc;
+module ppl.ast.expr.BuiltinFunc;
 
 import ppl.internal;
 ///

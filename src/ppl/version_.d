@@ -6,7 +6,8 @@ const string VERSION = "3.25.0";
 
 /*
 
-3.25.0 -
+3.25.0 - Remove more declarations in the resolve phase.
+         Prevent casting enum to different enum.
 
 3.24.0 - Added @ctUnreachable()
 
@@ -79,8 +80,9 @@ TODO Compiler:
     - Implement ControlFlow to check that every route through a function returns
       correctly
 
+    - Implement [[range]] attribute and add checks if boundsChecks=true
+
     - Replace pointers with ref / const ref
-    - Change 'loop' to 'for' eg. for(array) v, i {}
     - Remove module, replace with struct for entire file??
     - Change import syntax
     - Add coroutine intrinsics eg. @coroPrelude, @coroHandle, @coroSuspend, @coroResume
@@ -93,7 +95,22 @@ TODO Compiler:
     - Think about const. If a struct value is const we should not allow any modifying
       member property updates or function calls.
 
-    - Fold select, for/loop, functions and lambdas
+    - Fold for/loop (wait for syntax change?)
+
+    ** foldable()
+
+    ** Fold more EnumMemberValues
+
+    ** struct decl syntax change:
+        struct A <T> (pub int a, bool b) {
+            # functions
+        }
+      so that it is similar to tuple decl syntax eg. struct(int a)
+
+    ** Change 'loop' to 'for' eg. for(array) v, i {}
+        - for(i in 0..10) {}
+        - for(i in @range(0,10,1)) {}
+            struct Range<T>(T start, T end, T step)
 
 TODO Lib:
     - Create a work-stealing thread pool in libs/core or libs/std using coroutines

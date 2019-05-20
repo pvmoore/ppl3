@@ -1,4 +1,4 @@
-module ppl.ast.Index;
+module ppl.ast.expr.Index;
 
 import ppl.internal;
 ///

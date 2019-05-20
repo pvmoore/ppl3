@@ -1,4 +1,4 @@
-module ppl.ast.LiteralFunction;
+module ppl.ast.expr.LiteralFunction;
 
 import ppl.internal;
 

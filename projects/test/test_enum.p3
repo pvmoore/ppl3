@@ -36,9 +36,15 @@ enum D : long {
 
 pub fn testEnum() {
     const initialisation = {
-        const a = A.SIX          ; assert @typeOf(a) is A;    assert a.value == 3
-        const b = a              ; assert @typeOf(b) is A;    assert b.value == 3
-        const c = A.FIVE.value   ; assert @typeOf(c) is int;  assert c == 2
+        const a = A.SIX           
+            assert @typeOf(a) is A
+            assert a.value == 3
+        const b = a              
+            assert @typeOf(b) is A    
+            assert b.value == 3
+        const c = A.FIVE.value   
+            assert @typeOf(c) is int
+            assert c == 2
         
         A d
         A e = A.THREE          ; assert e.value == 5
@@ -66,12 +72,16 @@ pub fn testEnum() {
         assert h >= i
     }
     const conversion = {
+        # rewritten --> A.THREE.value as int
         const a = A.THREE as int; assert a == 5
-        const b = 4 as A        ; assert @typeOf(b) is A
-                                 assert b == 4
-                                 assert b.value == 4
-        const c = A.FOUR as B   ; assert @typeOf(c) is B
-                                 assert c.value == 6
+        
+        # New EnumMember created with value 4
+        const b = 4 as A;   assert @typeOf(b) is A
+                            assert b == 4
+                            assert b.value == 4
+                                 
+        # cast to different enum not allowed                         
+        #const c = A.FOUR as B  
     }
     const manipulation = {
         const a = A.TWO + A.TWO     ; assert @typeOf(a) is A;    assert a.value == 2

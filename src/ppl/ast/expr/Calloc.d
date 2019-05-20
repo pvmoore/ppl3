@@ -1,4 +1,4 @@
-module ppl.ast.Calloc;
+module ppl.ast.expr.Calloc;
 
 import ppl.internal;
 ///

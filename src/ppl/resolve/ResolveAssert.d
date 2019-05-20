@@ -25,31 +25,62 @@ public:
             Type type = n.expr().getType();
             if(type.isUnknown) return;
 
-            /// Convert to a call to __assert(bool, string, int)
-            auto parent = n.parent;
-            auto b      = module_.builder(n);
+            auto ctc = n.expr().as!CompileTimeConstant;
+            if(ctc) {
+                if(ctc.isTrue()) {
+                    /// Just remove the assertion
+                    resolver.fold(n);
+                } else {
+                    /// Assertion failed. Call __assert with false
+                    rewriteAsCallToAssert(n, type);
+                }
+                return;
 
-            auto c = b.call("__assert", null);
-
-            /// value
-            Expression value;
-            if(type.isPtr) {
-                value = b.binary(Operator.BOOL_NE, n.expr(), LiteralNull.makeConst(type));
-            } else if(type.isBool) {
-                value = n.expr();
             } else {
-                value = b.binary(Operator.BOOL_NE, n.expr(), LiteralNumber.makeConst(0));
+                if(n.expr().isConst) {
+                    /// Wait for it to be resolved to a CompileTimeConstant
+
+                    //dd("waiting for", module_.canonicalName, n.line+1, n.expr());
+
+                    // todo - we need something better than isConst. Maybe isCTConst?
+                    //return;
+                }
             }
-            c.add(value);
 
-            /// string
-            //c.add(b.string_(module_.moduleNameLiteral));
-            c.add(module_.moduleNameLiteral.copy());
-
-            /// line
-            c.add(LiteralNumber.makeConst(n.line+1, TYPE_INT));
-
-            resolver.fold(n, c);
+            rewriteAsCallToAssert(n, type);
         }
+    }
+private:
+    /// Rewrite to:
+    ///
+    /// call __assert
+    ///     bool    (assert result)
+    ///     string  (module name)
+    ///     int     (line number)
+    void rewriteAsCallToAssert(Assert n, Type exprType) {
+        auto parent = n.parent;
+        auto b      = module_.builder(n);
+
+        auto c = b.call("__assert", null);
+
+        /// value
+        Expression value;
+        if(exprType.isPtr) {
+            value = b.binary(Operator.BOOL_NE, n.expr(), LiteralNull.makeConst(exprType));
+        } else if(exprType.isBool) {
+            value = n.expr();
+        } else {
+            value = b.binary(Operator.BOOL_NE, n.expr(), LiteralNumber.makeConst(0));
+        }
+        c.add(value);
+
+        /// string
+        //c.add(b.string_(module_.moduleNameLiteral));
+        c.add(module_.moduleNameLiteral.copy());
+
+        /// line
+        c.add(LiteralNumber.makeConst(n.line+1, TYPE_INT));
+
+        resolver.fold(n, c);
     }
 }

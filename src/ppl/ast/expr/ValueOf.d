@@ -1,4 +1,4 @@
-module ppl.ast.ValueOf;
+module ppl.ast.expr.ValueOf;
 
 import ppl.internal;
 

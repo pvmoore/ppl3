@@ -1,4 +1,4 @@
-module ppl.ast.AddressOf;
+module ppl.ast.expr.AddressOf;
 
 import ppl.internal;
 

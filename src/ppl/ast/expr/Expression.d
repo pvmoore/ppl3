@@ -1,12 +1,18 @@
-module ppl.ast.Expression;
+module ppl.ast.expr.Expression;
 
 import ppl.internal;
+
+enum CT { YES, UNRESOLVED, NO }
 
 abstract class Expression : Statement {
 
     abstract int priority() const;
 
+    CT comptime() { return CT.NO; }
+
+    // todo - remove this in favour of comptime(). Keep for Variable
     bool isConst() { return false; }
+
 
     bool isStartOfChain() {
         if(!parent.isDot) return true;

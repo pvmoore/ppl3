@@ -1,4 +1,4 @@
-module ppl.ast.Composite;
+module ppl.ast.expr.Composite;
 
 import ppl.internal;
 

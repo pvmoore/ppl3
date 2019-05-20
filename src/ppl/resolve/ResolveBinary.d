@@ -160,7 +160,7 @@ private:
         auto builder = module_.builder(n);
         Enum enum_;
 
-        /// += for example
+        /// eg. +=
         if(n.op.isAssign) {
 
             /// Rewrite:
@@ -186,15 +186,15 @@ private:
             /// Rewrite these as .value
 
             if(lt.isEnum && lt.isValue) {
-                auto value = builder.enumMemberValue(lt.getEnum, n.left());
+                enum_ = lt.getEnum;
+                auto value = builder.enumMemberValue(enum_, n.left());
                 n.addToFront(value);
-                enum_    = lt.getEnum;
                 resolver.setModified(n);
             }
             if(rt.isEnum && rt.isValue) {
-                auto value = builder.enumMemberValue(rt.getEnum, n.right());
+                enum_ = rt.getEnum;
+                auto value = builder.enumMemberValue(enum_, n.right());
                 n.add(value);
-                enum_    = rt.getEnum;
                 resolver.setModified(n);
             }
             if(enum_) {

@@ -1,4 +1,4 @@
-module ppl.ast.Dot;
+module ppl.ast.expr.Dot;
 
 import ppl.internal;
 ///

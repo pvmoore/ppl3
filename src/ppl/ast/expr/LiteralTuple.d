@@ -1,4 +1,4 @@
-module ppl.ast.LiteralTuple;
+module ppl.ast.expr.LiteralTuple;
 
 import ppl.internal;
 ///

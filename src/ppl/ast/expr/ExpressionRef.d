@@ -1,4 +1,4 @@
-module ppl.ast.ExpressionRef;
+module ppl.ast.expr.ExpressionRef;
 
 import ppl.internal;
 ///

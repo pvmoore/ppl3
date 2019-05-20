@@ -1,4 +1,4 @@
-module ppl.ast.LiteralNumber;
+module ppl.ast.expr.LiteralNumber;
 
 import ppl.internal;
 
