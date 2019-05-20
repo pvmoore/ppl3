@@ -10,9 +10,11 @@ private:
     Type type;
 public:
     override bool isResolved() { return expr.isResolved; }
-    override bool isConst() { return expr().isConst; }
+    override bool isConst() { return expr().isConst(); }
     override NodeID id() const { return NodeID.ADDRESS_OF; }
     override int priority() const { return 3; }
+
+    override CT comptime() { return expr().comptime(); }
 
     override Type getType() {
         if(!expr().isResolved) return TYPE_UNKNOWN;

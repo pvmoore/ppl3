@@ -22,6 +22,8 @@ final class LiteralArray : Expression {
     override int priority() const { return 15; }
     override Type getType() { return type; }
 
+    override CT comptime() { return CT.NO; }
+
     int length() {
         return children.length.toInt;
     }

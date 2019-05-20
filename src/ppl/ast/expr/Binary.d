@@ -19,6 +19,8 @@ public class Binary : Expression {
     override int priority() const { return op.priority; }
     override Type getType()       { return type; }
 
+    override CT comptime() { return mergeCT(left(), right()); }
+
     Expression left()  { return cast(Expression)children[0]; }
     Expression right() { return cast(Expression)children[1]; }
     Type leftType()    { assert(left()); return left().getType; }

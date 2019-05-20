@@ -162,11 +162,11 @@ public:
 
                     auto exprs = n.exprs();
 
-                    if(!exprs[1].isConst) {
+                    if(!exprs[1].isConst()) {
                         module_.addError(exprs[1], "@expect argument 2 needs to be a const integer or bool", true);
                     }
 
-                    if(exprs.areResolved && exprs[0].isConst && exprs[1].isConst) {
+                    if(exprs.areResolved && exprs[0].isConst() && exprs[1].isConst()) {
                         /// We can fold this because both expressions are const
                         auto left  = exprs[0].as!LiteralNumber;
                         auto right = exprs[1].as!LiteralNumber;
@@ -197,7 +197,7 @@ public:
                     auto cct = n.exprs()[0].as!CompileTimeConstant;
 
                     if(cct is null) {
-                        if(!n.exprs()[0].isConst) {
+                        if(!n.exprs()[0].isConst()) {
                             module_.addError(n.exprs()[0], "@ctAssert argument needs to be a compile time constant", true);
                         }
                     } else {

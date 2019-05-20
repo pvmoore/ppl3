@@ -36,7 +36,7 @@ public:
         }
         /// If expression is a const literal number then apply the
         /// operator and replace Unary with the result
-        if(n.isResolved && n.isConst) {
+        if(n.isResolved && n.isConst()) {
             auto lit = n.expr().as!LiteralNumber;
             if(lit) {
                 bool ok = lit.value.applyUnary(n.op);

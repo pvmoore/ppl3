@@ -14,6 +14,8 @@ final class As : Expression {
     override int priority() const { return 3; }
     override Type getType() { return rightType(); }
 
+    override CT comptime() { return CT.YES; }
+
     Expression left()  { return children[0].as!Expression; }
     Expression right() { return children[1].as!Expression; }
 

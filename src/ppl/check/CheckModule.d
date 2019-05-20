@@ -554,7 +554,7 @@ public:
             if(!n.isGlobal && !n.isStructMember) {
                 /// Initialiser must be const
                 auto ini = n.initialiser();
-                if(!ini.isConst) {
+                if(!ini.isConst()) {
                     module_.addError(n, "Const initialiser must be const", true);
                 }
             }

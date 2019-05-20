@@ -28,7 +28,7 @@ public:
     }
     void resolve(EnumMemberValue n) {
         if(n.isResolved) {
-            if(n.expr.isConst) {
+            if(n.expr.isConst()) {
 
                 CompileTimeConstant ctc;
 

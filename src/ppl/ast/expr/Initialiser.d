@@ -24,6 +24,12 @@ public:
         }
         return TYPE_UNKNOWN;
     }
+
+    override CT comptime() {
+        return getExpr().comptime();
+    }
+
+
     Expression getExpr() {
         if(astGenerated) {
             auto b = last().as!Binary;

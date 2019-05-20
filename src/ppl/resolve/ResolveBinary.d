@@ -117,7 +117,7 @@ public:
 
         /// If left and right expressions are const numbers then evaluate them now
         /// and replace the Binary with the result
-        if(n.isResolved && n.isConst) {
+        if(n.isResolved && n.isConst()) {
 
             // todo - make this work
             if(n.op.isAssign) return;

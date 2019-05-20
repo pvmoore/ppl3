@@ -36,6 +36,8 @@ final class Call : Expression {
         return target.getType().getFunctionType.returnType;
     }
 
+    override CT comptime() { return CT.NO; }
+
     void addImplicitThisArg(Variable this_) {
         import std.array : insertInPlace;
         assert(this_);

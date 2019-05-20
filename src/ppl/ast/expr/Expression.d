@@ -4,13 +4,30 @@ import ppl.internal;
 
 enum CT { YES, UNRESOLVED, NO }
 
+CT mergeCT(Expression[] exprs...) {
+    CT result = CT.YES;
+    foreach(e; exprs) {
+        auto ct = e.comptime();
+        if(ct==CT.NO) return CT.NO;
+        if(ct==CT.UNRESOLVED) result = ct;
+    }
+    return result;
+}
+CT mergeCT(CT[] cts...) {
+    CT result = CT.YES;
+    foreach(ct; cts) {
+        if(ct==CT.NO) return CT.NO;
+        if(ct==CT.UNRESOLVED) result = ct;
+    }
+    return result;
+}
+
 abstract class Expression : Statement {
 
     abstract int priority() const;
+    abstract CT comptime();
 
-    CT comptime() { return CT.NO; }
-
-    // todo - remove this in favour of comptime(). Keep for Variable
+    // todo - remove this in favour of comptime()
     bool isConst() { return false; }
 
 

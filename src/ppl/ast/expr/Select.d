@@ -35,6 +35,16 @@ final class Select : Expression {
     override int priority() const { return 15; }
     override Type getType()       { return type; }
 
+    override CT comptime() {
+        if(isSwitch) {
+            if(valueExpr().comptime()!=CT.YES) return valueExpr().comptime();
+        }
+        if(isExpr) {
+            return mergeCT(casesIncludingDefault());
+        }
+        return CT.YES;
+    }
+
     bool hasInitExpr() { assert(isSwitch); return first().hasChildren; }
 
     bool isExpr() {
@@ -110,6 +120,8 @@ final class Case : Expression {
     override bool isConst()       { return false; }
     override int priority() const { return 15; }
     override Type getType()       { return stmts().getType; }
+
+    override CT comptime()        { return mergeCT(mergeCT(conds()), stmts().comptime()); }
 
     Expression cond()    { return children[0].as!Expression; }
     Expression[] conds() { return children[0..$-1].as!(Expression[]); }

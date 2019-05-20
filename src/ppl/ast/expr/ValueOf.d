@@ -6,7 +6,7 @@ final class ValueOf : Expression {
     private Type type;
 
     override bool isResolved() { return expr.isResolved; }
-    override bool isConst() { return expr().isConst; }
+    override bool isConst() { return expr().isConst(); }
     override NodeID id() const { return NodeID.VALUE_OF; }
     override int priority() const { return 3; }
 
@@ -23,6 +23,8 @@ final class ValueOf : Expression {
         type = Pointer.of(t, -1);
         return type;
     }
+
+    override CT comptime() { return expr().comptime(); }
 
     Expression expr() { return children[0].as!Expression; }
 

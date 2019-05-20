@@ -46,6 +46,14 @@ final class Composite : Expression {
         if(hasChildren) return last().getType();
         return TYPE_VOID;
     }
+
+    override CT comptime() {
+        auto e = expr();
+        return e is null ? CT.YES :
+                           e.comptime();
+    }
+
+
     bool endsWithReturn() {
         return numChildren > 0 && last().isReturn;
     }

@@ -10,6 +10,8 @@ final class LiteralMap : Expression {
     override int priority() const { return 15; }
     override Type getType() { return type; }
 
+    override CT comptime() { return CT.NO; }
+
     override string toString() {
         return "[:] %s".format(type);
     }

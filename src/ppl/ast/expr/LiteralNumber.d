@@ -53,6 +53,8 @@ public:
     override Type getType() { return _type; }
     override NodeID id() const { return NodeID.LITERAL_NUMBER; }
 
+    override CT comptime() { return CT.YES; }
+
     void determineType() {
         From!"std.typecons".Tuple!(Type,string) r = parseNumberLiteral(str);
         _type  = r[0];

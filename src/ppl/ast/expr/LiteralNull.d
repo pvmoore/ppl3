@@ -31,6 +31,8 @@ final class LiteralNull : Expression, CompileTimeConstant {
     override Type getType()       { return type; }
     override NodeID id() const    { return NodeID.LITERAL_NULL; }
 
+    override CT comptime() { return CT.YES; }
+
     override string toString() {
         return "null (type=const %s)".format(type);
     }

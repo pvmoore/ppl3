@@ -37,12 +37,12 @@ public:
                 return;
 
             } else {
-                if(n.expr().isConst) {
+                if(n.expr().isConst()) {
                     /// Wait for it to be resolved to a CompileTimeConstant
 
                     //dd("waiting for", module_.canonicalName, n.line+1, n.expr());
 
-                    // todo - we need something better than isConst. Maybe isCTConst?
+                    // todo - use comptime()
                     //return;
                 }
             }

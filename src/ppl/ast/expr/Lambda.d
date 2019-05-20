@@ -16,6 +16,8 @@ final class Lambda : Expression {
     override int priority() const { return 15; }
     override Type getType() { return getBody().getType(); }
 
+    override CT comptime() { return CT.NO; }
+
     LiteralFunction getBody() {
         return first().as!LiteralFunction;
     }

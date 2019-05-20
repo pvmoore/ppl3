@@ -76,6 +76,9 @@ final class Index : Expression {
         return TYPE_UNKNOWN;
     }
 
+    override CT comptime() { return CT.NO; }
+
+
     bool isArrayIndex() { return exprType().isValue && exprType().isArray; }
     bool isTupleIndex() { return exprType().isValue && exprType().isTuple; }
     bool isPtrIndex()   { return exprType().isPtr; }

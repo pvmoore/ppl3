@@ -19,6 +19,8 @@ class LiteralFunction : Expression, Container {
     override int priority() const { return 15; }
     override Type getType()       { return type; }
 
+    override CT comptime() { return CT.NO; }
+
     LLVMValueRef getLLVMValue() {
         if(isLambda) return parent.as!Lambda.llvmValue;
         return getFunction().llvmValue;

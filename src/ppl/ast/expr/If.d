@@ -29,10 +29,21 @@ final class If : Expression {
     override NodeID id() const { return NodeID.IF; }
     override int priority() const { return 15; }
     override bool isConst() {
-        if(!condition().isConst) return false;
+        if(!condition().isConst()) return false;
         return isExpr() && thenStmt().isConst() && elseStmt().isConst();
     }
     override Type getType() { return type; }
+
+    override CT comptime() {
+        /// condition is NO or UNRESOLVED
+        if(condition().comptime()!=CT.YES) return condition().comptime();
+
+        if(isExpr) {
+            return mergeCT(thenStmt(), elseStmt());
+        }
+        /// condition must be YES
+        return CT.YES;
+    }
 
     Composite initExprs()  { return children[0].as!Composite; }
     Expression condition() { return children[1].as!Expression; }

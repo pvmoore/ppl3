@@ -44,7 +44,7 @@ final class BuiltinFunc : Expression {
             if(!e[0].isResolved || !e[1].isResolved) return false;
 
             /// If expr[0] is not const then we need to propagate to the gen layer
-            if(!e[0].isConst) return type && type.isKnown;
+            if(!e[0].isConst()) return type && type.isKnown;
         }
         if(name=="ctUnreachable") {
             return true;
@@ -53,7 +53,7 @@ final class BuiltinFunc : Expression {
         return false;
     }
     override bool isConst() {
-        if(name=="expect") return exprs()[0].isConst;
+        if(name=="expect") return exprs()[0].isConst();
         return true;
     }
     override NodeID id() const    { return NodeID.BUILTIN_FUNC; }
@@ -63,6 +63,11 @@ final class BuiltinFunc : Expression {
             if(type) return type;
         }
         return TYPE_UNKNOWN;
+    }
+
+    override CT comptime() {
+        if(name=="expect") return exprs()[0].comptime();
+        return CT.YES;
     }
 
     int numExprs()       { return numChildren; }

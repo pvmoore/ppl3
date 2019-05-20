@@ -87,9 +87,10 @@ final class EnumMember : Expression {
 
     override bool isResolved()    { return hasChildren && expr().isResolved; }
     override NodeID id() const    { return NodeID.ENUM_MEMBER; }
-    override bool isConst()       { return expr().isConst; }
+    override bool isConst()       { return expr().isConst(); }
     override int priority() const { return 15; }
     override Type getType()       { return type; }
+    override CT comptime()        { return expr().comptime(); }
 
     Expression expr() { return first().as!Expression; }
 
@@ -104,9 +105,10 @@ final class EnumMemberValue : Expression {
 
     override bool isResolved()    { return hasChildren && expr().isResolved; }
     override NodeID id() const    { return NodeID.ENUM_MEMBER_VALUE; }
-    override bool isConst()       { return expr().isConst; }
+    override bool isConst()       { return expr().isConst(); }
     override int priority() const { return 15; }
     override Type getType()       { return enum_.elementType; }
+    override CT comptime()        { return expr().comptime(); }
 
     Expression expr() { return first().as!Expression; }
 

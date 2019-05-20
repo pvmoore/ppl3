@@ -27,8 +27,24 @@ final class Identifier : Expression {
     override int priority() const { return 15; }
     override Type getType() { return target.getType(); }
 
+    override CT comptime() {
+
+        if(!isResolved) return CT.UNRESOLVED;
+
+        if(target.isVariable) {
+            auto var = target.getVariable;
+            if(var.isConst) {
+                return var.initialiser().getExpr().comptime();
+            }
+        } else {
+            // todo - function ptr
+        }
+
+        return CT.NO;
+    }
+
     override string toString(){
-        string c = isConst ? "const ":"";
+        string c = isConst() ? "const ":"";
         return "ID:%s (type=%s%s) %s".format(name, c, getType(), target);
     }
 }

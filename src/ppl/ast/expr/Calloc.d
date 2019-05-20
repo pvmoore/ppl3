@@ -23,6 +23,8 @@ public:
         return ptrType;
     }
 
+    override CT comptime() { return CT.NO; }
+
     override string toString() {
         return "Calloc (%s)".format(getType());
     }

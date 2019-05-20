@@ -28,6 +28,8 @@ final class Constructor : Expression {
     override NodeID id() const { return NodeID.CONSTRUCTOR; }
     override Type getType() { return type; }
 
+    override CT comptime() { return CT.NO; }
+
     string getName() {
         return type.isStruct ? type.getStruct.name : type.getAlias.name;
     }

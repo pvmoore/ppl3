@@ -12,6 +12,8 @@ final class ModuleAlias : Expression {
     override int priority() const { return 15; }
     override Type getType() { return TYPE_VOID; }
 
+    override CT comptime() { return CT.YES; }
+
     override string toString() {
         return "ModuleAlias (%s)".format(mod.canonicalName);
     }

@@ -131,8 +131,8 @@ private:
                 case "const":
                     if(!varConstAllowed()) module_.addError(t, "'const' not allowed here", true);
                     if(seenConst) module_.addError(t, "'const' specified more than once", true);
-                    v.isConst   = true;
-                    seenConst   = true;
+                    v.isConst  = true;
+                    seenConst  = true;
                     t.next;
                     break;
                 case "var":

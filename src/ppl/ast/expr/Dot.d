@@ -14,6 +14,8 @@ final class Dot : Expression {
         return right().getType;
     }
 
+    override CT comptime() { return CT.NO; }
+
     Expression left()  { return cast(Expression)first(); }
     Expression right() { return cast(Expression)last(); }
 

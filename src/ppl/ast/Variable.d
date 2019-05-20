@@ -25,6 +25,7 @@ final class Variable : Statement {
     override NodeID id() const { return NodeID.VARIABLE; }
     override Type getType()    { return type; }
 
+
     bool isLocalAlloc() {
         return !isParameter &&
                !isTupleMember &&
@@ -91,9 +92,10 @@ final class Variable : Statement {
         string mod = isStatic ? "static " : "";
         mod ~= isConst ? "const ":"";
 
-        string loc = isParameter ? "PARAM" :
+        string loc = isParameter  ? "PARAM" :
                      isLocalAlloc ? "LOCAL" :
-                     isGlobal ? "GLOBAL" : "STRUCT";
+                     isGlobal     ? "GLOBAL" :
+                                    "STRUCT";
 
         if(name) {
             return "'%s' Variable[refs=%s] (type=%s%s) %s %s".format(name, numRefs, mod, type, loc, access);
