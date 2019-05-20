@@ -33,6 +33,7 @@ final class BuiltinFunc : Expression {
     string name;
     Type type;  // for "expect"
 
+/// ASTNode
     override bool isResolved() {
         if(name=="expect") {
             /// If both expressions are const then we can fold this,
@@ -43,8 +44,10 @@ final class BuiltinFunc : Expression {
             /// Resolve both expressions
             if(!e[0].isResolved || !e[1].isResolved) return false;
 
-            /// If expr[0] is not const then we need to propagate to the gen layer
-            if(!e[0].isConst()) return type && type.isKnown;
+            if(e[0].comptime()==CT.UNRESOLVED) return false;
+
+            /// If expr[0] is not comptime then we need to propagate to the gen layer
+            if(e[0].comptime()==CT.NO) return type && type.isKnown;
         }
         if(name=="ctUnreachable") {
             return true;
@@ -52,23 +55,20 @@ final class BuiltinFunc : Expression {
         /// Everything else is waiting to be folded
         return false;
     }
-    override bool isConst() {
-        if(name=="expect") return exprs()[0].isConst();
-        return true;
-    }
     override NodeID id() const    { return NodeID.BUILTIN_FUNC; }
-    override int priority() const { return 2; }
     override Type getType() {
         if(name=="expect") {
             if(type) return type;
         }
         return TYPE_UNKNOWN;
     }
-
+/// Expression
+    override int priority() const { return 2; }
     override CT comptime() {
         if(name=="expect") return exprs()[0].comptime();
         return CT.YES;
     }
+
 
     int numExprs()       { return numChildren; }
     Expression[] exprs() { return children[].as!(Expression[]); }

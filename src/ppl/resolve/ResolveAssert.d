@@ -25,25 +25,23 @@ public:
             Type type = n.expr().getType();
             if(type.isUnknown) return;
 
-            auto ctc = n.expr().as!CompileTimeConstant;
-            if(ctc) {
-                if(ctc.isTrue()) {
-                    /// Just remove the assertion
-                    resolver.fold(n);
-                } else {
-                    /// Assertion failed. Call __assert with false
-                    rewriteAsCallToAssert(n, type);
-                }
+            if(n.expr().comptime()==CT.UNRESOLVED) {
+                /// Wait for it to be resolved one way or the other
                 return;
+            }
+            if(n.expr().comptime()==CT.YES) {
 
-            } else {
-                if(n.expr().isConst()) {
-                    /// Wait for it to be resolved to a CompileTimeConstant
+                auto ctc = n.expr().as!CompileTimeConstant;
+                if(ctc) {
+                    if(ctc.isTrue()) {
+                        /// Just remove the assertion
+                        resolver.fold(n);
+                    } else {
+                        /// Assertion failed. Call __assert with false
+                        rewriteAsCallToAssert(n, type);
+                    }
+                    return;
 
-                    //dd("waiting for", module_.canonicalName, n.line+1, n.expr());
-
-                    // todo - use comptime()
-                    //return;
                 }
             }
 

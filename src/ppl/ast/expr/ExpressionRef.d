@@ -13,13 +13,15 @@ final class ExpressionRef : Expression {
         return ref_;
     }
 
+/// ASTNode
     override bool isResolved()    { return reference.isResolved(); }
-    override bool isConst()       { return reference.isConst(); }
     override NodeID id() const    { return reference.id(); }
-    override int priority() const { return reference.priority(); }
     override Type getType()       { return reference.getType; }
 
-    override CT comptime() { return reference.comptime(); }
+/// Expression
+    override int priority() const { return reference.priority(); }
+    override CT comptime()        { return reference.comptime(); }
+
 
     Expression expr() { return reference; }
 

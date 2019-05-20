@@ -16,16 +16,18 @@ private:
 public:
     bool negate;
 
+/// ASTNode
     override bool isResolved() {
         /// Everything other than ptr is ptr will be rewritten to some other node
         return leftType.isPtr && rightType.isPtr;
     }
-    override bool isConst() { return left().isConst() && right().isConst(); }
     override NodeID id() const { return NodeID.IS; }
-    override int priority() const { return 9; }
     override Type getType() { return TYPE_BOOL; }
 
+/// Expression
+    override int priority() const { return 9; }
     override CT comptime() { return mergeCT(left(), right()); }
+
 
     Expression left()  { return children[0].as!Expression; }
     Expression right() { return children[1].as!Expression; }

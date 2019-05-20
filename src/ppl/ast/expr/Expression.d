@@ -4,32 +4,10 @@ import ppl.internal;
 
 enum CT { YES, UNRESOLVED, NO }
 
-CT mergeCT(Expression[] exprs...) {
-    CT result = CT.YES;
-    foreach(e; exprs) {
-        auto ct = e.comptime();
-        if(ct==CT.NO) return CT.NO;
-        if(ct==CT.UNRESOLVED) result = ct;
-    }
-    return result;
-}
-CT mergeCT(CT[] cts...) {
-    CT result = CT.YES;
-    foreach(ct; cts) {
-        if(ct==CT.NO) return CT.NO;
-        if(ct==CT.UNRESOLVED) result = ct;
-    }
-    return result;
-}
-
 abstract class Expression : Statement {
 
     abstract int priority() const;
     abstract CT comptime();
-
-    // todo - remove this in favour of comptime()
-    bool isConst() { return false; }
-
 
     bool isStartOfChain() {
         if(!parent.isDot) return true;
@@ -50,5 +28,24 @@ abstract class Expression : Statement {
         }
         assert(parent.parent.isDot);
         return parent.parent.as!Dot.left();
+    }
+
+
+    static CT mergeCT(Expression[] exprs...) {
+        CT result = CT.YES;
+        foreach(e; exprs) {
+            auto ct = e.comptime();
+            if(ct==CT.NO) return CT.NO;
+            if(ct==CT.UNRESOLVED) result = ct;
+        }
+        return result;
+    }
+    static CT mergeCT(CT[] cts...) {
+        CT result = CT.YES;
+        foreach(ct; cts) {
+            if(ct==CT.NO) return CT.NO;
+            if(ct==CT.UNRESOLVED) result = ct;
+        }
+        return result;
     }
 }

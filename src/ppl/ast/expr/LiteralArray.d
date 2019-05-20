@@ -17,12 +17,18 @@ final class LiteralArray : Expression {
         type.add(LiteralNumber.makeConst(0, TYPE_INT));
     }
 
+/// ASTNode
     override bool isResolved() { return type.isKnown; }
     override NodeID id() const { return NodeID.LITERAL_ARRAY; }
-    override int priority() const { return 15; }
     override Type getType() { return type; }
 
-    override CT comptime() { return CT.NO; }
+/// Expression
+    override int priority() const { return 15; }
+    override CT comptime() {
+        // todo - this might be comptime
+        return CT.NO;
+    }
+
 
     int length() {
         return children.length.toInt;

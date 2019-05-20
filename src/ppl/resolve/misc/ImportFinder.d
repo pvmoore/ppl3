@@ -1,4 +1,4 @@
-module ppl.resolve.ImportFinder;
+module ppl.resolve.misc.ImportFinder;
 
 import ppl.internal;
 

@@ -122,12 +122,7 @@ import ppl.parse.ParseStatement;
 import ppl.parse.ParseType;
 import ppl.parse.ParseVariable;
 
-import ppl.resolve.AfterResolution;
 import ppl.resolve.ResolveCalloc;
-import ppl.resolve.FunctionFinder;
-import ppl.resolve.ImportFinder;
-import ppl.resolve.TypeFinder;
-import ppl.resolve.OverloadCollector;
 import ppl.resolve.ResolveAs;
 import ppl.resolve.ResolveAssert;
 import ppl.resolve.ResolveBinary;
@@ -144,6 +139,12 @@ import ppl.resolve.ResolveModule;
 import ppl.resolve.ResolveSelect;
 import ppl.resolve.ResolveUnary;
 import ppl.resolve.ResolveVariable;
+
+import ppl.resolve.misc.AfterResolution;
+import ppl.resolve.misc.FunctionFinder;
+import ppl.resolve.misc.ImportFinder;
+import ppl.resolve.misc.OverloadCollector;
+import ppl.resolve.misc.TypeFinder;
 
 import ppl.templates.blueprint;
 import ppl.templates.ImplicitTemplates;

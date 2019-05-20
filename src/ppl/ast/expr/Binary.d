@@ -13,13 +13,14 @@ public class Binary : Expression {
         type = TYPE_UNKNOWN;
     }
 
+/// ASTNode
     override bool isResolved()    { return type.isKnown && left().isResolved && right.isResolved; }
-    override bool isConst()       { return left().isConst && right().isConst; }
     override NodeID id() const    { return NodeID.BINARY; }
-    override int priority() const { return op.priority; }
     override Type getType()       { return type; }
+/// Expression
+    override int priority() const { return op.priority; }
+    override CT comptime()        { return mergeCT(left(), right()); }
 
-    override CT comptime() { return mergeCT(left(), right()); }
 
     Expression left()  { return cast(Expression)children[0]; }
     Expression right() { return cast(Expression)children[1]; }
@@ -34,6 +35,6 @@ public class Binary : Expression {
 
     override string toString() {
 
-        return "%s (type=%s%s)".format(op, isConst?"const ":"", getType());
+        return "%s (type=%s)".format(op, getType());
     }
 }

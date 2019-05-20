@@ -5,17 +5,16 @@ import ppl.internal;
 final class ValueOf : Expression {
     private Type type;
 
-    override bool isResolved() { return expr.isResolved; }
-    override bool isConst() { return expr().isConst(); }
-    override NodeID id() const { return NodeID.VALUE_OF; }
-    override int priority() const { return 3; }
-
+/// ASTNode
+    override bool isResolved()    { return expr.isResolved; }
+    override NodeID id() const    { return NodeID.VALUE_OF; }
     override Type getType() {
         if(!expr().isResolved) return TYPE_UNKNOWN;
 
         if(type) {
             assert(type.getPtrDepth==expr().getType.getPtrDepth-1,
-                "ptrdepth=%s %s".format(type.getPtrDepth, expr()));
+            "ptrdepth=%s %s".format(type.getPtrDepth, expr()));
+
             return type;
         }
 
@@ -24,7 +23,10 @@ final class ValueOf : Expression {
         return type;
     }
 
-    override CT comptime() { return expr().comptime(); }
+/// Expression
+    override int priority() const { return 3; }
+    override CT comptime()        { return expr().comptime(); }
+
 
     Expression expr() { return children[0].as!Expression; }
 

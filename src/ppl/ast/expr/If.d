@@ -25,15 +25,15 @@ final class If : Expression {
         type = TYPE_UNKNOWN;
     }
 
+/// ASTNode
     override bool isResolved() { return type.isKnown; }
     override NodeID id() const { return NodeID.IF; }
-    override int priority() const { return 15; }
-    override bool isConst() {
-        if(!condition().isConst()) return false;
-        return isExpr() && thenStmt().isConst() && elseStmt().isConst();
-    }
     override Type getType() { return type; }
 
+/// Expression
+    override int priority() const {
+        return 15;
+    }
     override CT comptime() {
         /// condition is NO or UNRESOLVED
         if(condition().comptime()!=CT.YES) return condition().comptime();
@@ -44,6 +44,7 @@ final class If : Expression {
         /// condition must be YES
         return CT.YES;
     }
+
 
     Composite initExprs()  { return children[0].as!Composite; }
     Expression condition() { return children[1].as!Expression; }

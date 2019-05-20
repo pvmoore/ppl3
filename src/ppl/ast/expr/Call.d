@@ -28,15 +28,19 @@ final class Call : Expression {
     }
     bool isTemplated() { return templateTypes.length>0 ;}
 
+/// ASTNode
     override bool isResolved() { return target.isResolved; }
     override NodeID id() const { return NodeID.CALL; }
-    override int priority() const { return 2; }
     override Type getType() {
         if(!target.isResolved) return TYPE_UNKNOWN;
         return target.getType().getFunctionType.returnType;
     }
-
-    override CT comptime() { return CT.NO; }
+/// Expression
+    override int priority() const { return 2; }
+    override CT comptime() {
+        // todo - the function or function ptr might be comptime
+        return CT.NO;
+    }
 
     void addImplicitThisArg(Variable this_) {
         import std.array : insertInPlace;

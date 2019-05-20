@@ -11,13 +11,15 @@ final class TypeExpr : Expression {
         return e;
     }
 
+/// ASTNode
     override bool isResolved()    { return type && type.isKnown; }
     override NodeID id() const    { return NodeID.TYPE_EXPR; }
-    override bool isConst()       { return true; }
-    override int priority() const { return 15; }
     override Type getType()       { return type; }
 
+/// Expression
+    override int priority() const { return 15; }
     override CT comptime()        { return CT.YES; }
+
 
     override string toString() {
         return "Type:%s".format(type);

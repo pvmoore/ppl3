@@ -27,14 +27,17 @@ final class Select : Expression {
         type = TYPE_UNKNOWN;
     }
 
+/// ASTNode
     override bool isResolved() {
         return isExpr() ? type.isKnown : true;
     }
     override NodeID id() const    { return NodeID.SELECT; }
-    override bool isConst()       { return false; }
-    override int priority() const { return 15; }
     override Type getType()       { return type; }
 
+/// Expression
+    override int priority() const {
+        return 15;
+    }
     override CT comptime() {
         if(isSwitch) {
             if(valueExpr().comptime()!=CT.YES) return valueExpr().comptime();
@@ -44,6 +47,7 @@ final class Select : Expression {
         }
         return CT.YES;
     }
+
 
     bool hasInitExpr() { assert(isSwitch); return first().hasChildren; }
 
@@ -115,13 +119,15 @@ final class Select : Expression {
 /// case ::= expr "{" { stmt } "}"
 ///
 final class Case : Expression {
+/// ASTNode
     override bool isResolved()    { return true; }
     override NodeID id() const    { return NodeID.CASE; }
-    override bool isConst()       { return false; }
-    override int priority() const { return 15; }
     override Type getType()       { return stmts().getType; }
 
+/// Expression
+    override int priority() const { return 15; }
     override CT comptime()        { return mergeCT(mergeCT(conds()), stmts().comptime()); }
+
 
     Expression cond()    { return children[0].as!Expression; }
     Expression[] conds() { return children[0..$-1].as!(Expression[]); }

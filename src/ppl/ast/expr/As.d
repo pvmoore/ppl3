@@ -7,14 +7,14 @@ import ppl.internal;
 ///    type
 ///
 final class As : Expression {
-
-    override bool isResolved() { return left().isResolved && getType.isKnown; }
-    override bool isConst() { return true; }
-    override NodeID id() const { return NodeID.AS; }
+/// ASTNode
+    override bool isResolved()    { return left().isResolved && getType.isKnown; }
+    override NodeID id() const    { return NodeID.AS; }
+    override Type getType()       { return rightType(); }
+/// Expression
     override int priority() const { return 3; }
-    override Type getType() { return rightType(); }
+    override CT comptime()        { return CT.YES; }
 
-    override CT comptime() { return CT.YES; }
 
     Expression left()  { return children[0].as!Expression; }
     Expression right() { return children[1].as!Expression; }

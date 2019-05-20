@@ -75,7 +75,7 @@ public:
         }
 
         /// If Identifier target is a const value then just replace with that value
-        if(n.isResolved && n.isConst()) {
+        if(n.isResolved && n.comptime()==CT.YES) {
             auto type = n.target.getType;
             auto var  = n.target.getVariable;
             auto ini  = var.initialiser();

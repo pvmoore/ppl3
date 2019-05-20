@@ -1,4 +1,4 @@
-module ppl.resolve.TypeFinder;
+module ppl.resolve.misc.TypeFinder;
 
 import ppl.internal;
 

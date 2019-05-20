@@ -10,10 +10,9 @@ private:
 public:
     Type valueType;
 
+/// ASTNode
     override bool isResolved() { return false; }
-    override bool isConst() { return false; }
     override NodeID id() const { return NodeID.CALLOC; }
-    override int priority() const { return 15; }
     override Type getType() {
         if(!ptrType) {
             auto t = Pointer.of(valueType, 1);
@@ -22,8 +21,13 @@ public:
         }
         return ptrType;
     }
+/// Expression
+    override int priority() const { return 15; }
+    override CT comptime() {
+        // todo - this might be comptime since we know the size and that it is all zeroes
+        return CT.NO;
+    }
 
-    override CT comptime() { return CT.NO; }
 
     override string toString() {
         return "Calloc (%s)".format(getType());

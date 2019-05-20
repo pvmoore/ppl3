@@ -85,12 +85,15 @@ final class EnumMember : Expression {
     string name;
     Enum type;
 
+/// ASTNode
     override bool isResolved()    { return hasChildren && expr().isResolved; }
     override NodeID id() const    { return NodeID.ENUM_MEMBER; }
-    override bool isConst()       { return expr().isConst(); }
-    override int priority() const { return 15; }
     override Type getType()       { return type; }
+
+/// Expression
+    override int priority() const { return 15; }
     override CT comptime()        { return expr().comptime(); }
+
 
     Expression expr() { return first().as!Expression; }
 
@@ -103,12 +106,15 @@ final class EnumMember : Expression {
 final class EnumMemberValue : Expression {
     Enum enum_;
 
+/// ASTNode
     override bool isResolved()    { return hasChildren && expr().isResolved; }
     override NodeID id() const    { return NodeID.ENUM_MEMBER_VALUE; }
-    override bool isConst()       { return expr().isConst(); }
-    override int priority() const { return 15; }
     override Type getType()       { return enum_.elementType; }
+
+/// Expression
+    override int priority() const { return 15; }
     override CT comptime()        { return expr().comptime(); }
+
 
     Expression expr() { return first().as!Expression; }
 

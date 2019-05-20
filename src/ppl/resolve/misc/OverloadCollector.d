@@ -1,4 +1,4 @@
-module ppl.resolve.OverloadCollector;
+module ppl.resolve.misc.OverloadCollector;
 
 import ppl.internal;
 

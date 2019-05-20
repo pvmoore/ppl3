@@ -11,9 +11,8 @@ private:
 public:
     Variable var;
 
+/// ASTNode
     override bool isResolved() { return astGenerated; }
-    override bool isConst() { return var.isConst; }
-    override int priority() const { return 15; }
     override NodeID id() const { return NodeID.INITIALISER; }
     override Type getType() {
         assert(var);
@@ -25,6 +24,10 @@ public:
         return TYPE_UNKNOWN;
     }
 
+/// Expression
+    override int priority() const {
+        return 15;
+    }
     override CT comptime() {
         return getExpr().comptime();
     }

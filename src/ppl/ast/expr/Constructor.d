@@ -22,13 +22,20 @@ import ppl.internal;
 final class Constructor : Expression {
     Type type;               /// Struct (or Alias resolved to Struct)
 
+/// ASTNode
     override bool isResolved() { return type.isKnown; }
-    override bool isConst() { return false; }
-    override int priority() const { return 15; }
     override NodeID id() const { return NodeID.CONSTRUCTOR; }
-    override Type getType() { return type; }
+    override Type getType()    { return type; }
 
-    override CT comptime() { return CT.NO; }
+/// Expression
+    override int priority() const {
+        return 15;
+    }
+    override CT comptime() {
+        // todo - this might be made comptime
+        return CT.NO;
+    }
+
 
     string getName() {
         return type.isStruct ? type.getStruct.name : type.getAlias.name;

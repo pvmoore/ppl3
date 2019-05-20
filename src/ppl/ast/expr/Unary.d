@@ -8,16 +8,18 @@ import ppl.internal;
 final class Unary : Expression {
     Operator op;
 
-    override bool isResolved() { return expr.isResolved; }
-    override bool isConst() { return expr().isConst(); }
-    override NodeID id() const { return NodeID.UNARY; }
-    override int priority() const { return op.priority; }
+/// ASTNode
+    override bool isResolved()    { return expr.isResolved; }
+    override NodeID id() const    { return NodeID.UNARY; }
     override Type getType() {
         if(op.isBool) return TYPE_BOOL;
         return expr().getType;
     }
 
+/// Expression
+    override int priority() const { return op.priority; }
     override CT comptime() { return expr().comptime(); }
+
 
     Expression expr() { return children[0].as!Expression; }
 

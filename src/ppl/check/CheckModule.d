@@ -552,11 +552,12 @@ public:
         if(n.isConst) {
 
             if(!n.isGlobal && !n.isStructMember) {
+
                 /// Initialiser must be const
-                auto ini = n.initialiser();
-                if(!ini.isConst()) {
-                    module_.addError(n, "Const initialiser must be const", true);
-                }
+                //auto ini = n.initialiser();
+                //if(ini.comptime()!=CT.YES) {
+                //    module_.addError(n, "Const initialiser must be const", true);
+                //}
             }
         }
         if(n.isStructMember) {

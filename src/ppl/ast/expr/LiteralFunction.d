@@ -14,12 +14,20 @@ import ppl.internal;
 class LiteralFunction : Expression, Container {
     Type type; /// Pointer -> FunctionType
 
+/// ASTNode
     override bool isResolved()    { return type.isKnown; }
     override NodeID id() const    { return NodeID.LITERAL_FUNCTION; }
-    override int priority() const { return 15; }
     override Type getType()       { return type; }
 
-    override CT comptime() { return CT.NO; }
+/// Expression
+    override int priority() const {
+        return 15;
+    }
+    override CT comptime() {
+        // todo - this might be comptime
+        return CT.NO;
+    }
+
 
     LLVMValueRef getLLVMValue() {
         if(isLambda) return parent.as!Lambda.llvmValue;

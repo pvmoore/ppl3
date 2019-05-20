@@ -25,13 +25,15 @@ final class LiteralNull : Expression, CompileTimeConstant {
         return false;
     }
 
+/// ASTNode
     override bool isResolved()    { return type.isKnown; }
-    override bool isConst()       { return true; }
-    override int priority() const { return 15; }
-    override Type getType()       { return type; }
     override NodeID id() const    { return NodeID.LITERAL_NULL; }
+    override Type getType()       { return type; }
 
-    override CT comptime() { return CT.YES; }
+/// Expression
+    override int priority() const { return 15; }
+    override CT comptime()        { return CT.YES; }
+
 
     override string toString() {
         return "null (type=const %s)".format(type);

@@ -10,6 +10,7 @@ import ppl.internal;
 ///
 final class Index : Expression {
 
+/// ASTNode
     override bool isResolved() {
         if(!expr().isResolved) return false;
         if(isArrayIndex()) {
@@ -27,9 +28,9 @@ final class Index : Expression {
         /// Struct index must be a const number
         return index().isResolved && index().isA!LiteralNumber;
     }
-    override NodeID id() const { return NodeID.INDEX; }
-    override int priority() const { return 2; }
-
+    override NodeID id() const {
+        return NodeID.INDEX;
+    }
     override Type getType() {
         /// This might happen if an error is thrown
         if(numChildren < 2) return TYPE_UNKNOWN;
@@ -76,7 +77,14 @@ final class Index : Expression {
         return TYPE_UNKNOWN;
     }
 
-    override CT comptime() { return CT.NO; }
+/// Expression
+    override int priority() const {
+        return 2;
+    }
+    override CT comptime() {
+        // todo - this might be comptime
+        return CT.NO;
+    }
 
 
     bool isArrayIndex() { return exprType().isValue && exprType().isArray; }

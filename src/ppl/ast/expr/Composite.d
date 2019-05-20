@@ -32,22 +32,22 @@ final class Composite : Expression {
         return c;
     }
 
+/// ASTNode
     override bool isResolved()    { return areResolved(children[]); }
     override NodeID id() const    { return NodeID.COMPOSITE; }
-    override int priority() const { return 15; }
-
-    override bool isConst() {
-        auto e = expr();
-        return e is null || e.isConst();
-    }
-
     /// The type is the type of the last element
     override Type getType() {
         if(hasChildren) return last().getType();
         return TYPE_VOID;
     }
 
+/// Expression
+    override int priority() const {
+        return 15;
+    }
     override CT comptime() {
+        if(usage==Usage.PLACEHOLDER) return CT.UNRESOLVED;
+
         auto e = expr();
         return e is null ? CT.YES :
                            e.comptime();

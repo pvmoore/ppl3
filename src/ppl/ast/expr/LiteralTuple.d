@@ -16,12 +16,20 @@ final class LiteralTuple : Expression {
         type = TYPE_UNKNOWN;
     }
 
+/// ASTNode
     override bool isResolved()    { return type.isKnown; }
     override NodeID id() const    { return NodeID.LITERAL_TUPLE; }
-    override int priority() const { return 15; }
     override Type getType()       { return type; }
 
-    override CT comptime() { return CT.NO; }
+/// Expression
+    override int priority() const {
+        return 15;
+    }
+    override CT comptime() {
+        // todo - this probably should be comptime
+        return CT.NO;
+    }
+
 
     ///
     /// Try to infer the type based on the elements.

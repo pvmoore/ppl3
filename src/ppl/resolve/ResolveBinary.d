@@ -117,7 +117,7 @@ public:
 
         /// If left and right expressions are const numbers then evaluate them now
         /// and replace the Binary with the result
-        if(n.isResolved && n.isConst()) {
+        if(n.isResolved && n.comptime()==CT.YES) {
 
             // todo - make this work
             if(n.op.isAssign) return;
@@ -126,10 +126,6 @@ public:
 
             auto leftLit  = n.left().as!LiteralNumber;
             auto rightLit = n.right().as!LiteralNumber;
-
-            //if(n.line==102 && module_.canonicalName=="misc::test_constant_folding") {
-            //    dd("!!!!!!",n.left().as!Identifier.target, rightLit);
-            //}
 
             if(leftLit && rightLit) {
 

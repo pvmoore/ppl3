@@ -1,4 +1,4 @@
-module ppl.resolve.AfterResolution;
+module ppl.resolve.misc.AfterResolution;
 
 import ppl.internal;
 ///

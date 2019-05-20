@@ -1,4 +1,4 @@
-module ppl.resolve.FunctionFinder;
+module ppl.resolve.misc.FunctionFinder;
 
 import ppl.internal;
 import common : contains;
