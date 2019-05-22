@@ -9,7 +9,7 @@ abstract class Expression : Statement {
     abstract int priority() const;
     abstract CT comptime();
 
-    bool isStartOfChain() {
+    final bool isStartOfChain() {
         if(!parent.isDot) return true;
         if(index()!=0) return false;
 
@@ -18,7 +18,7 @@ abstract class Expression : Statement {
     ///
     /// Get the previous link in the chain. Assumes there is one.
     ///
-    Expression prevLink() {
+    final Expression prevLink() {
         if(!parent.isDot) return null;
         if(isStartOfChain()) return null;
 
@@ -28,6 +28,15 @@ abstract class Expression : Statement {
         }
         assert(parent.parent.isDot);
         return parent.parent.as!Dot.left();
+    }
+
+    final string comptimeStr() {
+        final switch(comptime()) with(CT) {
+            case YES        : return "comptime";
+            case UNRESOLVED : return "comptime?";
+            case NO         : return "not comptime";
+        }
+        assert(false);
     }
 
 

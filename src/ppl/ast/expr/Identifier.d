@@ -33,6 +33,6 @@ final class Identifier : Expression {
 
 
     override string toString(){
-        return "ID:%s (type=%s) %s".format(name, getType(), target);
+        return "ID:%s (type=%s) [%s] %s".format(name, getType(), comptimeStr(), target);
     }
 }

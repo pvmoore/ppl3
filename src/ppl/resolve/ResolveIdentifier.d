@@ -91,16 +91,29 @@ public:
             if(type.isValue) {
 
                 if(type.isEnum) {
-                    //dd("....", n.name, ini, module_.canonicalName, n.line+1);
-                    //ini.dumpToConsole();
 
                     if(n.parent.isA!EnumMemberValue) {
+                        /// EnumMemberValue
+                        ///     ID:b (type=A) [comptime] Target: VAR b A
 
                         /// Extract the EnumMember value (which may be a literal)
 
-                        expr = expr.isA!ExpressionRef &&
-                               expr.as!ExpressionRef.reference.isA!EnumMember ?
-                               expr.as!ExpressionRef.reference.as!EnumMember.expr() : null;
+                        if(expr.isA!ExpressionRef) {
+                            /// ExpressionRef reference=EnumMember
+
+                            expr = expr.as!ExpressionRef.reference;
+                        }
+
+                        if(expr.isA!EnumMember) {
+                            /// EnumMember
+                            ///     4
+
+                            expr = expr.as!EnumMember.expr();
+
+                            if(!expr.isA!CompileTimeConstant) {
+                                dd("...", expr);
+                            }
+                        }
 
                         if(!expr || !expr.isResolved) return;
 

@@ -30,19 +30,18 @@ public:
         if(n.isResolved) {
             if(n.expr.comptime()==CT.YES) {
 
-                CompileTimeConstant ctc;
+                auto expr = n.expr();
 
-                if(n.expr.isA!ExpressionRef) {
-                    auto er = n.expr.as!ExpressionRef;
-                    if(er.reference.isA!EnumMember) {
-                        auto expr = er.reference.as!EnumMember.expr();
-                        if(!expr.isResolved) return;
-
-                        ctc = expr.as!CompileTimeConstant;
-                    }
-                } else {
-                    ctc = n.expr().as!CompileTimeConstant;
+                if(expr.isA!ExpressionRef) {
+                    expr = expr.as!ExpressionRef.reference;
                 }
+                if(expr.isA!EnumMember) {
+                    expr = expr.as!EnumMember.expr();
+                }
+
+                if(!expr.isResolved) return;
+
+                auto ctc = expr.as!CompileTimeConstant;
 
                 if(ctc) {
                     resolver.fold(n, ctc.copy());

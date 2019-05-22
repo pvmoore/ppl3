@@ -62,9 +62,9 @@ pub fn testEnum() {
         
         # booleans
         # Compares values regardless of enum type
-        const g  = A.ONE == B.ONE   ; assert @typeOf(g) is bool; assert g
-        const g2 = A.ONE <> B.TWO   ; assert @typeOf(g2) is bool; assert g2
-        const g3 = A.ONE < A.TWO    ; assert g3
+        const g  = A.ONE == B.ONE               ; assert @typeOf(g) is bool; assert g
+        const g2 = A.ONE <> B.TWO               ; assert @typeOf(g2) is bool; assert g2
+        const g3 = A.ONE.value < A.TWO.value    ; assert g3
         const g4 = A.THREE > A.TWO  ; assert g4
         const h = A.SIX
         const i = B.TWO
@@ -94,7 +94,9 @@ pub fn testEnum() {
         b += D.THREE               ; assert @typeOf(b) is D;    assert b.value == 7
         b += 1                     ; assert @typeOf(b) is D;    assert b.value == 8 
         
-        const d = D.ONE | D.TWO | D.THREE  ; assert @typeOf(d) is D; assert d.value == 7
+        const d = D.ONE | D.TWO | D.THREE  
+            assert @typeOf(d) is D
+            assert d.value == 7
     }
     const misc = {
         assert @sizeOf(A) == 4 
@@ -114,6 +116,7 @@ pub fn testEnum() {
         assert 0 == foo(1)
         assert 1 == foo1(A.ONE)
         assert 2 == foo2(B.TWO)
+        foo1(A.ONE | A.TWO)
         assert 3+5+0 == foo3(A.THREE, B.ONE)
     }
     const properties = {

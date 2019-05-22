@@ -120,9 +120,15 @@ public:
             }
 
             /// ptr is ptr
-            /// This is the only one that stays as an Is
             assert(leftType.isPtr && rightType.isPtr);
 
+            /// null is null
+            if(n.left().isA!LiteralNull && n.right().as!LiteralNull) {
+                rewriteToConstBool(n, true);
+                return;
+            }
+
+            /// This is the only one that stays as an Is
             return;
 
         } else if(n.left().isTypeExpr && n.right().isTypeExpr) {
@@ -132,6 +138,8 @@ public:
         } else {
             /// Type is Expression
             /// Expression is Type
+
+
 
             auto offendingExpr = n.left().isTypeExpr ? n.right() : n.left();
 

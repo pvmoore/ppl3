@@ -12,41 +12,44 @@ public:
         this.module_  = module_;
     }
     void resolve(Assert n) {
-
         /// Note: Assert is always unresolved because it needs
         ///       to be converted into a call to __assert
 
-        if(!n.isResolved) {
+        /// This should be imported implicitly
+        assert(findImportByCanonicalName("core::assert", n));
 
-            /// This should be imported implicitly
-            assert(findImportByCanonicalName("core::assert", n));
+        /// Wait until we know what the type is
+        Type type = n.expr().getType();
+        if(type.isUnknown) return;
 
-            /// Wait until we know what the type is
-            Type type = n.expr().getType();
-            if(type.isUnknown) return;
+        if(n.expr().comptime()==CT.UNRESOLVED) {
+            /// Wait for it to be resolved one way or the other
+            return;
+        }
+        if(n.expr().comptime()==CT.YES) {
 
-            if(n.expr().comptime()==CT.UNRESOLVED) {
-                /// Wait for it to be resolved one way or the other
+            auto ctc = n.expr().as!CompileTimeConstant;
+            if(ctc) {
+                if(ctc.isTrue()) {
+                    /// Just remove the assertion
+                    resolver.fold(n);
+                } else {
+                    /// Assertion failed. Call __assert with false
+                    rewriteAsCallToAssert(n, type);
+                }
+                return;
+            } else {
+
+                if(resolver.isStalemate) {
+                    module_.addError(n, "Could not resolve comptime assert", true);
+                }
+
+                /// Wait for expr to resolve
                 return;
             }
-            if(n.expr().comptime()==CT.YES) {
-
-                auto ctc = n.expr().as!CompileTimeConstant;
-                if(ctc) {
-                    if(ctc.isTrue()) {
-                        /// Just remove the assertion
-                        resolver.fold(n);
-                    } else {
-                        /// Assertion failed. Call __assert with false
-                        rewriteAsCallToAssert(n, type);
-                    }
-                    return;
-
-                }
-            }
-
-            rewriteAsCallToAssert(n, type);
         }
+
+        rewriteAsCallToAssert(n, type);
     }
 private:
     /// Rewrite to:

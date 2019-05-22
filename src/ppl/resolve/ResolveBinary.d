@@ -148,17 +148,16 @@ private:
     bool handleEnums(Binary n, Type lt, Type rt) {
         if(!lt.isEnum && !rt.isEnum) return false;
 
-        /// No special handling for =
-        if(n.op==Operator.ASSIGN) return false;
+        /// Either left or right or both are enums
 
-        /// We have at least one side being an enum, maybe both
+        /// No special handling for = == <>
+        if(n.op==Operator.ASSIGN) return false;
 
         auto builder = module_.builder(n);
         Enum enum_;
 
         /// eg. +=
         if(n.op.isAssign) {
-
             /// Rewrite:
             ///
             /// a += expr

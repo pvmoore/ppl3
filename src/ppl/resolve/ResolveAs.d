@@ -33,6 +33,7 @@ public:
         }
 
         /// enum as non-enum
+        /// eg. E1 as 4
         if(lt.isEnum && !rt.isEnum) {
             /// Rewrite to left.value as right
 
@@ -45,6 +46,7 @@ public:
         }
 
         /// non-enum as enum
+        /// eg. 4 as E1
         if(!lt.isEnum && rt.isEnum) {
             /// Create new EnumMember to represent this value
             auto member = builder.enumMember(rt.getEnum, n.left());

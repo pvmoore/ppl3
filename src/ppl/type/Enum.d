@@ -119,6 +119,6 @@ final class EnumMemberValue : Expression {
     Expression expr() { return first().as!Expression; }
 
     override string toString() {
-        return "EnumMemberValue %s".format(getType);
+        return "EnumMemberValue %s [%s]".format(getType, comptimeStr());
     }
 }

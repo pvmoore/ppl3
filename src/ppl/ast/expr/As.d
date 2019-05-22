@@ -13,7 +13,7 @@ final class As : Expression {
     override Type getType()       { return rightType(); }
 /// Expression
     override int priority() const { return 3; }
-    override CT comptime()        { return CT.YES; }
+    override CT comptime()        { return left().comptime(); }
 
 
     Expression left()  { return children[0].as!Expression; }
