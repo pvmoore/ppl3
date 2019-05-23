@@ -2,9 +2,11 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.25.0";
+const string VERSION = "3.26.0";
 
 /*
+
+3.26.0 -
 
 3.25.0 - Remove more declarations in the resolve phase.
          Prevent casting enum to different enum.
@@ -96,10 +98,6 @@ TODO Compiler:
       member property updates or function calls.
 
     - Fold for/loop (wait for syntax change?)
-
-    ** foldable()
-
-    ** Fold more EnumMemberValues
 
     ** struct decl syntax change:
         struct A <T> (pub int a, bool b) {

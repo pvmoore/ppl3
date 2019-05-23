@@ -63,6 +63,8 @@ private:
                 /// We need this to be resolved or we can't continue
                 if(!expr.isResolved) return;
 
+                if(expr.comptime()==CT.UNRESOLVED) return;
+
                 /// Assume it is a LiteralNumber for now
                 auto lit = expr.as!LiteralNumber;
                 assert(lit);

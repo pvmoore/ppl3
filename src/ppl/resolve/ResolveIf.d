@@ -49,16 +49,37 @@ public:
 
             auto cond = n.condition();
             auto cct  = cond.as!CompileTimeConstant;
-            auto val  = cct.isTrue();
+
+            if(!cct) {
+                /// Wait for condition to become a literal
+                return;
+            }
+
+            /// Check the init expressions. They must all be compile time known
+            auto inits = n.initExprs();
+
+            foreach(node; inits.children) {
+
+                if(node.isA!Variable) {
+                    auto var = node.as!Variable;
+                    if(var.hasInitialiser && !var.initialiser().comptime()==CT.YES) {
+                        return;
+                    }
+                } else if(node.isA!Expression) {
+                    if(node.as!Expression.comptime()!=CT.YES) {
+                        return;
+                    }
+                } else assert(false, "implement me %s".format(node.id));
+            }
 
             /// Extract the init expressions and mark them as an inline scope
-            auto inits = n.initExprs();
             inits.usage = Composite.Usage.INLINE_REMOVABLE;
 
             /// Put an empty init expression Composite in it's place so nothing breaks
             auto empty = Composite.make(n, Composite.Usage.INLINE_REMOVABLE);
             resolver.fold(n.initExprs(), empty, false);
 
+            auto val = cct.isTrue();
             if(val) {
                 /// Replace the IF with the THEN block
                 auto then = n.thenStmt();

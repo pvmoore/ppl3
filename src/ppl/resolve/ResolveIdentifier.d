@@ -109,17 +109,14 @@ public:
                             ///     4
 
                             expr = expr.as!EnumMember.expr();
-
-                            if(!expr.isA!CompileTimeConstant) {
-                                dd("...", expr);
-                            }
                         }
 
                         if(!expr || !expr.isResolved) return;
 
                         type = expr.getType();
 
-                    } else if(expr.isA!ExpressionRef && expr.as!ExpressionRef.reference.isA!EnumMember) {
+                    }
+                    else if(expr.isA!ExpressionRef && expr.as!ExpressionRef.reference.isA!EnumMember) {
 
                         auto em     = expr.as!ExpressionRef.reference.as!EnumMember;
                         auto newRef = ExpressionRef.make(expr.as!ExpressionRef.reference);

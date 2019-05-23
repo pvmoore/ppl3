@@ -196,18 +196,15 @@ public:
                 if(n.numExprs==1) {
                     auto cct = n.exprs()[0].as!CompileTimeConstant;
 
-                    if(cct is null) {
-                        if(n.exprs()[0].isResolved && !n.exprs()[0].isA!CompileTimeConstant()) {
-                            module_.addError(n.exprs()[0], "@ctAssert argument needs to be a compile time constant", true);
-                        }
-                    } else {
-
+                    if(cct) {
                         if(cct.isTrue()) {
                             resolver.fold(n);
                             return;
                         }
 
                         module_.addError(n, "Compile Time assertion failed", true);
+                    } else if(resolver.isStalemate) {
+                        module_.addError(n.exprs()[0], "@ctAssert argument needs to be a compile time constant", true);
                     }
                 }
                 break;

@@ -19,7 +19,7 @@ public class Binary : Expression {
     override Type getType()       { return type; }
 /// Expression
     override int priority() const { return op.priority; }
-    override CT comptime()        { return mergeCT(left(), right()); }
+    override CT comptime()        { return mergeCT(mergeCT(left(), right())); }
 
 
     Expression left()  { return cast(Expression)children[0]; }
@@ -35,6 +35,6 @@ public class Binary : Expression {
 
     override string toString() {
 
-        return "%s (type=%s)".format(op, getType());
+        return "%s (type=%s) [%s]".format(op, getType(), comptimeStr());
     }
 }
