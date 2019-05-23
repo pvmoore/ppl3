@@ -1,4 +1,4 @@
-# This module should be first
+// This module should be first
 [[module priority=-1_000_000]]
 
 pub alias Destructor = fn(void*)void
@@ -42,7 +42,7 @@ extern fn tgc_get_size (tgc_t* gc, void* ptr) long
 extern fn tgc_set_dtor ( tgc_t* gc, void* ptr, Destructor dtor) void
 extern fn tgc_get_dtor ( tgc_t* gc, void* ptr) Destructor 
 
-# todo - This needs to be thread-local
+// todo - This needs to be thread-local
 tgc_t gc
 
 pub struct GC(

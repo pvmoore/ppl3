@@ -4,8 +4,8 @@ import structs::statics2
 struct A(
     pub int m = 1,
     pub static int s = 2,  
-    #pub const int T = 4,           # fixme
-    #pub const static int S = 9,    # fixme
+    //pub const int T = 4,           // fixme
+    //pub const static int S = 9,    // fixme
     pub int rm = 3,
     pub static int rs = 4,
     int pm = 5,
@@ -55,18 +55,18 @@ struct B <T>(
     static fn yellow<K>(K k) { ret 5 }
 }
 
-#static int globalStatic # not allowed
-#globalFoo { static int a -> } # not allowed
+//static int globalStatic // not allowed
+//globalFoo { static int a -> } // not allowed
 
 pub fn testStatics() {
 	const testLocal = {
         const a = A()
-        # member access
+        // member access
         assert a.m == 1
         assert a.foo() == 1
 		
-        # static access
-        #var ss = a.s      # not allowed
+        // static access
+        //var ss = a.s      // not allowed
         
 		assert A.s == 2
 		assert A.rs == 4
@@ -82,46 +82,46 @@ pub fn testStatics() {
         const a1 = A.s as float  ; assert @typeOf(a1) is float; assert a1 == 2.0f    
 		
         const b = B<int>()
-        # member access
+        // member access
         assert b.m == 1
         assert b.orange<float>(3.14) == 6
-        # static access
+        // static access
         assert @sizeOf(B<int>) == 4
         assert B<int>.s == 2
         assert B<int>.foo() == 3
         assert B<int>.foo(7) == 4
         assert B<int>.yellow<float>(3.14) == 5
         
-        #A::foo()         # not allowed - (fixme.needs better error msg)
-        #a.bar()           # not allowed
-        #[static int] anon # not allowed
-        #static int nope   # not allowed
-        #globalFoo(1)
+        //A::foo()         // not allowed - (fixme.needs better error msg)
+        //a.bar()           // not allowed
+        //[static int] anon // not allowed
+        //static int nope   // not allowed
+        //globalFoo(1)
     }
     const testExternal = {
         const a = Static()
-        # member access
+        // member access
         assert a.m == 10
         assert a.foo() == 10
         
-        # static access
+        // static access
         assert Static.s == 20
         assert Static.rs == 40
-        #assert Static::ps == 60     # private external
+        //assert Static::ps == 60     // private external
         assert @sizeOf(Static) == 12
         
         assert Static.bar() == 20
         assert Static.bar2(1) == 30
         assert Static.rbar() == 50
         assert Static.rbar2(5) == 60
-        #assert Static::pbar() == 80       # private external
-        #assert Static::pbar2(10) == 90    # private external
+        //assert Static::pbar() == 80       // private external
+        //assert Static::pbar2(10) == 90    // private external
         
         const b = Statics2<int>()
-        # member access
+        // member access
         assert b.m == 1
         assert b.orange<float>(3.14) == 6
-        # static access
+        // static access
         assert @sizeOf(Statics2<int>) == 4
         assert Statics2<int>.s == 2
         assert Statics2<int>.foo() == 3

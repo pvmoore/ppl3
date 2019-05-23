@@ -2,9 +2,11 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.26.0";
+const string VERSION = "3.27.0";
 
 /*
+
+3.27.0 - Add back // line comments
 
 3.26.0 - Change struct decl syntax to struct Name <...> (Variables) { ... }
 

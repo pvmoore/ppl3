@@ -10,7 +10,7 @@ pub fn println(byte* ptr,long len) {
     print(ptr,len)
     putchar(10)
 }
-#
+//
 pub fn print(bool b) {
     if(b) print("true")
     else print("false")
@@ -34,7 +34,7 @@ pub fn print(long n) {
     }
 }
 pub fn print(double n) {
-    # todo
+    // todo
     print("TODO")
 }
 pub fn print(string s) {

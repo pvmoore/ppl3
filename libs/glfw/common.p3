@@ -13,7 +13,7 @@ pub extern fn glfwTerminate() void
 pub extern fn glfwGetVersion(int* major, int* minor, int* rev) void 
 pub extern fn glfwGetVersionString() byte* 
 
-# Window functions
+// Window functions
 pub extern fn glfwCreateWindow(int width, int height, byte* title, GLFWmonitor* monitor, GLFWwindow* share) GLFWwindow* 
 pub extern fn glfwDestroyWindow(GLFWwindow* window) void 
 pub extern fn glfwWindowHint(int hint, int value) void 

@@ -7,14 +7,14 @@ pub fn testClosures() {
     
     int hello = 1
     
-    # fn(bool)void
+    // fn(bool)void
     const closure0 = |bool a| {}
     
     const lambda = || {}
     
     const closure1 = |int a| {
-        # this     # nope
-        # hello    # nope
+        // this     // nope
+        // hello    // nope
         ret 2 
     }
     const closure2 = |int a| { 
@@ -34,9 +34,9 @@ struct A(pub int member = 1) {
         member 
         
         const closure1 = |int a| {
-            # this     # nope
-            # hello    # nope
-            # member   # nope
+            // this     // nope
+            // hello    // nope
+            // member   // nope
             ret 1
         }   
         fn()int closure2 = {

@@ -3,17 +3,17 @@
  */
 struct Fruit(
     pub int a,
-    pub int b = 1,   # This initialisation will be moved to 'new' func
-    #short b, # duplicate
+    pub int b = 1,   // This initialisation will be moved to 'new' func
+    //short b, // duplicate
     pub bool isABanana,
-    #pub static int ss = 3,
+    //pub static int ss = 3,
     pub int z,
-    #static foobar = { int a ->
-    #}
+    //static foobar = { int a ->
+    //}
 ) {
     pub fn new(/* Fruit* this */) {
-        # All struct var initialisers will be put in here
-        # This will be called before properties are set manually during initialisation
+        // All struct var initialisers will be put in here
+        // This will be called before properties are set manually during initialisation
 
         b += 3
     }
@@ -28,7 +28,7 @@ struct Fruit(
     pub fn baz(/* Fruit* this, */ bool sing) {
         int loc
         const localFunc = /* Fruit* this, */ {
-            # inner func
+            // inner func
         }
 
         z += 1
@@ -65,13 +65,13 @@ pub fn testStructs() {
     const a = t.a + 2
 
     t.foo()
-    #t.boo(3.1)
+    //t.boo(3.1)
     
-    #Fruit::foobar(1)
+    //Fruit::foobar(1)
 
     t.retThis().foo()
 
-    #Colour col
+    //Colour col
     
     Alpha alpha
     Beta beta

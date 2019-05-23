@@ -1,55 +1,55 @@
 
 pub fn testEscapees() {
-    #rets()
+    //rets()
     arguments()
 }
 
 fn rets() {
     const variables ={
-        # simple local values
+        // simple local values
         const bad1a = {
             int a
-            ret &a   # bad
+            ret &a   // bad
         }
         const bad1b = {
             int[1] b
-            ret &b   # bad
+            ret &b   // bad
         }
         const bad1c = {
             struct(int,int) c
-            ret &c   # bad
+            ret &c   // bad
         }
         const bad1d ={
             struct D(int a)
             D d
-            ret &d   # bad
+            ret &d   // bad
         }
-        # nested local
+        // nested local
         const bad2 = {
-            if(int a=0; true) ret &a # bad
+            if(int a=0; true) ret &a // bad
             ret null as int*
         }
-        # local ref to local alloca
+        // local ref to local alloca
         const bad3 = {
             int a
             int* ptr = &a
-            ret ptr    # bad
+            ret ptr    // bad
         }
         const bad4 = {
             int a
             int* b = &a
             var c = b
-            if(false) ret c  # bad
+            if(false) ret c  // bad
             c = null
-            ret c    # ok
+            ret c    // ok
         }
-        # no local alloca
+        // no local alloca
         const ok1 = {
             int* a 
-            ret a    # ok
+            ret a    // ok
         }
         const ok2 = {
-            ret null as int* # ok
+            ret null as int* // ok
         }
         bad1a()
         bad1b()
@@ -66,28 +66,28 @@ fn rets() {
         struct B(int a, int* b)
         const bad1 = {
             A a
-            ret &a.b # bad
+            ret &a.b // bad
         }
         const bad2 = {
             A a
             int* ptr = &a.a
-            ret ptr  # bad
+            ret ptr  // bad
         }
         const bad3 = {
             B b
-            ret &b.b # bad - address of int*
+            ret &b.b // bad - address of int*
         }
         const ok1 = {
             B b
-            ret b # ok is value
+            ret b // ok is value
         }
         const ok2 = {
             B b
-            ret b.b  # ok - b.b is an int* value
+            ret b.b  // ok - b.b is an int* value
         }
         const ok3 = {
             B* b
-            ret b    # ok
+            ret b    // ok
         }
         bad1()
         bad2() 
@@ -99,31 +99,31 @@ fn rets() {
     const tupleMembers = {
         const bad1 = {
             struct(int a, int b) t
-            ret &t.a # bad
+            ret &t.a // bad
         }
         const bad2 = {
             struct(int a, int* b) t
-            ret &t.b     # bad 
+            ret &t.b     // bad 
         }
         const ok1 = {
             struct(int a, int* b) t
-            ret t.b    # ok int* value
+            ret t.b    // ok int* value
         }
         const ok2 = {
             struct(int a, int b) t
-            ret t.a   # ok
+            ret t.a   // ok
         }
         const ok3 = {
             struct(int a, int b) t
-            ret t[0]     # ok
+            ret t[0]     // ok
         }
         const ok4 = {
             struct(int* a, int b) t
-            ret t[0]     # ok
+            ret t[0]     // ok
         }
         const bad3 = {
             struct(int* a, int b) t
-            ret &t[0]     # bad
+            ret &t[0]     // bad
         }
         bad1()
         bad2()
@@ -136,23 +136,23 @@ fn rets() {
     const arrayMembers = {
         const bad1 = {
             int[3] array
-            ret &array[0]    # bad
+            ret &array[0]    // bad
         }
         const ok1 = {
             int[3] array
-            ret array[0]    # ok
+            ret array[0]    // ok
         }
         const ok2 = {
             int*[3] array
-            ret array[0] # ok - value
+            ret array[0] // ok - value
         }
         const bad2 = {
             int*[3] array
-            ret &array[0] # bad
+            ret &array[0] // bad
         }
         const ok3 = {
             int* ptr = GC.alloc(3) as int*
-            ret ptr[1]   # ok
+            ret ptr[1]   // ok
         }
         bad1()
         bad2()
@@ -163,16 +163,16 @@ fn rets() {
     const literalArrays = {
         const bad1 = {
             int[3] a = @arrayOf(int, 1,2,3)
-            ret &a           # bad
+            ret &a           // bad
         }
         const bad2 = {
-            ret &@arrayOf(int, 1,2,3)     # bad
+            ret &@arrayOf(int, 1,2,3)     // bad
         }
         const ok1 = {
-            ret @arrayOf(int, 1,2,3)      # ok
+            ret @arrayOf(int, 1,2,3)      // ok
         }
         const bad3 = {
-            ret &@arrayOf(int, 1,2,3)[1]    # bad
+            ret &@arrayOf(int, 1,2,3)[1]    // bad
         }
         bad1()
         bad2()
@@ -181,10 +181,10 @@ fn rets() {
     }
     const literalTuples = {
         const bad1 = {
-            ret &(@structOf(1,2) as struct(int,int))  # bad
+            ret &(@structOf(1,2) as struct(int,int))  // bad
         }
         const ok1 = {
-            ret @structOf(1,2) as struct(int,int)   # ok     
+            ret @structOf(1,2) as struct(int,int)   // ok     
         }
         bad1()
         ok1()   

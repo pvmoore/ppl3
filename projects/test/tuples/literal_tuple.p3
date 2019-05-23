@@ -2,7 +2,7 @@
 pub fn testLiteralTuple() {
 
     const test1 = {
-        # zero initialised
+        // zero initialised
         struct(bool a, int b, float c) s
 
         assert s.a==false
@@ -18,7 +18,7 @@ pub fn testLiteralTuple() {
         assert s[2]==0.0f
     }
     const test2 = {
-        # user initialised
+        // user initialised
         struct(int a, double b) s = @structOf(1,2 as double)
 
         assert s.a==1
@@ -42,18 +42,18 @@ pub fn testLiteralTuple() {
         assert s[2]==true
     }
     const test6 = {
-        # implicit [int,int]
+        // implicit [int,int]
         const s = @structOf(7,8)   ; assert @typeOf(s) is struct(int,int)
         assert @typeOf(s[0]) is int
         assert @typeOf(s[1]) is int
 
-        # [byte,int]
+        // [byte,int]
         const s2 = @structOf(7 as byte, 8)
         assert @typeOf(s2[0]) is byte
         assert @typeOf(s2[1]) is int
     }
     const test7 = {
-        # [bool, float, long]
+        // [bool, float, long]
         const s = @structOf(true,2f,3L)    ; assert @typeOf(s) is struct(bool,float,long)
 
         assert s[0] == true
@@ -61,10 +61,10 @@ pub fn testLiteralTuple() {
         assert s[2] == 3L
     }
     const test8 = {
-        # standalone
+        // standalone
         @structOf(7,8)
 
-        # index 
+        // index 
         const s = @structOf(9,10) [1]
         assert @typeOf(s) is int
         assert s==10
@@ -73,15 +73,15 @@ pub fn testLiteralTuple() {
         assert(a[0]==66)
     }
     const shouldNotCompile = {
-        # too few values
-        #[double a, int b, bool c] s = @structOf(3.1d)
+        // too few values
+        //[double a, int b, bool c] s = @structOf(3.1d)
 
-        # too many values
-        #[int] s = @structOf(1,2)
+        // too many values
+        //[int] s = @structOf(1,2)
 
-        # bad casts
-        #[int] a = @structOf(3.1f)
-        #[float a, int b] s = @structOf(1, 3.14f)
+        // bad casts
+        //[int] a = @structOf(3.1f)
+        //[float a, int b] s = @structOf(1, 3.14f)
     }
     test1()
     test2()

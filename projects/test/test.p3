@@ -8,33 +8,33 @@ main {
 
 var s = "hello"
 
-import imports::imports             # Bat, Cat, Dog, IntPtrPtr, Wolf, importedFunc()
+import imports::imports             // Bat, Cat, Dog, IntPtrPtr, Wolf, importedFunc()
 import nodes::literals       
 import test_arrays  
 import misc::test_constant_folding   
 
 alias AA = int 
-alias BB = AA*     # int*  
-alias CC = BB      # int*
-alias DD = CC*     # int**
-DD dd              # int**
+alias BB = AA*     // int*  
+alias CC = BB      // int*
+alias DD = CC*     // int**
+DD dd              // int**
 alias EE = IntPtrPtr* 
-EE ee              # int*** 
+EE ee              // int*** 
 
-# declare for later
+// declare for later
 struct Gold
-struct Gold # ok 
+struct Gold // ok 
 
 struct Silver(Gold* gold)
-struct Gold( # definition
+struct Gold( // definition
     Silver* silver
 )
 Gold gold
 
-# Module init function
+// Module init function
 fn new() {
-    # All module variable initialisation
-    # code will be put in here
+    // All module variable initialisation
+    // code will be put in here
     boop += 7
 }
 
@@ -47,7 +47,7 @@ struct Animal(
 {
     struct(int,bool) anon
     
-    pub fn bark() { # Animal* this
+    pub fn bark() { // Animal* this
         assert true
     }
 }
@@ -70,7 +70,7 @@ fn unreferencedFunc() {
 
 struct Thingy(pub int a) {
     pub fn()int b = { ret 1 }
-    #new = { Thingy* this }    # implicit
+    //new = { Thingy* this }    // implicit
 }
 
 fn myfunc(bool flag) { 
@@ -79,7 +79,7 @@ fn myfunc(bool flag) {
 
 fn someArrays() {
     int[5] array
-    var a2 = @arrayOf(int, 1,2)  # int[2]
+    var a2 = @arrayOf(int, 1,2)  // int[2]
 }
 
 struct Array <A,B>(
@@ -95,13 +95,11 @@ fn tempfoo<T>(T a, int b) void {
     
 }  
 
-#struct wagahagahgahg(int a) { fn sdasdasdasd() {} }
+//struct wagahagahgahg(int a) { fn sdasdasdasd() {} }
 
-#struct TESTING() 
-    #int argh
-#}
+// hello
 
-#pub WinMain {   
+//pub WinMain {   
 pub fn main() {
 
     fn()int fptr      = { ret 1 }
@@ -115,7 +113,7 @@ pub fn main() {
     noobar()
     tempfoo(true, 1)
     
-    ####
+    ////////
 
     import misc::misc;              testMisc()
     import misc::builtin_funcs;     testBuiltinFuncs() 
@@ -176,8 +174,8 @@ pub fn main() {
 
         assert r2.a==1
 
-        # reinterpret cast int to float won't be 2
-        #assert r2.b==2
+        // reinterpret cast int to float won't be 2
+        //assert r2.b==2
     }
     const test3 = {
         struct Listy <T>(T length)
@@ -190,10 +188,10 @@ pub fn main() {
         Listy<Listy<int>> listoflist
     }
     const test4 = {
-        #float2 v2
-        #float3 v3
-        #float4 v4
-        #float8 v8
+        //float2 v2
+        //float3 v3
+        //float4 v4
+        //float8 v8
     }
     const testInnerImport = {
         import imports::imports3
@@ -231,11 +229,11 @@ fn testModules() {
     
     importedFunc()  
     
-    Cat cat             # from test_imports
+    Cat cat             // from test_imports
     Dog dog1 = Dog()
     var dogsAge = dog1.age + 1
     
-    Dog* dog2 = null     # from test_imports
+    Dog* dog2 = null     // from test_imports
     dog2 = &dog1
     dog2 = null
     

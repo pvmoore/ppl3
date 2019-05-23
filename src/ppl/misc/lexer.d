@@ -206,7 +206,8 @@ public:
             }
         }
         void addLineComment() {
-            assert(peek()=='#');
+            assert(peek()=='/' && peek(1)=='/');
+
             /*
             # line comment */
             addToken();
@@ -321,7 +322,7 @@ public:
                     handleEOL();
                     break;
                 case '#':
-                    addLineComment();
+                    addToken(TT.HASH);
                     break;
                 case '/':
                     if(peek(1)=='*') {
@@ -329,6 +330,8 @@ public:
                     } else if(peek(1)=='=') {
                         addToken(TT.DIV_ASSIGN, 2);
                         index++;
+                    } else if(peek(1)=='/') {
+                        addLineComment();
                     } else {
                         addToken(TT.DIV);
                     }

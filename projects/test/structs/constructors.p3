@@ -2,17 +2,17 @@
 
 struct S(
     pub int a,
-    pub int b = 1,   # This initialisation will be moved to 'new' func
+    pub int b = 1,   // This initialisation will be moved to 'new' func
     pub bool flag) 
 {
     pub fn new() { /*S* this*/
-        # All struct var initialisers will be put in here
-        # This will be called before properties are set manually during initialisation
+        // All struct var initialisers will be put in here
+        // This will be called before properties are set manually during initialisation
 
         b += 3
         flag = true
     }
-    # rename me
+    // rename me
     pub fn new( /*S* this,*/ int value) {
         this.a = value
     }
@@ -30,22 +30,22 @@ struct S(
     }
 }
 struct S2() {
-    # new function created automatically
+    // new function created automatically
 }
 
 pub fn testConstructors() {
-    S s         # zero initialise
+    S s         // zero initialise
     assert s.a==0
     assert s.b==0
     assert s.flag==false
 
-    S s2 = S()  # zero initialise
-                # call new()
+    S s2 = S()  // zero initialise
+                // call new()
     assert s2.a==0
     assert s2.b==4
     assert s2.flag==true
 
-    S* sp   # null
+    S* sp   // null
     S* sp2 = null
     assert sp is null
 

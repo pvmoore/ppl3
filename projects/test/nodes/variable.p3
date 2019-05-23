@@ -34,7 +34,7 @@ pub fn testVariables() {
 
         const i = 0   ; assert @typeOf(i) is int
         
-        #var var X = 1  # var specified twice
+        //var var X = 1  // var specified twice
     }
     const anonStructs = {
         struct(int) a

@@ -14,9 +14,9 @@ import std.algorithm.iteration  : map, sum;
 void main(string[] argv) {
 
     writefln("");
-    writefln("======================================");
+    writefln("===========================================");
     writefln("PPL %s".format(VERSION));
-    writefln("======================================");
+    writefln("===========================================");
 
     string configFile = "projects/test/config.toml";
 

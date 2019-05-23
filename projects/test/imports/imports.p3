@@ -62,7 +62,7 @@ pub fn importedFunc() {
 
 }
 
-# global function templates
+// global function templates
 pub fn tfunc<T>(T a) {
     ret 200
 }

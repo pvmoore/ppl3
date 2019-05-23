@@ -94,7 +94,7 @@ pub fn testArrays() {
 
 fn testLiteralArrays() {
     const test1 = {
-        # zero initialised
+        // zero initialised
         int[2] array
         assert array[0] == 0
         assert array[1] == 0
@@ -115,7 +115,7 @@ fn testLiteralArrays() {
         assert ptr.length==2
     }
     const test2 = {
-        # initialised
+        // initialised
         int[2] array = @arrayOf(int, 5, 10)
 
         assert array[0] == 5
@@ -144,12 +144,12 @@ fn testLiteralArrays() {
 
     }
     const shouldNotCompile = {
-        #int[1] a
-        #var b = a[1] # out of bounds
+        //int[1] a
+        //var b = a[1] // out of bounds
 
-        #int[2] a = @arrayOf(int, 1,2,3) # too many values
+        //int[2] a = @arrayOf(int, 1,2,3) // too many values
 
-        #int[2] a = @arrayOf(float, 1, 1f) # bad cast
+        //int[2] a = @arrayOf(float, 1, 1f) // bad cast
     }
     test1()
     test2()

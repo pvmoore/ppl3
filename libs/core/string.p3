@@ -1,12 +1,12 @@
 [[module priority=-900_000]]
 
-#=================================================================================================
-# Standard or small string
-#=================================================================================================
-pub struct string( # 16 bytes
+//=================================================================================================
+// Standard or small string
+//=================================================================================================
+pub struct string( // 16 bytes
     byte* basePtr,
     int offset,
-    pub int length)  # public property - readable from outside the struct but not modifiable
+    pub int length)  // public property - readable from outside the struct but not modifiable
 {
     pub fn new(byte* ptr, int offset, int len) {
         this.basePtr = ptr
@@ -34,7 +34,7 @@ pub struct string( # 16 bytes
     pub fn last()  { assert not empty(); ret ptr()[length-1] }
     
     pub fn cstr() {
-        # todo - this might seg fault
+        // todo - this might seg fault
         if(ptr()[length]==0) ret ptr() 
             
         var copy = GC.alloc(length+1) as byte*
@@ -55,7 +55,7 @@ pub struct string( # 16 bytes
         ret if(p) (p-ptr()) as int else -1
     }
     pub fn indexOf(string s) {
-        #ret indexOf(s, 0)  # fixme
+        //ret indexOf(s, 0)  // fixme
         ret this.indexOf(s, 0)
     }
     pub fn indexOf(int ch, int startIndex) {
@@ -103,7 +103,7 @@ pub struct string( # 16 bytes
         ret indexOf(s) <> -1
     }
     pub fn trim() {
-        # todo   
+        // todo   
         assert false
     }
     pub fn toInt(int default) {
@@ -123,10 +123,10 @@ pub struct string( # 16 bytes
         assert false
     }    
 }
-#=================================================================================================
-# Large string
-#=================================================================================================
-pub struct lstring( # 24 bytes
+//=================================================================================================
+// Large string
+//=================================================================================================
+pub struct lstring( // 24 bytes
     byte* basePtr,
     long offset,
     pub long length     

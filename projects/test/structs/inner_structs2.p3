@@ -2,7 +2,7 @@
 pub fn testExternalInnerStructs() {
     const testAccess = {
         import structs::inner_structs
-        # these are all pub structs
+        // these are all pub structs
         A a
         A::B ab
         A::B::C abc
@@ -13,22 +13,22 @@ pub fn testExternalInnerStructs() {
         TA<double>::TB<long>::TC<int> tabc
         TA<int>::TB<int>::TC<float>::TD<int> tabcd
         
-        # this is a pub struct but a and b are private, c and d are pub
+        // this is a pub struct but a and b are private, c and d are pub
         const ae = A::E()
-        #assert ae.a == 98     # private
-        #assert A::E.b == 99   # private
-        assert ae.c == 100      # pub
-        assert A::E.d == 101    # pub
+        //assert ae.a == 98     // private
+        //assert A::E.b == 99   // private
+        assert ae.c == 100      // pub
+        assert A::E.d == 101    // pub
         
-        #var af = A::F()       # A::F is private
-        #var ago = A::G.ONE    # G is private
+        //var af = A::F()       // A::F is private
+        //var ago = A::G.ONE    // G is private
         
-        # TA::TE is pub
+        // TA::TE is pub
         const te = TA<int>::TE<int>()
-        assert te.a == 50                   # pub
-        assert TA<int>::TE<int>.b == 51     # pub
-        #assert te.c == 52                 # private
-        #assert TA<int>::TE<int>.d == 52   # private 
+        assert te.a == 50                   // pub
+        assert TA<int>::TE<int>.b == 51     // pub
+        //assert te.c == 52                 // private
+        //assert TA<int>::TE<int>.d == 52   // private 
     }
     const testImportAlias = {
         import imp = structs::inner_structs
@@ -46,8 +46,8 @@ pub fn testExternalInnerStructs() {
         alias AL = imp.A::B
         AL al = imp.A::B()
         
-        #var af = imp.A::F()       # A::F is private
-        #var ago = imp.A::G.ONE    # G is private
+        //var af = imp.A::F()       // A::F is private
+        //var ago = imp.A::G.ONE    // G is private
     }
     testAccess()
     testImportAlias()

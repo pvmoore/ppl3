@@ -67,7 +67,7 @@ pub struct List <T>(
         ret this
     }
     pub fn pack() {
-        # todo
+        // todo
         ret this
     }
     pub fn reversed() {

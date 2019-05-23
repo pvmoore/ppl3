@@ -19,7 +19,7 @@ pub fn testList() {
         .add(9)
 
     print(list.length)
-    #print(list.arrayLength)
+    //print(list.arrayLength)
 
     print(list[3])
     list[3] = 90

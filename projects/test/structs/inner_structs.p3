@@ -33,22 +33,22 @@ pub struct A(
             }
         } 
     }
-    # For external testing. E is pub
+    // For external testing. E is pub
     pub struct E(
         int a            = 98,
         static int b     = 99, 
         pub int c        = 100,
         pub static int d = 101) 
 
-    # For external testing. F is private
+    // For external testing. F is private
     struct F(
         int a        = 102,
         static int b = 103
     )
-    # private enum
+    // private enum
     enum G { ONE }
 }
-#====================================================================================
+//====================================================================================
 pub struct TA <T1>(
     pub T1 a         = 1,
     pub static T1 sa = 2) 
@@ -97,7 +97,7 @@ pub struct TA <T1>(
             }
         }  
     }
-    # For external testing. TE is pub
+    // For external testing. TE is pub
     pub struct TE <T5>(
         pub int a = 50,
         pub static int b = 51,
@@ -105,19 +105,19 @@ pub struct TA <T1>(
         static int d = 53
     )
 
-    # For external testing. TF is private
+    // For external testing. TF is private
     struct TF <T6>(
         int a = 54,
         static int b = 55
     )
 }
-#====================================================================================
+//====================================================================================
 pub fn testInnerStructs() {
     const groundLevel = {
         A aa
-        #B b   # not visible
-        #C c   # not visible
-        #D d   # not visible
+        //B b   // not visible
+        //C c   // not visible
+        //D d   // not visible
         const t  = A()
         assert 1 == t.a
         assert 2 == A.sa
@@ -136,12 +136,12 @@ pub fn testInnerStructs() {
         TA<int>::Enum e2 = TA<int>::Enum.ONE; assert e2.value==2
     }
     const level1 = {
-        #A.B ab2   # identifier B not found
+        //A.B ab2   // identifier B not found
     
         A::B aa
         const t = A::B()
-        #var a = t.a         # not visible
-        #var sa = A::B.sa    # not visible
+        //var a = t.a         // not visible
+        //var sa = A::B.sa    // not visible
         assert 3 == t.b
         assert 4 == A::B.sb
         assert 3 == t.foo()
@@ -161,16 +161,16 @@ pub fn testInnerStructs() {
         assert 30 == t3.foo()
         assert 40 == TA<int>::TB<float>.sfoo()
         
-        # TA<int>::C t4        # inner type C not found 
+        // TA<int>::C t4        // inner type C not found 
         
         const ae = A::E()
-        #assert ae.a == 98  # private
+        //assert ae.a == 98  // private
         assert A::E.b == 99
         assert ae.c == 100
         assert A::E.d == 101
         
         const af = A::F()
-        #assert af.a == 102 # private
+        //assert af.a == 102 // private
         assert A::F.b == 103
     }
     const level2 = {

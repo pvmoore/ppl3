@@ -1,7 +1,7 @@
 [[module priority=-900_000]]
-#
-#  Handle unsigned div, mod and comparisons.
-#
+//
+//  Handle unsigned div, mod and comparisons.
+//
 pub fn ucmp(int a, int b) {
     ret 0
 }

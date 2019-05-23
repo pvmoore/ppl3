@@ -6,7 +6,7 @@ pub fn testString() {
         assert s.length==0
         assert s.ptr() as long == 0
         
-        #s.length = 1 # readonly
+        //s.length = 1 // readonly
     }
     const basicString = {
         string s = "hello"
@@ -20,7 +20,7 @@ pub fn testString() {
         assert s[2]=='l' 
         assert s[3]=='l' 
         assert s[4]=='o' 
-        # s[1] = 'f' # not allowed      
+        // s[1] = 'f' // not allowed      
     }
     const equals = {
         string a = "hello"

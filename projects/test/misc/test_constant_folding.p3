@@ -1,19 +1,19 @@
 
-# everything in this function should be removable
+// everything in this function should be removable
 fn foobar() {
-    # if
+    // if
     const A = 1
     if(A==1) {
         var b = 2
     }
     
-    # select non-expr
+    // select non-expr
     select {
         true : {}
         else : { @ctUnreachable() }
     }
     
-    # select expr
+    // select expr
     const SEVEN = 7
     const B = select(A) {
         0    : { 3.1 }
@@ -34,11 +34,11 @@ pub fn testConsts() {
     ifExpressions()
     selectExpressions()
     
-    # Should not compile:
+    // Should not compile:
     
-    #const int D        # needs initialiser
-    #const const X = 1  # 'const' specified twice
-    #A += 1             # modifying const
+    //const int D        // needs initialiser
+    //const const X = 1  // 'const' specified twice
+    //A += 1             // modifying const
 }
 fn binaryExpressions() {
     const A = (((1 + (2))));    assert A == 3 
@@ -70,9 +70,9 @@ fn binaryExpressions() {
     const U = true and false;   assert U is false
     const V = (true or false);  assert V is true
     
-    # Should not compile:
-    #const R1 = 1.0 << 1    # invalid
-    #const R1 = 1.0 & 0xff  # invalid
+    // Should not compile:
+    //const R1 = 1.0 << 1    // invalid
+    //const R1 = 1.0 & 0xff  // invalid
 }
 fn unaryExpressions() {
     const W = 1 - -10;  assert W==11
@@ -82,9 +82,9 @@ fn unaryExpressions() {
     var wii = not true; assert wii is false 
     
     const OK = -1.0
-    # Should not compile:
-    #const BAD = ~1.0
-    #const BAD = not 1.0
+    // Should not compile:
+    //const BAD = ~1.0
+    //const BAD = not 1.0
 }
 fn arrayInit() {
     const ARRAY_LEN = 2
@@ -98,8 +98,8 @@ fn arrayInit() {
 }
 fn ifStatements() {
     if(true) {
-        # If this block is folded, it needs to be put into a Container that is not scanned for variables
-        # otherwise there will be a name collision with the 'a' declared later
+        // If this block is folded, it needs to be put into a Container that is not scanned for variables
+        // otherwise there will be a name collision with the 'a' declared later
         var a = 1    
     } else {
         var a = 2

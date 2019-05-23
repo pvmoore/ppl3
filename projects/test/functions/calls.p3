@@ -7,11 +7,11 @@ pub fn testCalls() {
         ret 5
     }
 
-    #a()   # ambiguous
-    #b(3)  # ambiguous
+    //a()   // ambiguous
+    //b(3)  // ambiguous
     
-	assert 2 == b(3 as int) # b(int) exact match
-    assert 3 == b(3.1)      # b(float)
+	assert 2 == b(3 as int) // b(int) exact match
+    assert 3 == b(3.1)      // b(float)
     assert 3 == b(p1:3.1)
     assert 4 == b(1,2)
     assert 4 == b(p1:1, p2:3.1) 
@@ -22,7 +22,7 @@ pub fn testCalls() {
 	
     const testGroovyStyleCall = {
         println("Test ... Groovy type function calls")
-        # declarations
+        // declarations
 		const blah = |fn()void closure| {
             closure()
         }
@@ -30,7 +30,7 @@ pub fn testCalls() {
             closure()
         }
 
-		#calls
+		//calls
         blah()   { println("hello") }
         blah2(1) { println("hello2") }
     }

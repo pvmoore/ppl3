@@ -14,7 +14,7 @@ fn booleans() {
     bool b2 = true
 
     bool b3 = true
-    #assert 1==0  # fails
+    //assert 1==0  // fails
 }
 fn integers() {
     byte by
@@ -50,7 +50,7 @@ fn chars() {
     int ch2 = '\n'  ;   assert ch2 == 10
 }
 fn strings() {
-    string s    # set to an empty string
+    string s    // set to an empty string
     string s1 = "hello"
     const s2    = r"there"
 
@@ -67,5 +67,5 @@ fn strings() {
     
     const s3 = "a" "b" ; assert s3=="ab"
     
-    #"stringy"[0] = 'S' # readonly
+    //"stringy"[0] = 'S' // readonly
 }
