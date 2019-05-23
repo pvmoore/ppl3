@@ -6,7 +6,7 @@ const string VERSION = "3.26.0";
 
 /*
 
-3.26.0 -
+3.26.0 - Change struct decl syntax to struct Name <...> (Variables) { ... }
 
 3.25.0 - Remove more declarations in the resolve phase.
          Prevent casting enum to different enum.

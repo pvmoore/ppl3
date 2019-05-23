@@ -44,8 +44,7 @@ pub fn testArrays() {
         const b = a[0]
     }
     const arrayOfNamedStructOfArray = {
-        struct SOA {
-            pub int[5] array
+        struct SOA(pub int[5] array) {
             pub fn setArray(int[5] values) { this.array = values }
         }
         SOA[2] soa = @arrayOf(SOA, SOA(),SOA() )   

@@ -46,24 +46,12 @@ pub fn testImports() {
 	const skr = imp.Skunk<imp.Rabbit>.a 
 }
 
-pub struct Dog {
-    pub int age
-}
-pub struct Cat {
-    pub bool isGinger
-}
-pub struct Bat {
-    pub float size
-}
-pub struct Pig {
-    pub int weight
-}
-pub struct Wolf {
-    pub bool isGrey
-}
-pub struct Rose <T> {
-    pub T a
-}
+pub struct Dog(pub int age)
+pub struct Cat(pub bool isGinger)
+pub struct Bat(pub float size)
+pub struct Pig(pub int weight)
+pub struct Wolf(pub bool isGrey)
+pub struct Rose <T>(pub T a)
 
 pub alias AnInt = int
 pub alias IntPtrPtr = IntPtr*
@@ -84,8 +72,9 @@ pub fn tfunc<A,B>(A a, B b) {
 pub fn tfunc(float f) {
     ret 201
 }
-pub struct M3 <T> {
-    pub T t
+pub struct M3 <T>(
+    pub T t) 
+{
     pub fn foo(T a) {
         ret 270
     }

@@ -1,7 +1,7 @@
 
 import imports::imports
 
-struct M1 {
+struct M1() {
     pub fn foo(int a) {
         ret 10
     }
@@ -39,8 +39,7 @@ struct M1 {
         assert 50 == foo0(1, |int a, int b| {ret a+b} )
     }
 }
-struct M2 <T> {
-    pub T t
+struct M2 <T>(pub T t) {
     pub fn foo<F>(F a) {
         ret 100
     }

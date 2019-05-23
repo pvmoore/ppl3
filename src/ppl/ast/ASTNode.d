@@ -259,7 +259,8 @@ public:
     /// Return the root node ie. the node whose parent is Module
     ///
     final ASTNode getRoot() {
-        assert(this.id!=NodeID.MODULE);
+        if(this.id==NodeID.MODULE) return null;
+        if(this.parent is null) return null;
         if(this.parent.id==NodeID.MODULE) return this;
         return parent.getRoot();
     }
@@ -366,6 +367,13 @@ public:
         foreach(n; children) {
             n.recurse!T(functor, level+1);
         }
+    }
+    final T[] getChildren(T)() {
+        T[] array;
+        foreach(ch; children) {
+            if(ch.isA!T) array ~= ch.as!T;
+        }
+        return array;
     }
     final void collectTargets(ref Target[] targets) {
 

@@ -6,11 +6,11 @@ pub fn testBuiltinFuncs() {
         double c = 0;           assert 8 == @sizeOf(c)
         struct(int,bool) d;     assert 8 == @sizeOf(d)  # [4,4]
         
-        struct A {}                     # align 1
-        struct B { byte a }             # align 1
-        struct C { short a, byte b }    # align 2
-        struct D { int a, byte b }      # align 4
-        struct E { double a, byte b }   # align 8
+        struct A()                  # align 1
+        struct B(byte a)            # align 1
+        struct C(short a, byte b)   # align 2
+        struct D(int a, byte b)     # align 4
+        struct E(double a, byte b)  # align 8
         
         assert @sizeOf(A) == 0
         assert @sizeOf(B) == 1
@@ -33,11 +33,11 @@ pub fn testBuiltinFuncs() {
         assert @alignOf(struct(int,byte)) == 4    # tuple
         assert @alignOf(byte[1]) == 1   # array
         
-        struct A {}
-        struct B { byte a }
-        struct C { short a, byte b }
-        struct D { int a, byte b }
-        struct E { double a, byte b }
+        struct A()
+        struct B(byte a)
+        struct C(short a, byte b)
+        struct D(int a, byte b)
+        struct E(double a, byte b)
         
         assert @alignOf(A) == 1
         assert @alignOf(B) == 1
@@ -96,7 +96,7 @@ pub fn testBuiltinFuncs() {
         assert not @isReal(3)
     }
     const isStruct = {
-        struct A {}
+        struct A()
         A a
         assert @isStruct(A)
         assert @isStruct(a)
@@ -104,7 +104,7 @@ pub fn testBuiltinFuncs() {
         assert not @isStruct(3.1)
     }
     const isFunction = {
-        struct A {}
+        struct A()
         const f = {}
         
         assert @isFunction(testBuiltinFuncs)
@@ -116,7 +116,7 @@ pub fn testBuiltinFuncs() {
         assert not @isFunction(A)
     }
     const isFunctionPtr = {
-        struct A {}
+        struct A()
         const f = {}
         assert @isFunctionPtr(f)
         assert @isFunctionPtr(@typeOf(f))

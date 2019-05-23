@@ -5,9 +5,7 @@
 pub alias size_t    = long
 pub alias ptrdiff_t = long
 
-pub struct FILE {
-    void* _Placeholder  
-}
+pub struct FILE(void* _Placeholder)
 
 # stdio.h
 pub extern fn fopen(byte* filename, byte* mode) FILE* 

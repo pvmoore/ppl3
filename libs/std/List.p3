@@ -1,10 +1,10 @@
 [[module priority=-100000]]
 
-pub struct List <T> {
-    T* array
-    int arrayLength
-    pub int length
-    
+pub struct List <T>( 
+    T* array,
+    int arrayLength,
+    pub int length)
+{
     pub fn new(int reserve) {
         expand(reserve)
     }

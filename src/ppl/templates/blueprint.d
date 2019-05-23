@@ -38,8 +38,9 @@ public:
     }
     void setStructTokens(Struct ns, string[] paramNames, Token[] tokens, bool isPub) {
         assert(tokens.length>0);
-        assert(tokens[0].type==TT.LCURLY);
-        assert(tokens[$-1].type==TT.RCURLY);
+
+        assert(tokens[0].type==TT.LBRACKET || tokens[0].type==TT.LCURLY);
+        assert(tokens[$-1].type==TT.RBRACKET || tokens[$-1].type==TT.RCURLY);
 
         this.paramNames = paramNames;
         this.tokens     = tokens;
@@ -60,7 +61,7 @@ public:
         this.isPub       = isPub;
     }
     Token[] extractStruct(string mangledName, Type[] types) {
-        /// struct mangledName
+        /// [ "pub" ] "struct" mangledName
         Token[] tokens;
 
         if(isPub) tokens ~= this.tokens[0].copy("pub");

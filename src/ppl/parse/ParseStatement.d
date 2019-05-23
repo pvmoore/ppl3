@@ -103,6 +103,7 @@ public:
                         funcParser().parse(t, parent);
                     } else {
                         if(parent.isA!Struct) {
+                            module_.addError(t, "Struct properties are not allowed in the body", true);
                             varParser().parseStructMember(t, parent);
                         } else {
                             /// Consume this token

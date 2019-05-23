@@ -1,7 +1,7 @@
 
-struct A <T> {
+struct A <T>(
     int a
-}
+)
 
 pub fn testTemplateStructs() {
     A<int> a

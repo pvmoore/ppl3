@@ -3,23 +3,23 @@
 
 pub alias Destructor = fn(void*)void
 
-struct tgc_ptr_t {
-    void* ptr
-    int flags
-    long size
-    long hash
+struct tgc_ptr_t(
+    void* ptr,
+    int flags,
+    long size,
+    long hash,
     Destructor dtor
-} 
-struct tgc_t {
-    void* bottom
-    int paused
-    long* minptr
-    long* maxptr
-    tgc_ptr_t* items
-    tgc_ptr_t* frees
-    double loadfactor double sweepfactor
-    long nitems long nslots long mitems long nfrees
-}
+)
+struct tgc_t(
+    void* bottom,
+    int paused,
+    long* minptr,
+    long* maxptr,
+    tgc_ptr_t* items,
+    tgc_ptr_t* frees,
+    double loadfactor, double sweepfactor,
+    long nitems, long nslots, long mitems, long nfrees
+)
 
 extern fn tgc_start(tgc_t* gc, void* stk) void 
 extern fn tgc_stop(tgc_t* gc) void 
@@ -45,11 +45,11 @@ extern fn tgc_get_dtor ( tgc_t* gc, void* ptr) Destructor
 # todo - This needs to be thread-local
 tgc_t gc
 
-pub struct GC {
-    static long numAllocs 
-    static long numFrees  
-    static long totalAlloced
-    
+pub struct GC(
+    static long numAllocs, 
+    static long numFrees,  
+    static long totalAlloced)
+{
     pub static fn start() {
         int local
         tgc_start(&gc, &local)

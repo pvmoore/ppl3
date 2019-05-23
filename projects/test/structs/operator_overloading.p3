@@ -1,6 +1,5 @@
 
-struct Red {
-    pub int a
+struct Red(pub int a) {
     
     pub fn new(int a) { this.a = a }
     
@@ -93,16 +92,14 @@ struct Red {
     
     pub fn operator neg() { ret Red(-a) }
 }
-struct Green {
-    pub int a 
+struct Green(pub int a ) {  
     pub fn new(int v) { a=v }
 
     pub fn operator==(int s) { ret a==s }
     pub fn operator<(int s) { ret a<s }
     pub fn operator<=(int s) { ret a<=s }
 }
-struct Blue {
-    pub int a 
+struct Blue(pub int a) { 
     pub fn new(int v) { a=v }
 
     pub fn operator<>(int s) { ret a<>s }

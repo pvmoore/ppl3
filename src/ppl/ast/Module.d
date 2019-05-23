@@ -122,6 +122,10 @@ public:
 
     auto getCopyOfActiveRoots()      { return activeRoots.values.dup; }
     void addActiveRoot(ASTNode node) { activeRoots.add(node.getRoot); }
+    bool isActive(ASTNode node) {
+        auto root = node.getRoot();
+        return root && activeRoots.contains(root);
+    }
 
     NodeBuilder builder(ASTNode n) {
         return nodeBuilder.forNode(n);

@@ -46,7 +46,7 @@ public:
     void parseReturnType(Tokens t, ASTNode parent) {
         parse(t, parent, Loc.RET_TYPE);
     }
-    /// struct S { [static] [var|const] type name ...
+    /// struct S ( [pub] [static] [var|const] type name ...
     ///            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
     void parseStructMember(Tokens t, ASTNode parent) {
         parse(t, parent, Loc.STRUCT_MEMBER);
@@ -72,6 +72,11 @@ private:
         //dd("variable", t.get);
         auto v = makeNode!Variable(t);
         parent.add(v);
+
+        if(loc==Loc.STRUCT_MEMBER && t.value=="pub" ) {
+            t.setAccess(Access.PUBLIC);
+            t.next;
+        }
 
         v.type   = TYPE_UNKNOWN;
         v.access = t.access();

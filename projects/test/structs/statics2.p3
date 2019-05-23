@@ -1,8 +1,12 @@
 
-pub struct Static {
-    pub int m = 10
-    pub static int s = 20
-    
+pub struct Static(
+    pub int m = 10,
+    pub static int s = 20,
+    pub int rm = 30,
+    pub static int rs = 40,
+    int pm = 50,
+    static int ps = 60) 
+{
     pub fn foo(/* Static* this */) {
         ret 10
     }
@@ -12,8 +16,6 @@ pub struct Static {
     pub static fn bar2(int a) {
         ret 30
     }
-    pub int rm = 30
-    pub static int rs = 40
     
     pub fn rfoo(/* Static* this */) {
         ret 40
@@ -25,9 +27,6 @@ pub struct Static {
         ret 60
     }
 
-    int pm = 50
-    static int ps = 60
-    
     fn pfoo(/* Static* this */) {
         ret 70
     }
@@ -38,10 +37,10 @@ pub struct Static {
         ret 90
     }
 }
-pub struct Statics2 <T> {
-    pub T m = 1
-    pub static T s = 2
-    
+pub struct Statics2 <T>(
+    pub T m = 1,
+    pub static T s = 2) 
+{
     pub fn orange<G>(G g) { ret 6 }
     
     pub static fn foo() { ret 3 }

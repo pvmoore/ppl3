@@ -1,28 +1,32 @@
 
-pub struct A {
-    pub int a         = 1
-    pub static int sa = 2
+pub struct A( 
+    pub int a         = 1,
+    pub static int sa = 2)
+{ 
     pub fn foo()         { /*A* this*/ ret 1 }
     pub static fn sfoo() { ret 2 }
     pub enum Enum { ONE=3 }
     
-    pub struct B {
-        pub int b         = 3
-        pub static int sb = 4
+    pub struct B(
+        pub int b         = 3,
+        pub static int sb = 4) 
+    {
         pub fn foo() /*B* this*/ { A a; ret 3 } 
         pub static fn sfoo() { ret 4 }
         pub enum Enum { ONE=4 }
         
-        pub struct C {
-            pub int c         = 5
-            pub static int sc = 6
+        pub struct C(
+            pub int c         = 5,
+            pub static int sc = 6) 
+        {
             pub fn foo() /*C* this*/ { A ac; B bc; ret 5 }
             pub static fn sfoo() { ret 6 }
             pub enum Enum { ONE=5 }
             
-            pub struct D {
-                pub int d         = 7
-                pub static int sd = 8
+            pub struct D(
+                pub int d         = 7,
+                pub static int sd = 8) 
+            {
                 pub fn foo() /*D* this*/ { A ad; B bd; C cd; ret 7 }
                 pub static fn sfoo() { ret 8 }
                 pub enum Enum { ONE=6 }
@@ -30,89 +34,82 @@ pub struct A {
         } 
     }
     # For external testing. E is pub
-    pub struct E {
-        int a        = 98
-        static int b = 99 
-        
-        pub int c        = 100
-        pub static int d = 101
-    }
+    pub struct E(
+        int a            = 98,
+        static int b     = 99, 
+        pub int c        = 100,
+        pub static int d = 101) 
 
     # For external testing. F is private
-    struct F {
-        int a        = 102
+    struct F(
+        int a        = 102,
         static int b = 103
-    }
+    )
     # private enum
     enum G { ONE }
 }
 #====================================================================================
-pub struct TA <T1> {
-    pub T1 a         = 1
-    pub static T1 sa = 2
+pub struct TA <T1>(
+    pub T1 a         = 1,
+    pub static T1 sa = 2) 
+{
     pub fn foo() /*TA* this*/ { ret 10 }
     pub static fn sfoo() { ret 20 }
     
-    pub struct B {
-        pub T1 b = 3
-    }
+    pub struct B(pub T1 b = 3)
     pub enum Enum : T1 { ONE=2 }
     
-    pub struct TB <T2> {
-        pub T1 a = 100
-        pub T2 b = 4
-        pub static T2 sb = 5
+    pub struct TB <T2>(
+        pub T1 a = 100,
+        pub T2 b = 4,
+        pub static T2 sb = 5) 
+    {
         pub fn foo() /*TB* this*/ { ret 30 }
         pub static fn sfoo() { ret 40 }
         
-        pub struct C {
-            pub T2 c = 6
-        }
+        pub struct C(pub T2 c = 6)
         pub enum Enum : T2 { ONE=3 }
         
-        pub struct TC <T3> {
-            pub T1 a = 200
-            pub T2 b = 300
-            pub T3 c         = 7 as T3
-            pub static T3 sc = 8 as T3
+        pub struct TC <T3>(
+            pub T1 a         = 200,
+            pub T2 b         = 300,
+            pub T3 c         = 7 as T3,
+            pub static T3 sc = 8 as T3) 
+        {
             pub fn foo() /*TC* this*/ { ret 50 }
             pub static fn sfoo() { ret 60 }
             
-            pub struct D {
-                pub T3 d = 9 as T3  
-            }
+            pub struct D(pub T3 d = 9 as T3)
             pub enum Enum : T3 { ONE=4 }
         
-            pub struct TD <T4> {
-                pub T1 a = 300
-                pub T2 b = 400
-                pub T3 c = 500
-                pub T4 d = 10
-                pub static T4 sd = 11
+            pub struct TD <T4>(
+                pub T1 a = 300,
+                pub T2 b = 400,
+                pub T3 c = 500,
+                pub T4 d = 10,
+                pub static T4 sd = 11) 
+            {
                 pub fn foo() /*TD* this*/ { ret 70 }
                 pub static fn sfoo() { ret 80 }
                 
-                pub struct E {          
-                    pub T4 e = 7
-                }
+                pub struct E(pub T4 e = 7)
                 pub enum Enum : T4 { ONE=5 }
             }
         }  
     }
     # For external testing. TE is pub
-    pub struct TE <T5> {
-        pub int a = 50
-        pub static int b = 51
-
-        int c = 52
+    pub struct TE <T5>(
+        pub int a = 50,
+        pub static int b = 51,
+        int c = 52,
         static int d = 53
-    }
+    )
 
     # For external testing. TF is private
-    struct TF <T6> {
-        int a = 54
+    struct TF <T6>(
+        int a = 54,
         static int b = 55
-    }
+    )
 }
 #====================================================================================
 pub fn testInnerStructs() {

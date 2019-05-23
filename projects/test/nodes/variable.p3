@@ -53,7 +53,7 @@ pub fn testVariables() {
                                
     }
     const namedStructs = {
-        struct A { pub float a = 9 }
+        struct A(pub float a = 9)
         A a
         A a1   = A()
         A* a2  = &a1    ; assert @typeOf(a2) is A*   ; assert (*a2).a == 9

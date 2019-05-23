@@ -1,7 +1,7 @@
 
 pub fn testPtrArithmetic() {
-    struct Alpha { int a; byte b }      # 8 bytes
-    [[packed]] struct Beta { int a; byte b } # 5 bytes
+    struct Alpha(int a, byte b)             # 8 bytes
+    [[packed]] struct Beta(int a, byte b)   # 5 bytes
     
     byte* a   = 0 as byte*          ; assert a as long==0
     short* b  = 2 as short*         ; assert b as long==2

@@ -1,12 +1,17 @@
 
 import structs::statics2
 
-struct A {
-    pub int m = 1
-    pub static int s = 2    
-    #pub const int T = 4           # fixme
-    #pub const static int S = 9    # fixme
-    
+struct A(
+    pub int m = 1,
+    pub static int s = 2,  
+    #pub const int T = 4,           # fixme
+    #pub const static int S = 9,    # fixme
+    pub int rm = 3,
+    pub static int rs = 4,
+    int pm = 5,
+    static int ps = 6,
+) 
+{
     pub fn foo() /* A* this */  {
         ret 1
     }
@@ -17,8 +22,6 @@ struct A {
     pub static fn bar2(int v) {
         ret 3
     }
-    pub int rm = 3
-    pub static int rs = 4
     
     pub fn rfoo( /* A* this */ ) {
         ret 4
@@ -30,9 +33,6 @@ struct A {
         ret 6
     }
 
-    int pm = 5
-    static int ps = 6
-    
     fn pfoo(/* A* this */ ) {
         ret 7
     }
@@ -43,10 +43,10 @@ struct A {
         ret 9
     }
 }
-struct B <T> {
-    pub T m = 1
-    static T s = 2
-    
+struct B <T>(
+    pub T m = 1,
+    static T s = 2) 
+{
     pub fn orange<G>(G g) { ret 6 }
     
     static fn foo() { ret 3 }
@@ -130,29 +130,21 @@ pub fn testStatics() {
     }
 	const testNameClashes = {
 		const a = {
-			struct J1 {
-				static int a
-			}
+			struct J1(static int a)
 			J1 j1
 		}
 		const b = {
-			struct J1 {
-				static int a
-			}
+			struct J1(static int a)
 			J1 j1
 		}
 		const c = {
-			struct J1 {
-				static int a
-			}
+			struct J1(static int a)
 			J1 j1
 		}
 		a()
 		b()
 		c()
-		struct test_statics {
-			static bool boo
-		}
+		struct test_statics(static bool boo)
 		test_statics t
 		t.boo = true
 	}

@@ -3,11 +3,11 @@
 #=================================================================================================
 # Standard or small string
 #=================================================================================================
-pub struct string { # 16 bytes
-    byte* basePtr
-    int offset
-    pub int length  # public property - readable from outside the struct but not modifiable
-    
+pub struct string( # 16 bytes
+    byte* basePtr,
+    int offset,
+    pub int length)  # public property - readable from outside the struct but not modifiable
+{
     pub fn new(byte* ptr, int offset, int len) {
         this.basePtr = ptr
         this.offset  = offset
@@ -126,11 +126,11 @@ pub struct string { # 16 bytes
 #=================================================================================================
 # Large string
 #=================================================================================================
-pub struct lstring { # 24 bytes
-    byte* basePtr
-    long offset
+pub struct lstring( # 24 bytes
+    byte* basePtr,
+    long offset,
     pub long length     
-}
+)
     
 fn new() {
     assert @sizeOf(string)==16   

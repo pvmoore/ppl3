@@ -7,6 +7,7 @@ private:
     Module module_;
 
     auto stmtParser()   { return module_.stmtParser; }
+    auto varParser()    { return module_.varParser; }
     auto typeDetector() { return module_.typeDetector; }
     auto typeFinder()   { return module_.typeFinder; }
     auto builder()      { return module_.nodeBuilder; }
@@ -15,7 +16,9 @@ public:
         this.module_ = module_;
     }
     ///
-    /// "struct" name "=" [ <> ] "{" { statement } "}"
+    /// "struct" name [ "<" tparams ">" ]                     "{" { statements } "}"
+    ///
+    /// "struct" name [ "<" tparams ">" ] "(" variables ")" [ "{" { statements } "}" ]
     ///
     void parse(Tokens t, ASTNode parent) {
 
@@ -65,14 +68,16 @@ public:
         ///
         /// Stop here if this is just a declaration
         ///
-        if(t.type!=TT.LANGLE && t.type!=TT.LCURLY) {
+        if(t.type!=TT.LANGLE && t.type!=TT.LCURLY && t.type!=TT.LBRACKET) {
             n.isDeclarationOnly = true;
             return;
         }
 
+
         if(t.type==TT.LANGLE) {
             /// This is a template
 
+            /// <
             t.skip(TT.LANGLE);
 
             n.blueprint = new TemplateBlueprint(module_);
@@ -91,13 +96,22 @@ public:
                 t.expect(TT.RANGLE, TT.COMMA);
                 if(t.type==TT.COMMA) t.next;
             }
+            /// >
             t.skip(TT.RANGLE);
 
-            /// {
-            t.expect(TT.LCURLY);
 
-            int start = t.index;
-            int end   = t.findEndOfBlock(TT.LCURLY);
+            /// (
+            t.expect(TT.LBRACKET);
+
+            int start  = t.index;
+            int end    = t.findEndOfBlock(TT.LBRACKET);
+
+            /// Skip to end of {} scope if there is one
+
+            if(t.peek(end+1).type==TT.LCURLY) {
+                end = t.findEndOfBlock(TT.LCURLY, end);
+            }
+
             n.blueprint.setStructTokens(null, paramNames, t[start..start+end+1].dup, t.access.isPublic);
             t.next(end+1);
 
@@ -106,7 +120,15 @@ public:
         } else {
             /// This is a concrete struct
 
-            parseBody(t, n);
+            /// (
+            t.expect(TT.LBRACKET);
+
+            parseProperties(t, n);
+
+            /// optional { body
+            if(t.type==TT.LCURLY) {
+                parseBody(t, n);
+            }
 
             /// Do some house-keeping
             addDefaultConstructor(t, n);
@@ -117,6 +139,24 @@ public:
         }
     }
 private:
+    /// "(" variables ")"
+    void parseProperties(Tokens t, Struct ns) {
+        /// (
+        t.skip(TT.LBRACKET);
+
+        /// Variables
+        while(t.type!=TT.RBRACKET) {
+
+            varParser().parseStructMember(t, ns);
+
+            t.expect(TT.COMMA, TT.RBRACKET);
+            if(t.type==TT.COMMA) t.next;
+        }
+
+        /// )
+        t.skip(TT.RBRACKET);
+    }
+    /// "{" statements "}"
     void parseBody(Tokens t, Struct ns) {
         /// {
         t.skip(TT.LCURLY);

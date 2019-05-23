@@ -25,12 +25,10 @@ EE ee              # int***
 struct Gold
 struct Gold # ok 
 
-struct Silver {
-    Gold* gold
-}
-struct Gold { # definition
+struct Silver(Gold* gold)
+struct Gold( # definition
     Silver* silver
-}
+)
 Gold gold
 
 # Module init function
@@ -40,14 +38,13 @@ fn new() {
     boop += 7
 }
 
-struct Goal {
-    int scorer
-}
+struct Goal(int scorer)
 
-struct Animal {
-    int age
-    int[4] s
-    Goal g
+struct Animal(
+    int age,
+    int[4] s,
+    Goal g)
+{
     struct(int,bool) anon
     
     pub fn bark() { # Animal* this
@@ -71,8 +68,7 @@ fn unreferencedFunc() {
     struct(bool,bool) a
 }
 
-struct Thingy {
-    pub int a
+struct Thingy(pub int a) {
     pub fn()int b = { ret 1 }
     #new = { Thingy* this }    # implicit
 }
@@ -86,10 +82,10 @@ fn someArrays() {
     var a2 = @arrayOf(int, 1,2)  # int[2]
 }
 
-struct Array <A,B> {
-    A a
+struct Array <A,B>(
+    A a,
     B b 
-}
+)
 
 fn noofoo(int a) {
     var b = a
@@ -98,6 +94,12 @@ fn noofoo(int a) {
 fn tempfoo<T>(T a, int b) void {
     
 }  
+
+#struct wagahagahgahg(int a) { fn sdasdasdasd() {} }
+
+#struct TESTING() 
+    #int argh
+#}
 
 #pub WinMain {   
 pub fn main() {
@@ -178,9 +180,7 @@ pub fn main() {
         #assert r2.b==2
     }
     const test3 = {
-        struct Listy <T> {
-            T length
-        }
+        struct Listy <T>(T length)
 
         Listy<int> list = Listy<int>()
         Array<int,float> array

@@ -1,7 +1,5 @@
 
-pub struct RedRose <T> {
-    T a
-}
+pub struct RedRose <T>(T a)
 
 pub alias OrangeRose = RedRose<double> 
 pub alias IntPtr = int*  

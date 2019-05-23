@@ -9,7 +9,7 @@ pub fn testAs() {
     alias Tuple = struct(int,byte,short)
     const b  = @structOf(1, 2 as byte, 3 as short) as struct(int,byte,short)
     const b2 = @structOf(1, 2 as byte, 3 as short) 
-    struct Name { int a }
+    struct Name(int a)
     const b3 = null as Name*
     const b4 = @structOf(3 as byte) as struct(int)  
 

@@ -20,7 +20,7 @@ fn rets() {
             ret &c   # bad
         }
         const bad1d ={
-            struct D {int a}
+            struct D(int a)
             D d
             ret &d   # bad
         }
@@ -62,8 +62,8 @@ fn rets() {
         ok2()
     }
     const structMembers = {
-        struct A { int a, int b }
-        struct B { int a, int* b }
+        struct A(int a, int b)
+        struct B(int a, int* b)
         const bad1 = {
             A a
             ret &a.b # bad

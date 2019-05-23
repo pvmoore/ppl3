@@ -661,8 +661,9 @@ private:
         if(!m.isResolved) unresolved.add(m);
 
         /// If this is a scope, do some extra housekeeping
-        bool isScope = m.isLiteralFunction |
-                      (m.isComposite && m.as!Composite.usage==Composite.Usage.INNER_KEEP) |
+        bool isScope = m.isLiteralFunction ||
+                      //(m.isA!Struct  && !m.parent.isModule && !m.parent.isComposite) ||
+                      (m.isComposite && m.as!Composite.usage==Composite.Usage.INNER_KEEP) ||
                       (m.isComposite && m.as!Composite.usage==Composite.Usage.INNER_REMOVABLE);
 
         /// Remove any unused nodes in this scope
@@ -689,18 +690,33 @@ private:
 
         /// We need all targets inside this scope to be resolved
         Target[] targets;
+        //if(scope_.isModule) {
+        //    foreach(node; scope_.as!Module.getCopyOfActiveRoots) {
+        //        node.collectTargets(targets);
+        //    }
+        //} else {
+        //    scope_.collectTargets(targets);
+        //}
         scope_.collectTargets(targets);
         if(!targets.all!(it=>it.isResolved)) return;
 
         foldUnreferencedVariables(scope_);
         foldUnreferencedEnums(scope_);
-        foldUnreferencedCalls(scope_);
+        if(scope_.isA!LiteralFunction) {
+            auto lf = scope_.as!LiteralFunction;
+            foldUnreferencedCalls(lf);
+        }
         foldUnreferencedFunctions(scope_);
     }
+    void foldUnreferenced(Module m) {
+
+    }
     void foldUnreferencedVariables(ASTNode scope_) {
+
         scope_.recurse!Variable( (v) {
 
-            bool viableFold = (scope_.isModule && v.isGlobal) || v.isLocalAlloc;
+            bool viableFold = //module_.isActive(v) &&
+                             ((scope_.isModule && v.isGlobal) || v.isLocalAlloc);
 
             if(viableFold) {
 
@@ -729,9 +745,10 @@ private:
             }
         });
     }
-    void foldUnreferencedCalls(ASTNode scope_) {
+    void foldUnreferencedCalls(LiteralFunction scope_) {
+
         scope_.recurse!Call( (call) {
-            assert(call.target.isResolved);
+            assert(call.target.isResolved, "target not resolved: %s %s %s".format(module_.canonicalName, call, scope_));
 
             if(call.target.isFunction) {
                 auto func  = call.target.getFunction;
@@ -763,6 +780,23 @@ private:
         });
     }
     void foldUnreferencedFunctions(ASTNode scope_) {
+
+        //foreach(f; scope_.getChildren!Function) {
+        //    /// Don't get rid of any constructors
+        //    if(f.name!="new") {
+        //
+        //        /// Only look at private functions
+        //        if(f.access.isPrivate) {
+        //
+        //            if(f.numRefs==0) {
+        //                fold(f);
+        //            } else {
+        //
+        //            }
+        //        }
+        //    }
+        //}
+
         scope_.recurse!Function( (f) {
 
             /// Don't get rid of any constructors
@@ -796,6 +830,7 @@ private:
             }
         });
     }
+
     int getNumUsagesInScope(ASTNode scope_, Enum e, ref bool allKnown) {
         int count = 0;
         allKnown = true;

@@ -1,6 +1,6 @@
 [[module priority=-100000]]
 
-pub struct StringBuffer {
+pub struct StringBuffer() {
     
 }  
   

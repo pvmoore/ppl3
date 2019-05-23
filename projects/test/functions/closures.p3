@@ -27,8 +27,7 @@ pub fn testClosures() {
     assert 3 == closure2(1)
     assert 3 == funcptr(1)  
 } 
-struct A {
-    pub int member = 1
+struct A(pub int member = 1) {
     pub fn foo() {
         assert @typeOf(this) is A*
         int hello = 1

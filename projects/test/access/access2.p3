@@ -1,11 +1,13 @@
 
-pub struct Access {
-# private
-    int a
+pub struct Access(
+    int a,
+    pub int b,
+    pub int c,
+    int d)
+{
     fn foo() {}
     fn foo<T>(T t) {}
 
-    pub int b
     pub fn foo1() {
         # i can see private member
         a
@@ -13,25 +15,23 @@ pub struct Access {
     }
     pub fn foo1<T>(T t) {}
     
-    pub int c
     pub fn foo2() {}
     pub fn foo2<T>(T t) {}
 
-    int d
     fn foo3() {}
     fn foo3<T>(T t) {}
 }
 
-pub struct Access2 <T> {
-# private
-    T a
+pub struct Access2 <T>(
+    T a,
+    pub T b,
+    pub T c) 
+{
     fn foo() {}
     fn foo<U>(U u) {}
     
-    pub T b
     pub fn foo1() {}
     pub fn foo1<U>(U u) {}
-    pub T c
 }
 
 pub fn testAccess2() {

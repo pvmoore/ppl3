@@ -1,7 +1,7 @@
 
-struct Goo <T> { T a }
-struct Gaa <T> { T a }
-struct Gee <T> { T a }
+struct Goo <T>(T a)
+struct Gaa <T>(T a)
+struct Gee <T>(T a)
 
 fn func<A,B>(fn(A)B a   ) { ret 0 }
 fn func<A>(A[2][1] a    ) { ret 1 }
