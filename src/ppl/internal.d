@@ -141,6 +141,7 @@ import ppl.resolve.ResolveUnary;
 import ppl.resolve.ResolveVariable;
 
 import ppl.resolve.misc.AfterResolution;
+import ppl.resolve.misc.FoldUnreferenced;
 import ppl.resolve.misc.FunctionFinder;
 import ppl.resolve.misc.ImportFinder;
 import ppl.resolve.misc.OverloadCollector;

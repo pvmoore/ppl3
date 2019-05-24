@@ -165,11 +165,15 @@ public:
             .array;
     }
     Enum getEnum(string name) {
-        return children[]
-            .filter!(it=>it.id==NodeID.ENUM)
-            .map!(it=>cast(Enum)it)
+        return getEnums()
             .filter!(it=>it.name==name)
             .frontOrNull!Enum;
+    }
+    Enum[] getEnums() {
+        return children[]
+            .filter!(it=>it.isA!Enum)
+            .map!(it=>cast(Enum)it)
+            .array;
     }
     Enum[] getEnumsRecurse() {
         auto array = new DynamicArray!Enum;

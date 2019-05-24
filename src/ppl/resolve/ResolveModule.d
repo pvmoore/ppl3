@@ -21,6 +21,7 @@ private:
     ResolveIndex indexResolver;
     ResolveUnary unaryResolver;
     ResolveVariable variableResolver;
+    FoldUnreferenced foldUnreferenced;
 
     StopWatch watch;
     DynamicArray!Callable overloadSet;
@@ -62,6 +63,7 @@ public:
         this.variableResolver    = new ResolveVariable(this, module_);
         this.unresolved          = new Set!ASTNode;
         this.overloadSet         = new DynamicArray!Callable;
+        this.foldUnreferenced    = new FoldUnreferenced(module_, this);
     }
     void clearState() {
         watch.reset();
@@ -107,7 +109,7 @@ public:
             recursiveVisit(r);
         }
 
-        tryToFoldScope(module_);
+        foldUnreferenced.fold(module_);
 
         this.isResolved = unresolved.length==0 &&
                           modified==false &&
@@ -421,33 +423,6 @@ public:
         }
         f.log("==============================================");
     }
-    void fold(ASTNode replaceMe, ASTNode withMe, bool dereference = true) {
-
-        auto p = replaceMe.parent;
-
-        setModified(replaceMe);
-        setModified(withMe);
-
-        p.replaceChild(replaceMe, withMe);
-
-        if(dereference) {
-            recursiveDereference(replaceMe);
-        }
-        modified = true;
-
-        /// Ensure active roots remain valid
-        module_.addActiveRoot(withMe);
-    }
-    void fold(ASTNode removeMe, bool dereference = true) {
-        if(dereference) {
-            recursiveDereference(removeMe);
-        }
-        setModified(removeMe);
-        removeMe.detach();
-        modified = true;
-    }
-
-
     bool isAStaticTypeExpr(Expression expr) {
         auto exprType       = expr.getType;
         bool isStaticAccess = exprType.isValue;
@@ -589,7 +564,7 @@ public:
                 if(alias_.isInnerType) {
                     /// Find the template blueprint
                     string parentName = ns.name;
-                    ns = ns.getInnerStruct(alias_.name);
+                    ns = ns.getStruct(alias_.name);
                     if(!ns) {
                         module_.addError(alias_, "Struct %s does not have inner type %s".format(parentName, alias_.name), true);
                         return;
@@ -613,6 +588,31 @@ public:
         } else {
             unresolved.add(alias_);
         }
+    }
+    void fold(ASTNode replaceMe, ASTNode withMe, bool dereference = true) {
+
+        auto p = replaceMe.parent;
+
+        setModified(replaceMe);
+        setModified(withMe);
+
+        p.replaceChild(replaceMe, withMe);
+
+        if(dereference) {
+            recursiveDereference(replaceMe);
+        }
+        modified = true;
+
+        /// Ensure active roots remain valid
+        module_.addActiveRoot(withMe);
+    }
+    void fold(ASTNode removeMe, bool dereference = true) {
+        if(dereference) {
+            recursiveDereference(removeMe);
+        }
+        setModified(removeMe);
+        removeMe.detach();
+        modified = true;
     }
 //==========================================================================
 private:
@@ -660,16 +660,7 @@ private:
 
         if(!m.isResolved) unresolved.add(m);
 
-        /// If this is a scope, do some extra housekeeping
-        bool isScope = m.isLiteralFunction ||
-                      //(m.isA!Struct  && !m.parent.isModule && !m.parent.isComposite) ||
-                      (m.isComposite && m.as!Composite.usage==Composite.Usage.INNER_KEEP) ||
-                      (m.isComposite && m.as!Composite.usage==Composite.Usage.INNER_REMOVABLE);
-
-        /// Remove any unused nodes in this scope
-        if(isScope) {
-            tryToFoldScope(m);
-        }
+        foldUnreferenced.fold(m);
     }
     void recursiveDereference(ASTNode n) {
         /// dereference
@@ -685,168 +676,5 @@ private:
         foreach(ch; n.children) {
             recursiveDereference(ch);
         }
-    }
-    void tryToFoldScope(ASTNode scope_) {
-
-        /// We need all targets inside this scope to be resolved
-        Target[] targets;
-        //if(scope_.isModule) {
-        //    foreach(node; scope_.as!Module.getCopyOfActiveRoots) {
-        //        node.collectTargets(targets);
-        //    }
-        //} else {
-        //    scope_.collectTargets(targets);
-        //}
-        scope_.collectTargets(targets);
-        if(!targets.all!(it=>it.isResolved)) return;
-
-        foldUnreferencedVariables(scope_);
-        foldUnreferencedEnums(scope_);
-        if(scope_.isA!LiteralFunction) {
-            auto lf = scope_.as!LiteralFunction;
-            foldUnreferencedCalls(lf);
-        }
-        foldUnreferencedFunctions(scope_);
-    }
-    void foldUnreferenced(Module m) {
-
-    }
-    void foldUnreferencedVariables(ASTNode scope_) {
-
-        scope_.recurse!Variable( (v) {
-
-            bool viableFold = //module_.isActive(v) &&
-                             ((scope_.isModule && v.isGlobal) || v.isLocalAlloc);
-
-            if(viableFold) {
-
-                if(v.numRefs==0) {
-                    /// If numRefs==0 then remove it
-                    fold(v);
-
-                } else if(v.numRefs==1) {
-
-                    //'b' Variable[refs=1] (type=int) LOCAL PRIVATE
-                    //    Initialiser var=b, type=int
-                    //       ASSIGN (type=int)
-                    //          ID:b (type=int) Target: VAR b int
-                    //          2 (type=const int)
-
-                    /// If the only reference is the initialiser and the
-                    /// initialiser is a CompileTimeConstant then the Variable can be removed
-                    if(v.hasInitialiser) {
-                        auto lit = v.initialiser().getExpr();
-                        auto ctc = lit.as!CompileTimeConstant;
-                        if(ctc) {
-                            fold(v);
-                        }
-                    }
-                }
-            }
-        });
-    }
-    void foldUnreferencedCalls(LiteralFunction scope_) {
-
-        scope_.recurse!Call( (call) {
-            assert(call.target.isResolved, "target not resolved: %s %s %s".format(module_.canonicalName, call, scope_));
-
-            if(call.target.isFunction) {
-                auto func  = call.target.getFunction;
-                auto body_ = func.hasBody() ? func.getBody() : null;
-                if(body_) {
-                    if(body_.isEmpty()) {
-                        /// Function has nothing in it so the call can be removed
-
-                        fold(call);
-
-                    } else if(body_.numStatements()==1) {
-                        if(body_.second().isA!Return) {
-                            /// Function only has a single statement which is a return.
-                            /// If it returns void or a compile time constant
-                            /// then we can fold the call
-                            auto ret = body_.second().as!Return;
-                            if(ret.hasExpr) {
-                                auto ctc = ret.expr().as!CompileTimeConstant;
-                                if(ctc) {
-                                    fold(call, ctc.copy());
-                                }
-                            } else {
-                                fold(call);
-                            }
-                        }
-                    }
-                }
-            }
-        });
-    }
-    void foldUnreferencedFunctions(ASTNode scope_) {
-
-        //foreach(f; scope_.getChildren!Function) {
-        //    /// Don't get rid of any constructors
-        //    if(f.name!="new") {
-        //
-        //        /// Only look at private functions
-        //        if(f.access.isPrivate) {
-        //
-        //            if(f.numRefs==0) {
-        //                fold(f);
-        //            } else {
-        //
-        //            }
-        //        }
-        //    }
-        //}
-
-        scope_.recurse!Function( (f) {
-
-            /// Don't get rid of any constructors
-            if(f.name!="new") {
-
-                /// Only look at private functions
-                if(f.access.isPrivate) {
-
-                    if(f.numRefs==0) {
-                        fold(f);
-                    } else {
-
-                    }
-                }
-            }
-        });
-    }
-    void foldUnreferencedEnums(ASTNode scope_) {
-        scope_.recurse!Enum( (e) {
-            if(e.access.isPrivate) {
-                if(e.numRefs==0) {
-                    fold(e);
-                } else {
-                    bool allKnown;
-                    int usages = getNumUsagesInScope(scope_, e, allKnown);
-                    if(allKnown) {
-                        // todo
-                        dd("=====>", module_.canonicalName, e.line+1, e, "usages =", usages);
-                    }
-                }
-            }
-        });
-    }
-
-    int getNumUsagesInScope(ASTNode scope_, Enum e, ref bool allKnown) {
-        int count = 0;
-        allKnown = true;
-        scope_.recurse!Variable( (v) {
-            auto type = v.getType;
-            if(type.isKnown) {
-                if(type.isEnum) count++;
-            } else {
-                allKnown = false;
-            }
-        });
-        if(allKnown) {
-            //scope_.recurse!Dot( (d) {
-            //
-            //});
-        }
-        return count;
     }
 }

@@ -95,7 +95,7 @@ fn tempfoo<T>(T a, int b) void {
     
 }  
 
-//struct wagahagahgahg(int a) { fn sdasdasdasd() {} }
+struct wagahagahgahg(int a) { fn sdasdasdasd() {} }
 
 // hello
 

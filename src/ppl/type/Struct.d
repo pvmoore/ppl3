@@ -31,6 +31,11 @@ public:
     }
 /// end of template stuff
 
+    /// Return true if this sctruct is declared at module scope
+    bool isModuleScope() {
+        return getParentIgnoreComposite().isModule;
+    }
+
     int getSize() {
         if(_size==-1) {
             auto pack = attributes.get!PackedAttribute;
@@ -103,24 +108,24 @@ public:
         return _llvmType;
     }
     ///========================================================================================
-    Enum getInnerEnum(string name) {
+    Enum getEnum(string name) {
         return children[]
                 .filter!(it=>it.id==NodeID.ENUM && it.as!Enum.name==name)
                 .frontOrNull!Enum;
     }
-    Enum[] getInnerEnums() {
+    Enum[] getEnums() {
         return children[]
             .filter!(it=>it.id==NodeID.ENUM)
             .map!(it=>cast(Enum)it)
             .array;
     }
     ///========================================================================================
-    Struct getInnerStruct(string name) {
+    Struct getStruct(string name) {
         return children[]
                 .filter!(it=>it.id==NodeID.STRUCT && it.as!Struct.name==name)
                 .frontOrNull!Struct;
     }
-    Struct[] getInnerStructs() {
+    Struct[] getStructs() {
         return children[]
             .filter!(it=>it.id==NodeID.STRUCT)
             .map!(it=>cast(Struct)it)

@@ -36,7 +36,8 @@ public:
                 log("\t  unreferenced func %s", f);
 
                 if(f.access.isPrivate) {
-                    module_.addError(f, "Unreferenced function %s should have been removed during resolve phase".format(f), true);
+                    warn(f, "Unreferenced function %s should have been removed during resolve phase".format(f));
+                    //module_.addError(f, "Unreferenced function %s should have been removed during resolve phase".format(f), true);
                 }
 
                 remove(f);
@@ -58,7 +59,8 @@ public:
             if(e.numRefs==0) {
 
                 if(e.access.isPrivate) {
-                    module_.addError(e, "Unreferenced enum %s should have been removed during the resolve phase".format(e), true);
+                    warn(e, "Unreferenced enum %s should have been removed during the resolve phase".format(e));
+                    //module_.addError(e, "Unreferenced enum %s should have been removed during the resolve phase".format(e), true);
                 }
 
                 remove(e);
@@ -106,7 +108,8 @@ public:
         foreach(v; module_.getVariables()) {
             if(v.numRefs==0) {
 
-                module_.addError(v, "Unreferenced variable %s should have been removed during resolve phase".format(v), true);
+                warn(v, "Unreferenced variable %s should have been removed during resolve phase".format(v));
+                //module_.addError(v, "Unreferenced variable %s should have been removed during resolve phase".format(v), true);
 
                 v.detach();
             }

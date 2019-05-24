@@ -215,10 +215,10 @@ private:
         foreach(n; s.getStaticVariables) {
             n.access = Access.PUBLIC;
         }
-        foreach(n; s.getInnerEnums) {
+        foreach(n; s.getEnums) {
             n.access = Access.PUBLIC;
         }
-        foreach(n; s.getInnerStructs) {
+        foreach(n; s.getStructs) {
             n.access = Access.PUBLIC;
         }
     }
