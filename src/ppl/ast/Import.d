@@ -10,7 +10,8 @@ final class Import : Statement {
 /// ASTNode
     override bool isResolved() { return true; }
     override NodeID id() const { return NodeID.IMPORT; }
-///
+    override Type getType()    { return TYPE_VOID; }
+
 
     bool hasAliasName() { return aliasName !is null; }
 

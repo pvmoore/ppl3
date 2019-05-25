@@ -6,10 +6,12 @@ final class ResolveIs {
 private:
     Module module_;
     ResolveModule resolver;
+    FoldUnreferenced foldUnreferenced;
 public:
-    this(ResolveModule resolver, Module module_) {
-        this.resolver = resolver;
-        this.module_  = module_;
+    this(ResolveModule resolver) {
+        this.resolver         = resolver;
+        this.module_          = resolver.module_;
+        this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(Is n) {
         auto leftType  = n.leftType();
@@ -152,7 +154,7 @@ private:
 
         auto lit = LiteralNumber.makeConst(result ? TRUE : FALSE, TYPE_BOOL);
 
-        resolver.fold(n, lit);
+        foldUnreferenced.fold(n, lit);
     }
     ///
     /// Binary (EQ)
@@ -177,7 +179,7 @@ private:
         auto op = n.negate ? Operator.BOOL_NE : Operator.BOOL_EQ;
         auto ne = builder.binary(op, call, LiteralNumber.makeConst(0, TYPE_INT));
 
-        resolver.fold(n, ne);
+        foldUnreferenced.fold(n, ne);
     }
     void rewriteToBoolEquals(Is n) {
         auto builder = module_.builder(n);
@@ -186,7 +188,7 @@ private:
 
         auto binary = builder.binary(op, n.left, n.right, TYPE_BOOL);
 
-        resolver.fold(n, binary);
+        foldUnreferenced.fold(n, binary);
     }
     void rewriteToEnumMemberValues(Is n, Enum enum_) {
         auto builder = module_.builder(n);

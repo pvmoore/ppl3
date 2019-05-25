@@ -97,8 +97,6 @@ fn tempfoo<T>(T a, int b) void {
 
 struct wagahagahgahg(int a) { fn sdasdasdasd() {} }
 
-// hello
-
 //pub WinMain {   
 pub fn main() {
 

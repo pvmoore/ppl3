@@ -6,10 +6,12 @@ final class ResolveLiteral {
 private:
     Module module_;
     ResolveModule resolver;
+    FoldUnreferenced foldUnreferenced;
 public:
-    this(ResolveModule resolver, Module module_) {
-        this.resolver = resolver;
-        this.module_  = module_;
+    this(ResolveModule resolver) {
+        this.resolver         = resolver;
+        this.module_          = resolver.module_;
+        this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(LiteralArray n) {
 
@@ -161,7 +163,7 @@ public:
     }
     void resolve(LiteralNull n) {
         if(n.type.isUnknown) {
-            auto parent = n.getParentIgnoreComposite();
+            auto parent = n.getLogicalParent();
 
             Type type;
             /// Determine type from parent

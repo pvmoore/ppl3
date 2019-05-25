@@ -6,8 +6,11 @@ import ppl.internal;
 ///
 final class Parameters : ASTNode {
 
+/// ASTNode
     override bool isResolved() { return getParams().as!(ASTNode[]).areResolved; }
     override NodeID id() const { return NodeID.PARAMETERS; }
+    override Type getType()    { return TYPE_VOID; }
+
 
     int numParams() const {
         return children.length.toInt;

@@ -6,10 +6,12 @@ final class ResolveIf {
 private:
     Module module_;
     ResolveModule resolver;
+    FoldUnreferenced foldUnreferenced;
 public:
-    this(ResolveModule resolver, Module module_) {
-        this.resolver = resolver;
-        this.module_  = module_;
+    this(ResolveModule resolver) {
+        this.resolver         = resolver;
+        this.module_          = resolver.module_;
+        this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(If n) {
         if(!n.isResolved) {
@@ -77,7 +79,7 @@ public:
 
             /// Put an empty init expression Composite in it's place so nothing breaks
             auto empty = Composite.make(n, Composite.Usage.INLINE_REMOVABLE);
-            resolver.fold(n.initExprs(), empty, false);
+            foldUnreferenced.fold(n.initExprs(), empty, false);
 
             auto val = cct.isTrue();
             if(val) {
@@ -85,7 +87,7 @@ public:
                 auto then = n.thenStmt();
                 then.usage = Composite.Usage.INNER_REMOVABLE;
 
-                resolver.fold(n, then);
+                foldUnreferenced.fold(n, then);
 
                 /// Add the init expressions back at the front
                 then.addToFront(inits);
@@ -95,15 +97,15 @@ public:
                 auto else_ = n.elseStmt();
                 else_.usage = Composite.Usage.INNER_REMOVABLE;
 
-                resolver.fold(n, else_);
+                foldUnreferenced.fold(n, else_);
 
                 /// Add the init expressions back at the front
                 else_.addToFront(inits);
 
             } else {
                 /// Remove the IF completely
-                resolver.fold(n);
-                resolver.fold(inits);
+                foldUnreferenced.fold(n);
+                foldUnreferenced.fold(inits);
             }
 
             return;

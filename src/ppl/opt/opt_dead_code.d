@@ -48,6 +48,9 @@ public:
         auto aliases = new DynamicArray!Alias;
         module_.selectDescendents!Alias(aliases);
         foreach(a; aliases) {
+            if(a.access.isPrivate) {
+                warn(a, "Unreferenced alias %s should have been removed during resolve phase".format(a));
+            }
             log("\t alias %s", a.name);
             remove(a);
         }
@@ -75,6 +78,9 @@ public:
                 log("\t  template blueprint named struct %s", ns.name);
                 remove(ns);
             } else if(ns.numRefs==0) {
+                if(!ns.isAtModuleScope && ns.access.isPrivate) {
+                    warn(ns, "Unreferenced struct %s should have been removed during resolve phase".format(ns));
+                }
                 log("\t  unreferenced named struct %s", ns.name);
                 remove(ns);
             } else {

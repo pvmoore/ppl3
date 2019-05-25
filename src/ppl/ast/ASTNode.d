@@ -126,9 +126,9 @@ public:
 
 /// Override these
     abstract NodeID id() const;
-    abstract bool isResolved() { return false; }
-    Type getType()             { return TYPE_UNKNOWN; }
-/// end
+    abstract bool isResolved();
+    abstract Type getType();
+
 
     final bool hasChildren() const { return children.length > 0; }
     final int numChildren() const { return cast(int)children.length; }
@@ -148,14 +148,32 @@ public:
         if(this.id==NodeID.MODULE) return 0;
         return parent.getDepth() + 1;
     }
-    final ASTNode getParentIgnoreComposite() {
-        if(parent.isComposite) return parent.getParentIgnoreComposite();
+    final ASTNode getLogicalParent() {
+        if(parent.isComposite) return parent.getLogicalParent();
         return parent;
     }
     final bool isAttached() {
         if(this.isModule) return true;
         if(parent is null) return false;
         return parent.isAttached();
+    }
+    final bool isAtModuleScope() {
+        return getLogicalParent().isModule;
+    }
+    final bool isAScope() {
+        switch(this.id) with(NodeID) {
+            case MODULE:
+            case STRUCT:
+            case LITERAL_FUNCTION:
+                return true;
+            case COMPOSITE:
+                auto c = this.as!Composite;
+                return c.usage==Composite.Usage.INNER_KEEP ||
+                       c.usage==Composite.Usage.INNER_REMOVABLE;
+            default:
+                return false;
+        }
+        assert(false);
     }
 
     final auto addToFront(ASTNode child) {
@@ -360,6 +378,12 @@ public:
         if(this.isA!T) functor(this.as!T);
         foreach(n; children) {
             n.recurse!T(functor);
+        }
+    }
+    final void recurse(T)(bool delegate(T n) filter, void delegate(T n) functor) {
+        if(this.isA!T && filter(this)) functor(this.as!T);
+        foreach(n; children) {
+            n.recurse!T(filter, functor);
         }
     }
     final void recurse(T)(void delegate(int level, T n) functor, int level = 0) {

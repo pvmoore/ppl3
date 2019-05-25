@@ -6,10 +6,12 @@ final class ResolveSelect {
 private:
     Module module_;
     ResolveModule resolver;
+    FoldUnreferenced foldUnreferenced;
 public:
-    this(ResolveModule resolver, Module module_) {
-        this.resolver = resolver;
-        this.module_  = module_;
+    this(ResolveModule resolver) {
+        this.resolver         = resolver;
+        this.module_          = resolver.module_;
+        this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(Select n) {
         if(!n.isResolved) {
@@ -74,7 +76,7 @@ public:
             assert(prev);
             prev.add(def);
 
-            resolver.fold(n, first);
+            foldUnreferenced.fold(n, first);
             return;
         }
         if(n.isSwitch && n.valueType().isKnown) {
@@ -84,7 +86,7 @@ public:
                 auto val = n.valueExpr();
                 auto as  = makeNode!As(n);
 
-                resolver.fold(val, as);
+                foldUnreferenced.fold(val, as);
 
                 as.add(val);
                 as.add(TypeExpr.make(TYPE_INT));
@@ -102,7 +104,7 @@ public:
 
             void _doFold(Composite stmts) {
                 stmts.usage = Composite.Usage.INNER_REMOVABLE;
-                resolver.fold(n, stmts);
+                foldUnreferenced.fold(n, stmts);
             }
 
             foreach(c; n.cases()) {

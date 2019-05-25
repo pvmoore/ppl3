@@ -6,10 +6,12 @@ final class ResolveAs {
 private:
     Module module_;
     ResolveModule resolver;
+    FoldUnreferenced foldUnreferenced;
 public:
-    this(ResolveModule resolver, Module module_) {
-        this.resolver = resolver;
-        this.module_  = module_;
+    this(ResolveModule resolver) {
+        this.resolver         = resolver;
+        this.module_          = resolver.module_;
+        this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(As n) {
 
@@ -21,7 +23,7 @@ public:
 
         /// If cast is unnecessary then just remove the As
         if(lt.exactlyMatches(rt)) {
-            resolver.fold(n, n.left);
+            foldUnreferenced.fold(n, n.left);
             return;
         }
 
@@ -51,7 +53,7 @@ public:
             /// Create new EnumMember to represent this value
             auto member = builder.enumMember(rt.getEnum, n.left());
 
-            resolver.fold(n, member);
+            foldUnreferenced.fold(n, member);
             return;
         }
 
@@ -62,7 +64,7 @@ public:
             lit.value.as(rt);
             lit.str = lit.value.getString();
 
-            resolver.fold(n, lit);
+            foldUnreferenced.fold(n, lit);
             return;
         }
 
@@ -97,7 +99,7 @@ public:
             n.add(left);
             n.add(right);
 
-            resolver.fold(n, value);
+            foldUnreferenced.fold(n, value);
 
             value.add(n);
 

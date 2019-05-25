@@ -31,11 +31,6 @@ public:
     }
 /// end of template stuff
 
-    /// Return true if this sctruct is declared at module scope
-    bool isModuleScope() {
-        return getParentIgnoreComposite().isModule;
-    }
-
     int getSize() {
         if(_size==-1) {
             auto pack = attributes.get!PackedAttribute;

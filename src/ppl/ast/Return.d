@@ -4,9 +4,11 @@ import ppl.internal;
 
 final class Return : Statement {
 
+/// ASTNode
     override bool isResolved() { return getType.isKnown; }
     override NodeID id() const { return NodeID.RETURN; }
-    override Type getType() { return hasExpr ? expr().getType : TYPE_VOID; }
+    override Type getType()    { return hasExpr ? expr().getType : TYPE_VOID; }
+
 
     bool hasExpr() {
         return numChildren > 0;

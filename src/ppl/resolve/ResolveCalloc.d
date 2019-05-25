@@ -6,10 +6,12 @@ final class ResolveCalloc {
 private:
     Module module_;
     ResolveModule resolver;
+    FoldUnreferenced foldUnreferenced;
 public:
-    this(ResolveModule resolver, Module module_) {
-        this.resolver = resolver;
-        this.module_  = module_;
+    this(ResolveModule resolver) {
+        this.resolver         = resolver;
+        this.module_          = resolver.module_;
+        this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(Calloc n) {
         resolver.resolveAlias(n, n.valueType);
@@ -31,7 +33,7 @@ public:
 
             auto as = b.as(dot, n.getType);
 
-            resolver.fold(n, as);
+            foldUnreferenced.fold(n, as);
         }
     }
 }

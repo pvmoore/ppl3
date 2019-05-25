@@ -8,7 +8,8 @@ final class Break : Statement {
 /// ASTNode
     override bool isResolved() { return loop !is null; }
     override NodeID id() const { return NodeID.BREAK; }
-///
+    override Type getType()    { return TYPE_VOID; }
+
 
     override string toString() {
         return "Break";

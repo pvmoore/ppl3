@@ -6,10 +6,12 @@ final class ResolveIndex {
 private:
     Module module_;
     ResolveModule resolver;
+    FoldUnreferenced foldUnreferenced;
 public:
-    this(ResolveModule resolver, Module module_) {
-        this.resolver = resolver;
-        this.module_  = module_;
+    this(ResolveModule resolver) {
+        this.resolver         = resolver;
+        this.module_          = resolver.module_;
+        this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(Index n) {
         if(n.exprType().isStruct) {
@@ -42,7 +44,7 @@ public:
 
                     auto dot = b.dot(left, call);
 
-                    resolver.fold(bin, dot);
+                    foldUnreferenced.fold(bin, dot);
 
                     return;
                 }
@@ -64,7 +66,7 @@ public:
 
             auto dot = b.dot(left, call);
 
-            resolver.fold(n, dot);
+            foldUnreferenced.fold(n, dot);
 
             return;
 

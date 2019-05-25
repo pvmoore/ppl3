@@ -6,10 +6,12 @@ final class ResolveUnary {
 private:
     Module module_;
     ResolveModule resolver;
+    FoldUnreferenced foldUnreferenced;
 public:
-    this(ResolveModule resolver, Module module_) {
-        this.resolver = resolver;
-        this.module_  = module_;
+    this(ResolveModule resolver) {
+        this.resolver         = resolver;
+        this.module_          = resolver.module_;
+        this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(Unary n) {
         if(n.expr.getType.isStruct && n.op.isOverloadable) {
@@ -31,7 +33,7 @@ public:
 
             auto dot = b.dot(left, right);
 
-            resolver.fold(n, dot);
+            foldUnreferenced.fold(n, dot);
             return;
         }
         /// If expression is a const literal number then apply the
@@ -43,7 +45,7 @@ public:
                 if(ok) {
                     lit.str = lit.value.getString();
 
-                    resolver.fold(n, lit);
+                    foldUnreferenced.fold(n, lit);
                     return;
                 } else {
                     module_.addError(n, "(%s %s) is not supported".format(n.op.value, n.expr.getType), true);

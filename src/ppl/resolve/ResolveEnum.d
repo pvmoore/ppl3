@@ -6,10 +6,12 @@ final class ResolveEnum {
 private:
     Module module_;
     ResolveModule resolver;
+    FoldUnreferenced foldUnreferenced;
 public:
-    this(ResolveModule resolver, Module module_) {
-        this.resolver = resolver;
-        this.module_  = module_;
+    this(ResolveModule resolver) {
+        this.resolver         = resolver;
+        this.module_          = resolver.module_;
+        this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(Enum n) {
 
@@ -44,7 +46,7 @@ public:
                 auto ctc = expr.as!CompileTimeConstant;
 
                 if(ctc) {
-                    resolver.fold(n, ctc.copy());
+                    foldUnreferenced.fold(n, ctc.copy());
                 }
             }
         }

@@ -6,10 +6,12 @@ final class ResolveBinary {
 private:
     Module module_;
     ResolveModule resolver;
+    FoldUnreferenced foldUnreferenced;
 public:
-    this(ResolveModule resolver, Module module_) {
-        this.resolver = resolver;
-        this.module_  = module_;
+    this(ResolveModule resolver) {
+        this.resolver         = resolver;
+        this.module_          = resolver.module_;
+        this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(Binary n) {
         auto lt      = n.leftType();
@@ -66,7 +68,7 @@ public:
                 isExpr.add(n.left);
                 isExpr.add(n.right);
 
-                resolver.fold(n, isExpr);
+                foldUnreferenced.fold(n, isExpr);
                 return;
             }
         }
@@ -135,7 +137,7 @@ public:
                 if(ok) {
                     lit.str = lit.value.getString();
 
-                    resolver.fold(n, lit);
+                    foldUnreferenced.fold(n, lit);
                     return;
                 } else {
                     module_.addError(n, "(%s %s %s) is not supported".format(lt, n.op.value, rt), true);
@@ -198,7 +200,7 @@ private:
                     /// As enum
                     ///     Binary
                     auto as = makeNode!As(n);
-                    resolver.fold(n, as);
+                    foldUnreferenced.fold(n, as);
 
                     as.add(n);
                     as.add(TypeExpr.make(enum_));
@@ -269,7 +271,7 @@ private:
             } else {
                 expr = b.dot(n.left, b.call("operator"~n.op.value).add(n.right));
             }
-            resolver.fold(n, expr);
+            foldUnreferenced.fold(n, expr);
             return true;
         }
 
@@ -293,7 +295,7 @@ private:
                 if(leftStruct.hasOperatorOverload(BOOL_NE)) {
                     expr = b.dot(n.left, b.call("operator<>").add(n.right));
                     expr = b.not(expr);
-                    resolver.fold(n, expr);
+                    foldUnreferenced.fold(n, expr);
                     return true;
                 }
                 break;
@@ -301,7 +303,7 @@ private:
                 if(leftStruct.hasOperatorOverload(Operator.BOOL_EQ)) {
                     expr = b.dot(n.left, b.call("operator==").add(n.right));
                     expr = b.not(expr);
-                    resolver.fold(n, expr);
+                    foldUnreferenced.fold(n, expr);
                     return true;
                 }
                 break;
@@ -309,7 +311,7 @@ private:
                 if(leftStruct.hasOperatorOverload(Operator.GTE)) {
                     expr = b.dot(n.left, b.call("operator>=").add(n.right));
                     expr = b.not(expr);
-                    resolver.fold(n, expr);
+                    foldUnreferenced.fold(n, expr);
                     return true;
                 }
                 break;
@@ -317,7 +319,7 @@ private:
                 if(leftStruct.hasOperatorOverload(Operator.LTE)) {
                     expr = b.dot(n.left, b.call("operator<=").add(n.right));
                     expr = b.not(expr);
-                    resolver.fold(n, expr);
+                    foldUnreferenced.fold(n, expr);
                     return true;
                 }
                 if(rightStruct) {
@@ -328,7 +330,7 @@ private:
                 if(leftStruct.hasOperatorOverload(Operator.GT)) {
                     expr = b.dot(n.left, b.call("operator>").add(n.right));
                     expr = b.not(expr);
-                    resolver.fold(n, expr);
+                    foldUnreferenced.fold(n, expr);
                     return true;
                 }
                 if(rightStruct) {
@@ -339,7 +341,7 @@ private:
                 if(leftStruct.hasOperatorOverload(Operator.LT)) {
                     expr = b.dot(n.left, b.call("operator<").add(n.right));
                     expr = b.not(expr);
-                    resolver.fold(n, expr);
+                    foldUnreferenced.fold(n, expr);
                     return true;
                 }
                 break;

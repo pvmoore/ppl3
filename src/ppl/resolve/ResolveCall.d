@@ -18,10 +18,12 @@ private:
     Module module_;
     ResolveModule resolver;
     FunctionFinder functionFinder;
+    FoldUnreferenced foldUnreferenced;
 public:
-    this(ResolveModule resolver, Module module_) {
-        this.module_           = module_;
+    this(ResolveModule resolver) {
         this.resolver          = resolver;
+        this.module_           = resolver.module_;
+        this.foldUnreferenced  = resolver.foldUnreferenced;
         this.functionFinder    = new FunctionFinder(module_);
     }
     void resolve(Call n) {
@@ -136,7 +138,7 @@ public:
                         );
 
                         /// Fold but don't dereference 'prev'
-                        resolver.fold(prev, dummy, false);
+                        foldUnreferenced.fold(prev, dummy, false);
 
                         if(prevType.isValue) {
                             auto ptr = makeNode!AddressOf;

@@ -101,6 +101,7 @@ public:
     override bool isResolved()  { return true; }
     override NodeID id() const  { return NodeID.MODULE; }
     override Module getModule() { return this; }
+    override Type getType()     { return TYPE_VOID; }
 ///
 
     bool isParsed() { return parser.isParsed; }
@@ -181,11 +182,15 @@ public:
         return array[];
     }
     Struct getStruct(string name) {
+        return getStructs()
+            .filter!(it=>it.name==name)
+            .frontOrNull!Struct;
+    }
+    Struct[] getStructs() {
         return children[]
             .filter!(it=>it.id==NodeID.STRUCT)
             .map!(it=>cast(Struct)it)
-            .filter!(it=>it.name==name)
-            .frontOrNull!Struct;
+            .array;
     }
     Struct[] getStructsRecurse() {
         auto array = new DynamicArray!Struct;

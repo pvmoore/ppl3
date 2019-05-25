@@ -21,7 +21,6 @@ private:
     ResolveIndex indexResolver;
     ResolveUnary unaryResolver;
     ResolveVariable variableResolver;
-    FoldUnreferenced foldUnreferenced;
 
     StopWatch watch;
     DynamicArray!Callable overloadSet;
@@ -36,6 +35,7 @@ private:
 public:
     Module module_;
     ResolveIdentifier identifierResolver;
+    FoldUnreferenced foldUnreferenced;
 
     ulong getElapsedNanos()        { return watch.peek().total!"nsecs"; }
     ASTNode[] getUnresolvedNodes() { return unresolved.values; }
@@ -45,25 +45,26 @@ public:
 
     this(Module module_) {
         this.module_             = module_;
-        this.assertResolver      = new ResolveAssert(this, module_);
-        this.asResolver          = new ResolveAs(this, module_);
-        this.binaryResolver      = new ResolveBinary(this, module_);
-        this.builtinFuncResolver = new ResolveBuiltinFunc(this, module_);
-        this.callocResolver      = new ResolveCalloc(this, module_);
-        this.callResolver        = new CallResolver(this, module_);
-        this.constructorResolver = new ResolveConstructor(this, module_);
-        this.identifierResolver  = new ResolveIdentifier(this, module_);
-        this.enumResolver        = new ResolveEnum(this, module_);
-        this.indexResolver       = new ResolveIndex(this, module_);
-        this.ifResolver          = new ResolveIf(this, module_);
-        this.isResolver          = new ResolveIs(this, module_);
-        this.selectResolver      = new ResolveSelect(this, module_);
-        this.literalResolver     = new ResolveLiteral(this, module_);
-        this.unaryResolver       = new ResolveUnary(this, module_);
-        this.variableResolver    = new ResolveVariable(this, module_);
+        this.foldUnreferenced    = new FoldUnreferenced(module_, this);
+
+        this.asResolver          = new ResolveAs(this);
+        this.assertResolver      = new ResolveAssert(this);
+        this.binaryResolver      = new ResolveBinary(this);
+        this.builtinFuncResolver = new ResolveBuiltinFunc(this);
+        this.callocResolver      = new ResolveCalloc(this);
+        this.callResolver        = new CallResolver(this);
+        this.constructorResolver = new ResolveConstructor(this);
+        this.identifierResolver  = new ResolveIdentifier(this);
+        this.enumResolver        = new ResolveEnum(this);
+        this.indexResolver       = new ResolveIndex(this);
+        this.ifResolver          = new ResolveIf(this);
+        this.isResolver          = new ResolveIs(this);
+        this.selectResolver      = new ResolveSelect(this);
+        this.literalResolver     = new ResolveLiteral(this);
+        this.unaryResolver       = new ResolveUnary(this);
+        this.variableResolver    = new ResolveVariable(this);
         this.unresolved          = new Set!ASTNode;
         this.overloadSet         = new DynamicArray!Callable;
-        this.foldUnreferenced    = new FoldUnreferenced(module_, this);
     }
     void clearState() {
         watch.reset();
@@ -109,7 +110,7 @@ public:
             recursiveVisit(r);
         }
 
-        foldUnreferenced.fold(module_);
+        foldUnreferenced.process();
 
         this.isResolved = unresolved.length==0 &&
                           modified==false &&
@@ -186,7 +187,7 @@ public:
         if(n.expr.id==NodeID.VALUE_OF) {
             auto valueof = n.expr.as!ValueOf;
             auto child   = valueof.expr;
-            fold(n, child);
+            foldUnreferenced.fold(n, child);
             return;
         }
     }
@@ -242,21 +243,21 @@ public:
                 /// else           -> Don't remove
                 if(n.numChildren==1) {
                     auto child = n.first();
-                    fold(n, child);
+                    foldUnreferenced.fold(n, child);
                 }
                 break;
             case INNER_REMOVABLE:
             case INLINE_REMOVABLE:
                 /// If it's empty then just remove it
                 if(n.numChildren==0) {
-                    fold(n);
+                    foldUnreferenced.fold(n);
                     break;
                 }
                 /// If there is only a compile time constant in this scope then fold
                 if(n.numChildren==1) {
                     auto cct = n.first().as!CompileTimeConstant;
                     if(cct) {
-                        fold(n, cct.copy());
+                        foldUnreferenced.fold(n, cct.copy());
                     }
                 }
                 break;
@@ -376,7 +377,7 @@ public:
         assert(n.numChildren==1);
 
         /// We don't need any Parentheses any more
-        fold(n, n.expr());
+        foldUnreferenced.fold(n, n.expr());
     }
     void visit(Return n) {
 
@@ -397,7 +398,7 @@ public:
         if(n.expr.id==NodeID.ADDRESS_OF) {
             auto addrof = n.expr.as!AddressOf;
             auto child  = addrof.expr;
-            fold(n, child);
+            foldUnreferenced.fold(n, child);
             return;
         }
     }
@@ -589,31 +590,6 @@ public:
             unresolved.add(alias_);
         }
     }
-    void fold(ASTNode replaceMe, ASTNode withMe, bool dereference = true) {
-
-        auto p = replaceMe.parent;
-
-        setModified(replaceMe);
-        setModified(withMe);
-
-        p.replaceChild(replaceMe, withMe);
-
-        if(dereference) {
-            recursiveDereference(replaceMe);
-        }
-        modified = true;
-
-        /// Ensure active roots remain valid
-        module_.addActiveRoot(withMe);
-    }
-    void fold(ASTNode removeMe, bool dereference = true) {
-        if(dereference) {
-            recursiveDereference(removeMe);
-        }
-        setModified(removeMe);
-        removeMe.detach();
-        modified = true;
-    }
 //==========================================================================
 private:
     ///
@@ -659,22 +635,5 @@ private:
         if(!m.isAttached) return;
 
         if(!m.isResolved) unresolved.add(m);
-
-        foldUnreferenced.fold(m);
-    }
-    void recursiveDereference(ASTNode n) {
-        /// dereference
-        if(n.isIdentifier) {
-            auto t = n.as!Identifier.target;
-            t.dereference();
-        } else if(n.isCall) {
-            auto t = n.as!Call.target;
-            t.dereference();
-        } else if(n.isLambda) {
-            module_.removeLambda(n.as!Lambda);
-        }
-        foreach(ch; n.children) {
-            recursiveDereference(ch);
-        }
     }
 }

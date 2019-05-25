@@ -6,10 +6,12 @@ final class ResolveBuiltinFunc {
 private:
     Module module_;
     ResolveModule resolver;
+    FoldUnreferenced foldUnreferenced;
 public:
-    this(ResolveModule resolver, Module module_) {
-        this.resolver = resolver;
-        this.module_  = module_;
+    this(ResolveModule resolver) {
+        this.resolver         = resolver;
+        this.module_          = resolver.module_;
+        this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(BuiltinFunc n) {
 
@@ -20,49 +22,49 @@ public:
             case "sizeOf":
                 if(n.numExprs > 0) {
                     int size = n.exprs()[0].getType().size();
-                    resolver.fold(n, LiteralNumber.makeConst(size, TYPE_INT));
+                    foldUnreferenced.fold(n, LiteralNumber.makeConst(size, TYPE_INT));
                 }
                 break;
             case "alignOf":
                 if(n.numExprs > 0) {
                     int align_ = n.exprs()[0].getType().alignment();
-                    resolver.fold(n, LiteralNumber.makeConst(align_, TYPE_INT));
+                    foldUnreferenced.fold(n, LiteralNumber.makeConst(align_, TYPE_INT));
                 }
                 break;
             case "initOf":
                 if(n.numExprs > 0) {
                     auto ini = initExpression(n.exprs()[0].getType);
-                    resolver.fold(n, ini);
+                    foldUnreferenced.fold(n, ini);
                 }
                 break;
             case "isRef":
                 if(n.numExprs > 0) {
                     auto r = n.exprTypes()[0].isPtr;
-                    resolver.fold(n, LiteralNumber.makeConst(r, TYPE_BOOL));
+                    foldUnreferenced.fold(n, LiteralNumber.makeConst(r, TYPE_BOOL));
                 }
                 break;
             case "isValue":
                 if(n.numExprs > 0) {
                     auto r = n.exprTypes()[0].isPtr;
-                    resolver.fold(n, LiteralNumber.makeConst(!r, TYPE_BOOL));
+                    foldUnreferenced.fold(n, LiteralNumber.makeConst(!r, TYPE_BOOL));
                 }
                 break;
             case "isInteger":
                 if(n.numExprs > 0) {
                     auto b = n.exprTypes()[0].isInteger;
-                    resolver.fold(n, LiteralNumber.makeConst(b, TYPE_BOOL));
+                    foldUnreferenced.fold(n, LiteralNumber.makeConst(b, TYPE_BOOL));
                 }
                 break;
             case "isReal":
                 if(n.numExprs > 0) {
                     auto b = n.exprTypes()[0].isReal;
-                    resolver.fold(n, LiteralNumber.makeConst(b, TYPE_BOOL));
+                    foldUnreferenced.fold(n, LiteralNumber.makeConst(b, TYPE_BOOL));
                 }
                 break;
             case "isStruct":
                 if(n.numExprs > 0) {
                     auto b = n.exprTypes()[0].isStruct;
-                    resolver.fold(n, LiteralNumber.makeConst(b, TYPE_BOOL));
+                    foldUnreferenced.fold(n, LiteralNumber.makeConst(b, TYPE_BOOL));
                 }
                 break;
             case "isFunction":
@@ -79,7 +81,7 @@ public:
                         /// Assume anything else is not a function
                     }
 
-                    resolver.fold(n, LiteralNumber.makeConst(isFunc, TYPE_BOOL));
+                    foldUnreferenced.fold(n, LiteralNumber.makeConst(isFunc, TYPE_BOOL));
                 }
                 break;
             case "isFunctionPtr":
@@ -96,7 +98,7 @@ public:
                         /// Assume anything else is not a function
                     }
 
-                    resolver.fold(n, LiteralNumber.makeConst(isFunc, TYPE_BOOL));
+                    foldUnreferenced.fold(n, LiteralNumber.makeConst(isFunc, TYPE_BOOL));
                 }
                 break;
             case "typeOf":
@@ -114,7 +116,7 @@ public:
                         /// differentiate this from a standard function
                         te.getType.getFunctionType.isFunctionPtr = true;
                     }
-                    resolver.fold(n, te);
+                    foldUnreferenced.fold(n, te);
                 }
                 break;
             case "arrayOf":
@@ -132,7 +134,7 @@ public:
                     foreach(ch; n.children[1..$].dup) {
                         array.add(ch);
                     }
-                    resolver.fold(n, array);
+                    foldUnreferenced.fold(n, array);
                 }
 
                 break;
@@ -148,7 +150,7 @@ public:
                 foreach(ch; n.children[].dup) {
                     struct_.add(ch);
                 }
-                resolver.fold(n, struct_);
+                foldUnreferenced.fold(n, struct_);
 
                 break;
             case "expect":
@@ -172,7 +174,7 @@ public:
                         auto right = exprs[1].as!LiteralNumber;
 
                         if(left && right) {
-                            resolver.fold(n, left);
+                            foldUnreferenced.fold(n, left);
                             return;
                         }
                     } else {
@@ -198,7 +200,7 @@ public:
 
                     if(cct) {
                         if(cct.isTrue()) {
-                            resolver.fold(n);
+                            foldUnreferenced.fold(n);
                             return;
                         }
 

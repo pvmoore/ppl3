@@ -6,10 +6,12 @@ final class ResolveAssert {
 private:
     Module module_;
     ResolveModule resolver;
+    FoldUnreferenced foldUnreferenced;
 public:
-    this(ResolveModule resolver, Module module_) {
-        this.resolver = resolver;
-        this.module_  = module_;
+    this(ResolveModule resolver) {
+        this.resolver         = resolver;
+        this.module_          = resolver.module_;
+        this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(Assert n) {
         /// Note: Assert is always unresolved because it needs
@@ -32,7 +34,7 @@ public:
             if(ctc) {
                 if(ctc.isTrue()) {
                     /// Just remove the assertion
-                    resolver.fold(n);
+                    foldUnreferenced.fold(n);
                 } else {
                     /// Assertion failed. Call __assert with false
                     rewriteAsCallToAssert(n, type);
@@ -82,6 +84,6 @@ private:
         /// line
         c.add(LiteralNumber.makeConst(n.line+1, TYPE_INT));
 
-        resolver.fold(n, c);
+        foldUnreferenced.fold(n, c);
     }
 }

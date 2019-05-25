@@ -21,6 +21,7 @@ final class Variable : Statement {
 
     LLVMValueRef llvmValue;
 
+/// ASTNode
     override bool isResolved() { return type.isKnown; }
     override NodeID id() const { return NodeID.VARIABLE; }
     override Type getType()    { return type; }
@@ -39,7 +40,7 @@ final class Variable : Statement {
         return !isStatic && parent.id==NodeID.TUPLE;
     }
     bool isGlobal() {
-        return parent.id==NodeID.MODULE;
+        return isAtModuleScope();
     }
     bool isParameter() {
         return parent.isA!Parameters;

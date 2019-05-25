@@ -12,13 +12,16 @@ final class ResolveIdentifier {
 private:
     Module module_;
     ResolveModule resolver;
+    FoldUnreferenced foldUnreferenced;
 public:
     this(Module module_) {
         this.module_ = module_;
     }
-    this(ResolveModule resolver, Module module_) {
-        this(module_);
-        this.resolver = resolver;
+    this(ResolveModule resolver) {
+        this.resolver         = resolver;
+        this.foldUnreferenced = resolver.foldUnreferenced;
+
+        this(resolver.module_);
     }
     struct Result {
         union {
@@ -121,7 +124,7 @@ public:
                         auto em     = expr.as!ExpressionRef.reference.as!EnumMember;
                         auto newRef = ExpressionRef.make(expr.as!ExpressionRef.reference);
 
-                        resolver.fold(n, newRef);
+                        foldUnreferenced.fold(n, newRef);
                         return;
                     }
                 }
@@ -130,7 +133,7 @@ public:
 
                     auto cct = expr.as!CompileTimeConstant;
                     if(cct) {
-                        resolver.fold(n, cct.copy());
+                        foldUnreferenced.fold(n, cct.copy());
                         return;
                     }
                 }
@@ -300,15 +303,15 @@ private:
             case "length":
                 if(prevType.isArray) {
                     int len = prevType.getArrayType.countAsInt();
-                    resolver.fold(dot, LiteralNumber.makeConst(len, TYPE_INT));
+                    foldUnreferenced.fold(dot, LiteralNumber.makeConst(len, TYPE_INT));
                     return;
                 } else if(prevType.isTuple) {
                     int len = prevType.getTuple.numMemberVariables();
-                    resolver.fold(dot, LiteralNumber.makeConst(len, TYPE_INT));
+                    foldUnreferenced.fold(dot, LiteralNumber.makeConst(len, TYPE_INT));
                     return;
                 } else if(prevType.isEnum) {
                     int len = prevType.getEnum.numChildren;
-                    resolver.fold(dot, LiteralNumber.makeConst(len, TYPE_INT));
+                    foldUnreferenced.fold(dot, LiteralNumber.makeConst(len, TYPE_INT));
                     return;
                 }
                 break;
@@ -317,7 +320,7 @@ private:
 
                 /// for arrays only
                 if(prevType.isArray) {
-                    resolver.fold(dot, TypeExpr.make(prevType.getArrayType.subtype));
+                    foldUnreferenced.fold(dot, TypeExpr.make(prevType.getArrayType.subtype));
                     return;
                 } else if(prevType.isEnum) {
                     assert(false, "implement me");
@@ -342,7 +345,7 @@ private:
                 ///   AddressOf
                 ///      prev
                 ///   type*
-                resolver.fold(dot, as);
+                foldUnreferenced.fold(dot, as);
                 return;
             }
             case "value":
@@ -350,7 +353,7 @@ private:
                 if(prevType.isEnum) {
                     auto em = prev.as!EnumMember;
                     if(em) {
-                        resolver.fold(dot, em.expr());
+                        foldUnreferenced.fold(dot, em.expr());
                         return;
                     } else {
                         /// identifier.value
@@ -358,7 +361,7 @@ private:
                         emv.enum_ = prevType.getEnum;
                         emv.add(dot.left());
 
-                        resolver.fold(dot, emv);
+                        foldUnreferenced.fold(dot, emv);
                         return;
                     }
                 }
@@ -385,7 +388,7 @@ private:
                 return;
             }
 
-            resolver.fold(dot, ExpressionRef.make(em));
+            foldUnreferenced.fold(dot, ExpressionRef.make(em));
             return;
         }
 

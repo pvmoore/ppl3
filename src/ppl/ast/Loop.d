@@ -23,7 +23,9 @@ final class Loop : Statement {
 /// ASTNode
     override bool isResolved() { return true; }
     override NodeID id() const { return NodeID.LOOP; }
-///
+    override Type getType()    { return TYPE_VOID; }
+
+
     Composite initStmts() { return children[0].as!Composite; }
     Composite condExpr()  { return children[1].as!Composite; }
     Composite postExprs() { return children[2].as!Composite; }

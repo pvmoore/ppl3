@@ -39,7 +39,6 @@ abstract class Expression : Statement {
         assert(false);
     }
 
-
     static CT mergeCT(Expression[] exprs...) {
         CT result = CT.YES;
         foreach(e; exprs) {
