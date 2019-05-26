@@ -116,7 +116,18 @@ private:
                 break;
             case COMPOSITE:
                 auto comp = n.as!Composite;
-                foreach(ch; comp.children[]) {
+                auto u = comp.usage;
+                if(u==Composite.Usage.INLINE_KEEP ||
+                   u==Composite.Usage.INLINE_REMOVABLE)
+                {
+                    foreach(ch; comp.children[]) {
+                        check(ch);
+                    }
+                }
+                break;
+            case PLACEHOLDER:
+                auto ph = n.as!Placeholder;
+                foreach(ch; ph.children[]) {
                     check(ch);
                 }
                 break;

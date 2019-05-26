@@ -1,4 +1,4 @@
-module ppl.ast.Function;
+module ppl.ast.stmt.Function;
 
 import ppl.internal;
 import common : contains;

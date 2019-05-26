@@ -1,4 +1,4 @@
-module ppl.ast.Variable;
+module ppl.ast.stmt.Variable;
 
 import ppl.internal;
 

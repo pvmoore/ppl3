@@ -73,11 +73,6 @@ public:
     Callable standardFind(Call call, ModuleAlias modAlias=null) {
         //dd("resolveCall", call.name);
 
-        /// Come back when all root level Composites have been removed
-        //if(module_.containsComposites) {
-        //    return CALLABLE_NOT_READY;
-        //}
-
         Struct ns = call.isStartOfChain() ?
         call.getAncestor!Struct : null;
 
@@ -99,8 +94,8 @@ public:
             return CALLABLE_NOT_READY;
         }
 
-        /// Come back when all root level Composites have been removed
-        if(ns && ns.containsComposites) {
+        /// Come back when all root level Placeholders have been removed
+        if(ns && ns.containsPlaceholders) {
             return CALLABLE_NOT_READY;
         }
 
@@ -194,8 +189,8 @@ public:
 
         assert(ns);
 
-        /// Come back when all root level Composites have been removed
-        if(ns.containsComposites) {
+        /// Come back when all root level Placeholders have been removed
+        if(ns.containsPlaceholders) {
             return CALLABLE_NOT_READY;
         }
 

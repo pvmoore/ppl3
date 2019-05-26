@@ -242,7 +242,7 @@ private: //=====================================================================
     void checkPubAccess(Tokens t, ASTNode parent) {
 
         /// "pub" is only valid at module or struct scope:
-        auto p = parent; if(p.isComposite) p = p.parent;
+        auto p = parent; if(p.isComposite || p.isA!Placeholder) p = p.parent;
         if(!p.isModule && !p.isA!Struct) {
             module_.addError(t, "'pub' visibility modifier not allowed here", true);
             return;

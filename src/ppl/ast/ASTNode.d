@@ -45,6 +45,7 @@ enum NodeID {
     MODULE_ALIAS,
     PARAMETERS,
     PARENTHESIS,
+    PLACEHOLDER,
     RETURN,
     SELECT,
     STRUCT,
@@ -149,7 +150,7 @@ public:
         return parent.getDepth() + 1;
     }
     final ASTNode getLogicalParent() {
-        if(parent.isComposite) return parent.getLogicalParent();
+        if(parent.isA!Placeholder) return parent.getLogicalParent();
         return parent;
     }
     final bool isAttached() {

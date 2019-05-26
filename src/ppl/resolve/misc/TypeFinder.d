@@ -10,7 +10,7 @@ public:
         this.module_ = module_;
     }
     ///
-    /// Look for a Alias, Enum or Struct with given name starting from node.
+    /// Look for a Alias, Enum or Struct with given name starting from _node_.
     ///
     /// It is expected that this function is used during the parse phase so that
     /// is why we treat all nodes within a literal function as possible targets.
@@ -29,12 +29,27 @@ public:
             auto en = n.as!Enum;
             if(en && en.name==name) return en;
 
+            auto ph = n.as!Placeholder;
+            if(ph) {
+                /// Treat children of Placeholder as if they were in scope
+                foreach(ch; ph.children) {
+                    auto t = find(ch);
+                    if(t) return t;
+                }
+            }
+
             auto comp = n.as!Composite;
             if(comp) {
                 /// Treat children of Composite as if they were in scope
-                foreach(ch; comp.children) {
-                    auto t = find(ch);
-                    if(t) return t;
+
+                auto u = comp.usage;
+                if(u==Composite.Usage.INLINE_KEEP ||
+                   u==Composite.Usage.INLINE_REMOVABLE)
+                {
+                    foreach(ch; comp.children) {
+                        auto t = find(ch);
+                        if(t) return t;
+                    }
                 }
             }
 

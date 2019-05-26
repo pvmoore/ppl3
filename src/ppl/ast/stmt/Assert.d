@@ -1,4 +1,4 @@
-module ppl.ast.Assert;
+module ppl.ast.stmt.Assert;
 
 import ppl.internal;
 

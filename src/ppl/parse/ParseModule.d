@@ -108,12 +108,17 @@ public:
             t.setAccess(afterNode.as!Struct.access);
         }
 
-        auto composite = Composite.make(t, Composite.Usage.PLACEHOLDER);
-        afterNode.parent.insertAt(afterNode.index, composite);
-        this.templateStartNodes ~= composite;
+        auto ph = makeNode!Placeholder(t);
+        afterNode.parent.insertAt(afterNode.index, ph);
+
+        //auto composite = Composite.make(t, Composite.Usage.PLACEHOLDER);
+        //afterNode.parent.insertAt(afterNode.index, composite);
+
+        this.templateStartNodes ~= ph;
+
         templateParseComplete = false;
         module_.resolver.setModified();
-        module_.addActiveRoot(composite);
+        module_.addActiveRoot(ph);
     }
 private:
     void tokenise() {

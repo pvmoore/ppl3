@@ -1,4 +1,4 @@
-module ppl.ast.Return;
+module ppl.ast.stmt.Return;
 
 import ppl.internal;
 

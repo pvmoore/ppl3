@@ -1,4 +1,4 @@
-module ppl.ast.Import;
+module ppl.ast.stmt.Import;
 
 import ppl.internal;
 

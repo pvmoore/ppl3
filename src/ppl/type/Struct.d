@@ -207,12 +207,12 @@ public:
         return getMemberFunctions("new");
     }
     ///
-    /// Return true if there are Composites at root level which signifies
+    /// Return true if there are Placeholders at root level which signifies
     /// that a template function has just been added
     ///
-    bool containsComposites() {
+    bool containsPlaceholders() {
         foreach(ch; children) {
-            if(ch.isComposite) return true;
+            if(ch.isA!Placeholder) return true;
         }
         return false;
     }

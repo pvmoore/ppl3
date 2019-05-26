@@ -1,17 +1,17 @@
-module ppl.ast.Break;
+module ppl.ast.stmt.Continue;
 
 import ppl.internal;
 
-final class Break : Statement {
+final class Continue : Statement {
     Loop loop;
 
 /// ASTNode
     override bool isResolved() { return loop !is null; }
-    override NodeID id() const { return NodeID.BREAK; }
+    override NodeID id() const { return NodeID.CONTINUE; }
     override Type getType()    { return TYPE_VOID; }
 
 
     override string toString() {
-        return "Break";
+        return "Continue";
     }
 }

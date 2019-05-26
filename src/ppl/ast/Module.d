@@ -223,16 +223,6 @@ public:
             .map!(it=>cast(Variable)it)
             .array;
     }
-    ///
-    /// Return true if there are Composites at root level which signifies
-    /// that a template function has just been added
-    ///
-    bool containsComposites() {
-        foreach(ch; children) {
-            if(ch.isComposite) return true;
-        }
-        return false;
-    }
     //================================================================================
     Struct[] getImportedStructs() {
         Struct[string] structs;

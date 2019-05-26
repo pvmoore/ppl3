@@ -1,4 +1,4 @@
-module ppl.ast.Statement;
+module ppl.ast.stmt.Statement;
 
 import ppl.internal;
 

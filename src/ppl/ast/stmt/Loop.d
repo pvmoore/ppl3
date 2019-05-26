@@ -1,4 +1,4 @@
-module ppl.ast.Loop;
+module ppl.ast.stmt.Loop;
 
 import ppl.internal;
 

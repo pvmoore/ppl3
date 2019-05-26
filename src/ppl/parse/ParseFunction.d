@@ -38,6 +38,10 @@ public:
                 p = p.parent;
                 continue;
             }
+            if(p.isA!Placeholder) {
+                p = p.parent;
+                continue;
+            }
 
             module_.addError(t, "Function must be at module or struct scope", true);
             break;

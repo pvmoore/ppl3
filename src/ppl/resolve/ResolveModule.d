@@ -238,14 +238,6 @@ public:
     }
     void visit(Composite n) {
         switch(n.usage) with(Composite.Usage) {
-            case PLACEHOLDER:
-                /// If children==1 -> replace with child
-                /// else           -> Don't remove
-                if(n.numChildren==1) {
-                    auto child = n.first();
-                    foldUnreferenced.fold(n, child);
-                }
-                break;
             case INNER_REMOVABLE:
             case INLINE_REMOVABLE:
                 /// If it's empty then just remove it
@@ -378,6 +370,16 @@ public:
 
         /// We don't need any Parentheses any more
         foldUnreferenced.fold(n, n.expr());
+    }
+    void visit(Placeholder n) {
+        /// If children==1 -> replace with child
+        /// else           -> Don't remove
+        if(n.numChildren==1) {
+            auto child = n.first();
+            foldUnreferenced.fold(n, child);
+        } else if(n.numChildren>1) {
+            assert(false, "Expecting Placeholder to contain only 1 child");
+        }
     }
     void visit(Return n) {
 

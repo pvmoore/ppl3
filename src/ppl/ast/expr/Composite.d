@@ -8,15 +8,12 @@ import ppl.internal;
 final class Composite : Expression {
     /// INNER_*     -> The composite children are treated as if they are in an inner scope
     /// INLINE_*    -> The composite children are treated as if they are in the same scope
-    /// PLACEHOLDER -> Will be removed once template has been extracted into it
     enum Usage {
         INNER_KEEP,
         INLINE_KEEP,
 
         INNER_REMOVABLE,
-        INLINE_REMOVABLE,
-
-        PLACEHOLDER,
+        INLINE_REMOVABLE,       // do we need this?
     }
 
     Usage usage = Usage.INNER_KEEP;
@@ -46,8 +43,6 @@ final class Composite : Expression {
         return 15;
     }
     override CT comptime() {
-        if(usage==Usage.PLACEHOLDER) return CT.UNRESOLVED;
-
         auto e = expr();
         return e is null ? CT.YES :
                            e.comptime();
