@@ -143,8 +143,9 @@ private:
         if(type && templateParams.length>0) {
             type = typeFinder.findTemplateType(type, node, templateParams);
         }
+        if(type) {
 
-        if(!type) {
+        } else {
             t.resetToMark();
         }
         return type;
@@ -153,8 +154,6 @@ private:
 
         auto imp = findImportByAlias(t.value, node);
         if(!imp) return null;
-
-        //if(t.peek(1).type==TT.DBL_COLON) warn(t, "Deprecated module alias ::");
 
         if(t.peek(1).type!=TT.DOT) return null;
 

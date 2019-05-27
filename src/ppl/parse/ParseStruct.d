@@ -147,6 +147,9 @@ private:
         /// Variables
         while(t.type!=TT.RBRACKET) {
 
+            /// Default to private
+            t.setAccess(Access.PRIVATE);
+
             varParser().parseStructMember(t, ns);
 
             t.expect(TT.COMMA, TT.RBRACKET);

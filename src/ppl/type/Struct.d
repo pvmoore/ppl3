@@ -242,6 +242,6 @@ public:
     }
     //========================================================================================
     override string toString() {
-        return "%s%s".format(access.isPublic ? "pub " : "", name);
+        return "%s".format(name);
     }
 }

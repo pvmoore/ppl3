@@ -31,6 +31,7 @@ struct Callable {
     string[] paramNames()      { return getType.getFunctionType.paramNames; }
     Type[] paramTypes()        { return getType.getFunctionType.paramTypes; }
     Module getModule()         { return func ? func.getModule : var.getModule; }
+    Struct getStruct()         { return func ? func.getStruct() : var.getStruct(); }
 
     size_t toHash() const @safe pure nothrow {
         assert(id!=0);
@@ -235,7 +236,7 @@ public:
 
         chat("   overloads: %s", overloads);
 
-        int numRemoved = removeInvisible();
+        int numRemoved = removeInvisible(ns, call);
 
         chat("   numRemoved: %s", numRemoved);
 
@@ -299,6 +300,11 @@ public:
             } else {
                 msg ~= "Struct '%s' does not have %s function %s(%s)";
 
+                if(!staticOnly ) {
+                    // todo - improvement: If calling a static function on an instance variable
+                    //        then we could show the static function that might have matched
+                }
+
                 if(fns.length>0) {
                     suggestions = new FunctionSuggestions(fns);
                 }
@@ -326,16 +332,30 @@ public:
         return overloads[0];
     }
 private:
-    ///
-    /// Filter out inaccessible functions
-    ///
+    /// Filter out inaccessible module scope functions
     int removeInvisible() {
-        int thisNID = module_.nid;
-
         int count = 0;
         foreach(callable; overloads[].dup) {
-            if(callable.getModule.nid != thisNID) {
+            if(callable.getModule.nid != module_.nid) {
                 if(callable.isPrivate) {
+                    overloads.remove(callable);
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+    /// Filter out private struct member/static functions
+    int removeInvisible(Struct ns, Call call) {
+        int count = 0;
+        foreach(callable; overloads[].dup) {
+            if(callable.isPrivate) {
+                assert(callable.isStructMember);
+                auto targetStruct = callable.getStruct;
+                assert(targetStruct);
+
+                auto callerStruct = call.getAncestor!Struct;
+                if(!callerStruct || callerStruct != targetStruct) {
                     overloads.remove(callable);
                     count++;
                 }

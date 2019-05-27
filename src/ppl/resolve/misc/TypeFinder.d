@@ -19,7 +19,7 @@ public:
     ///
     Type findType(string name, ASTNode node, bool isInnerType = false) {
 
-        Type find(ASTNode n) {
+        Type _find(ASTNode n) {
             auto def = n.as!Alias;
             if(def && def.name==name) return def;
 
@@ -33,7 +33,7 @@ public:
             if(ph) {
                 /// Treat children of Placeholder as if they were in scope
                 foreach(ch; ph.children) {
-                    auto t = find(ch);
+                    auto t = _find(ch);
                     if(t) return t;
                 }
             }
@@ -41,13 +41,9 @@ public:
             auto comp = n.as!Composite;
             if(comp) {
                 /// Treat children of Composite as if they were in scope
-
-                auto u = comp.usage;
-                if(u==Composite.Usage.INLINE_KEEP ||
-                   u==Composite.Usage.INLINE_REMOVABLE)
-                {
+                if(comp.isInline) {
                     foreach(ch; comp.children) {
-                        auto t = find(ch);
+                        auto t = _find(ch);
                         if(t) return t;
                     }
                 }
@@ -56,7 +52,7 @@ public:
             auto imp = n.as!Import;
             if(imp && !imp.hasAliasName) {
                 foreach(ch; imp.children) {
-                    auto t = find(ch);
+                    auto t = _find(ch);
                     if(t) return t;
                 }
             }
@@ -70,7 +66,7 @@ public:
         if(nid==NodeID.MODULE) {
             /// Check all module level nodes
             foreach (n; node.children) {
-                auto t = find(n);
+                auto t = _find(n);
                 if (t) return found(t);
             }
             return null;
@@ -78,7 +74,7 @@ public:
         } else if(nid==NodeID.TUPLE || nid==NodeID.STRUCT || nid==NodeID.LITERAL_FUNCTION) {
             /// Check all scope level nodes
             foreach(n; node.children) {
-                auto t = find(n);
+                auto t = _find(n);
                 if(t) return found(t);
             }
             /// If we are looking for an inner type then we haven't found it
@@ -91,7 +87,7 @@ public:
         }
         /// Check nodes that appear before 'node' in current scope
         foreach(n; node.prevSiblings()) {
-            auto t = find(n);
+            auto t = _find(n);
             if(t) return found(t);
         }
         /// Recurse up the tree

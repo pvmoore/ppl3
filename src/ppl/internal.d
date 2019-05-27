@@ -126,6 +126,7 @@ import ppl.parse.ParseVariable;
 
 import ppl.resolve.ResolveCalloc;
 import ppl.resolve.ResolveAs;
+import ppl.resolve.ResolveAlias;
 import ppl.resolve.ResolveAssert;
 import ppl.resolve.ResolveBinary;
 import ppl.resolve.ResolveBuiltinFunc;

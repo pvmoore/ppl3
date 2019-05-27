@@ -35,10 +35,10 @@ pub fn testImports() {
 	assert 21 == imp.Badger<int>.bar(10)
 	assert 23 == imp.Badger<double>.baz<bool>(3.1, true)
 	
-	imp.Badger<int>.b = 80
-	imp.Badger<float>.b = 81
-	assert imp.Badger<int>.b == 80
-	imp.Badger<float>.b == 81
+	//imp.Badger<int>.b = 80        // can not modify
+	//imp.Badger<float>.b = 81      // can not modify
+	var br1 = imp.Badger<int>.b   == 80
+	var br2 = imp.Badger<float>.b == 81
 	
 	imp.Skunk<imp.Rabbit*> skunkRabbit
 	imp.Skunk<imp.Rabbit*>* skunkRabbit2

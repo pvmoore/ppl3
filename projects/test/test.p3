@@ -97,9 +97,11 @@ fn tempfoo<T>(T a, int b) void {
 
 struct wagahagahgahg(int a) { fn sdasdasdasd() {} }
 
+pub fn setvalue()int { ret 0 }
+
 //pub WinMain {   
 pub fn main() {
-
+   
     fn()int fptr      = { ret 1 }
     fn(int)void fptr2 = |int a| {}
     
@@ -125,7 +127,7 @@ pub fn main() {
     import texpr = test_expressions;    texpr.testExpressions()
     
     testLiterals()
-    testConsts()
+    testConstantFolding()
     testArrays()
 	
     const testGlobals = {

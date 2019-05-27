@@ -34,10 +34,11 @@ final class Variable : Statement {
                getContainer().id()==NodeID.LITERAL_FUNCTION;
     }
     bool isStructMember() {
+        // todo - should this ignore isStatic?
         return !isStatic && parent.id==NodeID.STRUCT;
     }
     bool isTupleMember() {
-        return !isStatic && parent.id==NodeID.TUPLE;
+        return parent.id==NodeID.TUPLE;
     }
     bool isGlobal() {
         return isAtModuleScope();
@@ -71,7 +72,7 @@ final class Variable : Statement {
         return parent.as!Tuple;
     }
     Struct getStruct() {
-        assert(isStructMember(), "isStructMember is false %s %s %s".format(getModule(), line+1, name));
+        assert(parent.isA!Struct, "parent is not a struct %s %s %s".format(getModule(), line+1, name));
         return parent.as!Struct;
     }
     Function getFunction() {

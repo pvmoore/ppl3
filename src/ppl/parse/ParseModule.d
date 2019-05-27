@@ -111,14 +111,10 @@ public:
         auto ph = makeNode!Placeholder(t);
         afterNode.parent.insertAt(afterNode.index, ph);
 
-        //auto composite = Composite.make(t, Composite.Usage.PLACEHOLDER);
-        //afterNode.parent.insertAt(afterNode.index, composite);
-
         this.templateStartNodes ~= ph;
 
         templateParseComplete = false;
         module_.resolver.setModified();
-        module_.addActiveRoot(ph);
     }
 private:
     void tokenise() {
@@ -158,12 +154,6 @@ private:
             if(t.isKeyword("extern")) return true;
             if(t.isKeyword("fn") && t.peek(1).type!=TT.LBRACKET) return true;
 
-            // todo - remove these
-            if(t.type==TT.IDENTIFIER && t.peek(1).type==TT.LCURLY) return true;
-            if(t.type==TT.IDENTIFIER && t.peek(1).type==TT.LANGLE) {
-                int end;
-                if(ParseHelper.isTemplateParams(t, 1, end) && t.peek(end+1).type==TT.LCURLY) return true;
-            }
             return false;
         }
 

@@ -6,15 +6,17 @@ final class ResolveCalloc {
 private:
     Module module_;
     ResolveModule resolver;
+    ResolveAlias aliasResolver;
     FoldUnreferenced foldUnreferenced;
 public:
     this(ResolveModule resolver) {
         this.resolver         = resolver;
         this.module_          = resolver.module_;
+        this.aliasResolver    = resolver.aliasResolver;
         this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(Calloc n) {
-        resolver.resolveAlias(n, n.valueType);
+        aliasResolver.resolve(n, n.valueType);
 
         if(n.valueType.isKnown) {
             /// Rewrite Calloc to:

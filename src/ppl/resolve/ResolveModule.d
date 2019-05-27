@@ -24,7 +24,6 @@ private:
 
     StopWatch watch;
     DynamicArray!Callable overloadSet;
-    bool addedModuleScopeElements;
     bool modified;
     Set!ASTNode unresolved;
     bool stalemate      = false;
@@ -34,6 +33,7 @@ private:
 
 public:
     Module module_;
+    ResolveAlias aliasResolver;
     ResolveIdentifier identifierResolver;
     FoldUnreferenced foldUnreferenced;
 
@@ -42,12 +42,14 @@ public:
     bool isModified()              { return modified; }
     bool isStalemate()             { return stalemate; }
     int getCurrentIteration()      { return iteration; }
+    void addUnresolved(ASTNode n)  { unresolved.add(n); }
 
     this(Module module_) {
         this.module_             = module_;
         this.foldUnreferenced    = new FoldUnreferenced(module_, this);
 
         this.asResolver          = new ResolveAs(this);
+        this.aliasResolver       = new ResolveAlias(this);
         this.assertResolver      = new ResolveAssert(this);
         this.binaryResolver      = new ResolveBinary(this);
         this.builtinFuncResolver = new ResolveBuiltinFunc(this);
@@ -70,7 +72,6 @@ public:
         watch.reset();
         unresolved.clear();
         overloadSet.clear();
-        addedModuleScopeElements = false;
         iteration      = 0;
         isResolved     = false;
         tokensModified = true;
@@ -104,9 +105,7 @@ public:
         this.iteration++;
         this.unresolved.clear();
 
-        collectModuleScopeElements();
-
-        foreach(r; module_.getCopyOfActiveRoots()) {
+        foreach(r; module_.children) {
             recursiveVisit(r);
         }
 
@@ -114,7 +113,6 @@ public:
 
         this.isResolved = unresolved.length==0 &&
                           modified==false &&
-                          addedModuleScopeElements &&
                           !tokensModified;
 
         return isResolved;
@@ -131,7 +129,6 @@ public:
             auto f = cast(Function)n;
             if(f && f.name==funcName) {
                 log("\t  Adding Function root %s", f);
-                module_.addActiveRoot(f);
 
                 /// Don't add reference here. Add it once we have filtered possible
                 /// overload sets down to the one we are going to use.
@@ -155,7 +152,6 @@ public:
                     if(ns.parent.isModule) {
                         log("\t  Adding Struct root %s", it);
                     }
-                    module_.addActiveRoot(ns);
                     ns.numRefs++;
                 }
             } else if(en) {
@@ -163,7 +159,6 @@ public:
                     if(en.parent.isModule) {
                         log("\t  Adding Enum root %s", en);
                     }
-                    module_.addActiveRoot(en);
                     en.numRefs++;
                 }
             } else if(al) {
@@ -171,7 +166,6 @@ public:
                     if(al.parent.isModule) {
                         log("\t  Adding Alias root %s", al);
                     }
-                    module_.addActiveRoot(al);
                     al.numRefs++;
 
                     /// Could be a chain of Aliases in different modules
@@ -201,11 +195,11 @@ public:
                 assert(!n.hasChildren());
             }
         } else {
-            resolveAlias(n, n.type);
+            aliasResolver.resolve(n, n.type);
         }
     }
     void visit(Array n) {
-        resolveAlias(n, n.subtype);
+        aliasResolver.resolve(n, n.subtype);
     }
     void visit(As n) {
         asResolver.resolve(n);
@@ -391,7 +385,7 @@ public:
 
     }
     void visit(TypeExpr n) {
-        resolveAlias(n, n.type);
+        aliasResolver.resolve(n, n.type);
     }
     void visit(Unary n) {
         unaryResolver.resolve(n);
@@ -459,154 +453,8 @@ public:
         }
         return isStaticAccess;
     }
-    ///
-    /// If type is a Alias then we need to resolve it
-    ///
-    void resolveAlias(ASTNode node, ref Type type) {
-        if(!type.isAlias) return;
-
-        auto alias_ = type.getAlias;
-
-        /+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ inner +/
-        void resolveTo(Type toType) {
-            type     = Pointer.of(toType, type.getPtrDepth);
-            modified = true;
-
-            auto node = cast(ASTNode)toType;
-            if(node) {
-                auto access = node.getAccess();
-                if(access.isPrivate && module_.nid!=node.getModule().nid) {
-                    module_.addError(alias_, "Type %s is private".format(node), true);
-                }
-            }
-
-            if(alias_.parent && alias_.parent.id==NodeID.IMPORT) {
-                /// This is an import alias. Leave it attached
-            } else if(!type.isAlias) {
-                //dd("!! detaching alias", alias_);
-
-                if(alias_.isInnerType) {
-                    alias_.detach();
-                }
-            }
-        }
-        /+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++/
-
-        /// Handle import
-        if(alias_.isImport) {
-            auto m = module_.buildState.getOrCreateModule(alias_.moduleName);
-            if(!m.isParsed) {
-                /// Come back when m is parsed
-                return;
-            }
-            Type externalType = m.getAlias(alias_.name);
-            if(!externalType) externalType = m.getStruct(alias_.name);
-            if(!externalType) externalType = m.getEnum(alias_.name);
-            if(!externalType) {
-                module_.addError(module_, "Import %s not found in module %s".format(alias_.name, alias_.moduleName), true);
-                return;
-            }
-
-            resolveTo(externalType);
-            return;
-        }
-
-        /// type<...>
-        if(alias_.isTemplateProxy) {
-
-            /// Ensure template params are resolved
-            foreach(ref t; alias_.templateParams) {
-                resolveAlias(node, t);
-            }
-
-            /// Resolve until we have the Struct
-            if(alias_.type.isAlias) {
-                resolveAlias(node, alias_.type);
-            }
-            if(!alias_.type.isStruct) {
-                unresolved.add(alias_);
-                return;
-            }
-
-            if(!alias_.templateParams.areKnown) {
-                unresolved.add(alias_);
-                return;
-            }
-        }
-        /// type::type2::type3 etc...
-        if(alias_.isInnerType) {
-
-            resolveAlias(node, alias_.type);
-
-            if(alias_.type.isAlias) {
-                unresolved.add(alias_);
-                return;
-            }
-        }
-
-        if(alias_.isTemplateProxy || alias_.isInnerType) {
-
-            /// We now have a Struct to work with
-            auto ns = alias_.type.getStruct;
-            string mangledName;
-            if(alias_.isInnerType) {
-                mangledName ~= alias_.name;
-            } else {
-                mangledName ~= ns.name;
-            }
-            if(alias_.isTemplateProxy) {
-                mangledName ~= "<" ~ module_.buildState.mangler.mangle(alias_.templateParams) ~ ">";
-            }
-
-            auto t = module_.typeFinder.findType(mangledName, ns, alias_.isInnerType);
-            if(t) {
-                /// Found
-                resolveTo(t);
-            } else {
-
-                if(alias_.isInnerType) {
-                    /// Find the template blueprint
-                    string parentName = ns.name;
-                    ns = ns.getStruct(alias_.name);
-                    if(!ns) {
-                        module_.addError(alias_, "Struct %s does not have inner type %s".format(parentName, alias_.name), true);
-                        return;
-                    }
-                }
-
-                if(alias_.isTemplateProxy) {
-                    /// Extract the template
-                    auto structModule = module_.buildState.getOrCreateModule(ns.moduleName);
-                    structModule.templates.extract(ns, node, mangledName, alias_.templateParams);
-
-                    unresolved.add(alias_);
-                }
-            }
-            return;
-        }
-
-        if(alias_.type.isKnown || alias_.type.isAlias) {
-            /// Switch to the Aliased type
-            resolveTo(alias_.type);
-        } else {
-            unresolved.add(alias_);
-        }
-    }
 //==========================================================================
 private:
-    ///
-    /// If this is the first time we have looked at this module then add           
-    /// all module level variables to the list of roots to resolve
-    ///
-    void collectModuleScopeElements() {
-        if(!addedModuleScopeElements && module_.isParsed) {
-            addedModuleScopeElements = true;
-
-            foreach(n; module_.getVariables()) {
-                module_.addActiveRoot(n);
-            }
-        }
-    }
     void recursiveVisit(ASTNode m) {
 
         if(!m.isAttached) return;

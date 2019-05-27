@@ -7,15 +7,17 @@ final class ResolveConstructor {
 private:
     Module module_;
     ResolveModule resolver;
+    ResolveAlias aliasResolver;
     FoldUnreferenced foldUnreferenced;
 public:
     this(ResolveModule resolver) {
         this.resolver         = resolver;
         this.module_          = resolver.module_;
+        this.aliasResolver    = resolver.aliasResolver;
         this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(Constructor n) {
-        resolver.resolveAlias(n, n.type);
+        aliasResolver.resolve(n, n.type);
 
 
 

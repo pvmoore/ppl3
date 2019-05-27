@@ -31,18 +31,18 @@ public:
         }
         return type;
     }
-    /// foo { type name, b ->
+    /// foo ( type name, b )
     ///       ^^^^^^^^^  ^
     void parseParameter(Tokens t, ASTNode parent) {
         parse(t, parent, Loc.PARAM);
     }
-    /// {type name -> void}
+    /// (type name)
     ///  ^^^^^^^^^
     void parseFunctionTypeParameter(Tokens t, ASTNode parent) {
         parse(t, parent, Loc.FUNCTYPE_PARAM);
     }
-    /// {type name -> type}
-    ///               ^^^^
+    /// () type
+    ///    ^^^^
     void parseReturnType(Tokens t, ASTNode parent) {
         parse(t, parent, Loc.RET_TYPE);
     }
@@ -73,9 +73,22 @@ private:
         auto v = makeNode!Variable(t);
         parent.add(v);
 
-        if(loc==Loc.STRUCT_MEMBER && t.value=="pub" ) {
-            t.setAccess(Access.PUBLIC);
-            t.next;
+        if(t.value=="pub") {
+            switch(loc) {
+                case Loc.STRUCT_MEMBER:
+                    t.setAccess(Access.PUBLIC);
+                    t.next;
+                    break;
+                default:
+                    module_.addError(t, "Visibility modifier not allowed here", true);
+                    t.next;
+                    break;
+            }
+        }
+
+        if(parent.isModule && t.access.isPublic) {
+            module_.addError(t, "Global variables cannot be public", true);
+            t.setAccess(Access.PRIVATE);
         }
 
         v.type   = TYPE_UNKNOWN;

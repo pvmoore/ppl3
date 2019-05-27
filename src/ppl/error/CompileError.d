@@ -287,7 +287,8 @@ void warn(Tokens n, string msg) {
     writefln("WARN [%s Line %s] %s", n.module_.fullPath, n.line+1, msg);
 }
 void warn(ASTNode n, string msg) {
-    writefln("WARN [%s Line %s] %s", n.getModule.fullPath, n.line+1, msg);
+    string path = n.isAttached ? n.getModule.fullPath : "unattached";
+    writefln("WARN [%s Line %s] %s", path, n.line+1, msg);
 }
 void errorBadSyntax(Module m, ASTNode n, string msg) {
     m.addError(n, msg, false);

@@ -165,13 +165,13 @@ pub fn testInnerStructs() {
         
         const ae = A::E()
         //assert ae.a == 98  // private
-        assert A::E.b == 99
+        //assert A::E.b == 99 // private
         assert ae.c == 100
         assert A::E.d == 101
         
-        const af = A::F()
-        //assert af.a == 102 // private
-        assert A::F.b == 103
+        //const af = A::F()     // private
+        //assert af.a == 102    // private
+        //assert A::F.b == 103  // private
     }
     const level2 = {
         A::B::C abc  

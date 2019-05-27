@@ -6,11 +6,13 @@ final class ResolveLiteral {
 private:
     Module module_;
     ResolveModule resolver;
+    ResolveAlias aliasResolver;
     FoldUnreferenced foldUnreferenced;
 public:
     this(ResolveModule resolver) {
         this.resolver         = resolver;
         this.module_          = resolver.module_;
+        this.aliasResolver    = resolver.aliasResolver;
         this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(LiteralArray n) {
@@ -232,7 +234,7 @@ public:
     }
     void resolve(LiteralString n) {
         if(n.type.isUnknown) {
-            resolver.resolveAlias(n, n.type);
+            aliasResolver.resolve(n, n.type);
         }
     }
     void resolve(LiteralTuple n) {

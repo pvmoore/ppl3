@@ -397,9 +397,11 @@ private:
         if(struct_) {
             var = struct_.getStaticVariable(n.name);
             if(var) {
-                if(var.access.isPrivate && var.getModule.nid != module_.nid) {
-                    module_.addError(n, "%s is private".format(var.name), true);
+
+                if(!prev.isA!TypeExpr) {
+                    module_.addError(n, "Use static syntax eg. %s.%s".format(prevType, var.name), true);
                 }
+
                 n.target.set(var);
                 return;
             }
@@ -426,9 +428,6 @@ private:
         }
 
         if(var) {
-            if(var.access.isPrivate && var.getModule.nid != module_.nid) {
-                module_.addError(n, "%s is private".format(var.name), true);
-            }
             n.target.set(var,index);
         }
     }

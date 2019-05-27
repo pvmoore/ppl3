@@ -2,9 +2,17 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.27.0";
+const string VERSION = "3.29.0";
 
 /*
+
+3.29.0 -
+
+3.28.0 - Tidy up some more node folding.
+         Remove concept of active/inactive nodes for resolution. Everything is now expected
+         to be resolved.
+         Make pub variables at module scope an error since this does not make any sense.
+         Fix bug allowing access to private struct members.
 
 3.27.0 - Add back // line comments
 

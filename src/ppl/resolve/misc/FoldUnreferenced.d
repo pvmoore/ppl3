@@ -1,7 +1,27 @@
 module ppl.resolve.misc.FoldUnreferenced;
 
 import ppl.internal;
-
+/*
+Scope:                  | Visible to scope:
+0   1   2               |
+=====================================================
+Module                  |
+    pub function        | 1 and external module
+    function            | 1
+                        |
+    variable            | 1
+                        |
+    pub struct          | 1 and external module
+        pub variable    | 1 and external module
+        variable        | internal struct only
+                        |
+        pub function    |
+        function        | internal struct only
+                        |
+    struct              | 1
+        pub variable    |
+        variable        |
+*/
 final class FoldUnreferenced {
 private:
     Module module_;
@@ -16,20 +36,21 @@ public:
     /// Called after each resolution phase.
     void process() {
 
-        /// Process functions and structs
+        /// Process function bodies
         foreach(f; module_.getFunctions()) {
             if(f.hasBody()) {
                 processNode(f.getBody());
             }
         }
+        /// Process structs
         foreach(s; module_.getStructs()) {
             processStruct(s);
         }
 
         /// Remove any Variable or Function that is not referenced
         if(allTargetsResolved(module_)) {
-            foreach(v; module_.getVariables()) checkVariable(v);
-            foreach(f; module_.getFunctions()) checkFunction(f);
+            foreach(v; module_.getVariables()) tryToFold(v);
+            foreach(f; module_.getFunctions()) tryToFold(f);
         }
     }
     void fold(ASTNode replaceMe, ASTNode withMe, bool dereference = true) {
@@ -44,10 +65,6 @@ public:
         if(dereference) {
             recursiveDereference(replaceMe);
         }
-        resolveModule.setModified();
-
-        /// Ensure active roots remain valid
-        module_.addActiveRoot(withMe);
     }
     void fold(ASTNode removeMe, bool dereference = true) {
         if(dereference) {
@@ -55,30 +72,27 @@ public:
         }
         resolveModule.setModified(removeMe);
         removeMe.detach();
-        resolveModule.setModified();
     }
 private:
     void processNode(ASTNode scope_) {
         if(scope_.isA!Struct) {
             processStruct(scope_.as!Struct);
+            return;
         } else if(scope_.isA!Enum) {
             processEnum(scope_.as!Enum);
+            return;
         } else if(!scope_.isAScope) {
             return;
         }
         /// This is an inner scope
 
+        assert(scope_.isLiteralFunction || scope_.isComposite);
+
         /// Remove Variable, Function, Call -> All targets must be known
         if(allTargetsResolved(scope_)) {
-            scope_.recurse!Variable( (v) {
-                checkVariable(v);
-            });
-            scope_.recurse!Call( (call) {
-                checkCall(call);
-            });
-            scope_.recurse!Function( (f) {
-                checkFunction(f);
-            });
+            scope_.recurse!Variable( (v) { tryToFold(v); });
+            scope_.recurse!Call( (call)  { tryToFold(call); });
+            scope_.recurse!Function( (f) { tryToFold(f);});
         }
 
         /// recurse
@@ -135,6 +149,39 @@ private:
         }
     }
     void processStruct(Struct s) {
+
+        bool _isStructRemovable(ASTNode scope_) {
+            bool removable = true;
+
+            scope_.recurse!ASTNode(
+                n => removable &&
+                (n !is s) &&
+                (n.id!=NodeID.MODULE) &&
+                (n.id!=NodeID.IMPORT) &&
+                (n.parent.id!=NodeID.IMPORT),
+                (n) {
+                    auto type = n.getType;
+                    if(type.isUnknown) {
+                        removable = false;
+                        //if(s.name=="S2") {
+                        //    dd("unknown n=", n);
+                        //    n.dumpToConsole();
+                        //}
+                    } else {
+                        auto ns = n.getType.getStruct;
+                        if(ns && ns is s) {
+                            removable = false;
+                            //if(s.name=="S2") {
+                            //    dd("referenced n=", n.line+1, n);
+                            //    n.dumpToConsole();
+                            //}
+                        }
+                    }
+                }
+            );
+            return removable;
+        }
+
         if(s.isTemplateBlueprint) return;
 
         /// scope_
@@ -142,42 +189,29 @@ private:
         ///
         auto scope_ = s.getLogicalParent();
 
-        /// If this struct is a private global or inner struct then see if it can be removed
-        if(!s.isAtModuleScope() && s.access.isPrivate) {
+        /// If this struct is a private global or an inner struct then see if it can be removed
+        if(s.access.isPrivate || !s.isAtModuleScope()) {
 
-            bool removable = true;
-
-            scope_.recurse!ASTNode(
-                n=>removable && (n !is s),
-                (n) {
-                    auto type = n.getType;
-                    if(type.isUnknown) {
-                        removable = false;
-                    } else {
-                        auto ns = n.getType.getStruct;
-                        if(ns && ns !is s) {
-                            removable = false;
-                        }
-                    }
-                }
-            );
-            if(removable) {
+            if(_isStructRemovable(scope_)) {
                 fold(s);
                 return;
             }
         }
 
-        /// Remove any Variable or Function that is not referenced within parent scope
-        if(allTargetsResolved(scope_)) {
-            foreach(v; s.getMemberVariables()) checkVariable(v);
-            foreach(v; s.getStaticVariables()) checkVariable(v);
+        /// We can't remove the struct. See if we can remove any
+        /// Variables, Functions, Enums or Aliases declared at struct scope
 
-            foreach(f; s.getMemberFunctions()) checkFunction(f);
-            foreach(f; s.getStaticFunctions()) checkFunction(f);
+        if(allTargetsResolved(scope_)) {
+            foreach(v; s.getMemberVariables()) tryToFold(v);
+            foreach(v; s.getStaticVariables()) tryToFold(v);
+
+            foreach(f; s.getMemberFunctions()) tryToFold(f);
+            foreach(f; s.getStaticFunctions()) tryToFold(f);
         }
         foreach(e; s.getEnums()) processEnum(e);
+        // todo - aliases
 
-        /// recurse functions
+        /// Recurse function bodies
         foreach(f; s.getMemberFunctions()) {
             if(f.hasBody) {
                 processNode(f.getBody());
@@ -194,9 +228,8 @@ private:
         scope_.collectTargets(targets);
         return targets.all!(it=>it.isResolved);
     }
-    void checkVariable(Variable v) {
+    void tryToFold(Variable v) {
         /// Must be a local variable or a private global
-        if(v.access.isPublic && v.isGlobal) return;
         if(!v.isGlobal && !v.isLocalAlloc) return;
 
         if(v.numRefs==0) {
@@ -204,15 +237,15 @@ private:
             fold(v);
 
         } else if(v.numRefs==1) {
+            /// If the only reference is the initialiser and the initialiser
+            /// is a CompileTimeConstant then the Variable can be removed
 
-            //'b' Variable[refs=1] (type=int) LOCAL PRIVATE
-            //    Initialiser var=b, type=int
-            //       ASSIGN (type=int)
-            //          ID:b (type=int) Target: VAR b int
-            //          2 (type=const int)
+            /// Variable[refs=1]
+            ///     Initialiser
+            ///       ASSIGN
+            ///          Identifier
+            ///          CompileTimeConstant
 
-            /// If the only reference is the initialiser and the
-            /// initialiser is a CompileTimeConstant then the Variable can be removed
             if(v.hasInitialiser) {
                 auto lit = v.initialiser().getExpr();
                 auto ctc = lit.as!CompileTimeConstant;
@@ -222,10 +255,15 @@ private:
             }
         }
     }
-    void checkFunction(Function f) {
-        /// Don't get rid of any constructors
-        /// Only look at private functions
-        if(f.name=="new") return;
+    void tryToFold(Function f) {
+
+        /// Don't fold any module constructors
+        if(f.name=="new" && f.isAtModuleScope()) return;
+
+        /// Public module scope functions can not be folded yet
+        if(f.access.isPublic && f.isAtModuleScope()) return;
+
+        // todo - we should be able to fold some public struct members
         if(f.access.isPublic) return;
 
         if(f.numRefs==0) {
@@ -234,7 +272,42 @@ private:
 
         }
     }
-    void checkCall(Call call) {
+    /// Module
+    ///     pub struct          | cannot be removed
+    ///         pub variable    | cannot be removed
+    ///         variable        | check targets within struct
+    ///                         |
+    ///         pub function    | cannot be removed
+    ///         function        | check targets within struct
+    ///                         |
+    ///         pub struct|enum | cannot be removed
+    ///         struct|enum     | check types within parent struct
+    ///                         |
+    ///     struct              | check types from parent scope
+    ///         pub variable    | check targets of struct parent scope
+    ///         variable        | check targets within struct
+    ///
+    ///     function
+    ///         struct              | check types with parent scope
+    ///             pub function    | check targets of struct parent scope
+    ///             function        | check targets within struct
+    ///                             |
+    ///             pub variable    |
+    ///             variable        |
+    ///
+    ///
+    void tryToFoldStructMember(Function f) {
+        assert(f.isStructMember);
+
+        if(f.access.isPublic) return;
+
+        if(f.numRefs==0) {
+            fold(f);
+        } else {
+
+        }
+    }
+    void tryToFold(Call call) {
         assert(call.target.isResolved, "target not resolved: %s %s".format(module_.canonicalName, call));
 
         if(call.target.isFunction) {
@@ -276,6 +349,7 @@ private:
         } else if(n.isLambda) {
             module_.removeLambda(n.as!Lambda);
         }
+
         foreach(ch; n.children) {
             recursiveDereference(ch);
         }

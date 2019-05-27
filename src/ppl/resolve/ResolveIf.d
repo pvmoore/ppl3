@@ -108,6 +108,9 @@ public:
                 foldUnreferenced.fold(inits);
             }
 
+            assert(empty.parent is n);
+            assert(!n.parent);
+
             return;
         }
     }

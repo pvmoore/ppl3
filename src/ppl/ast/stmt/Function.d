@@ -60,6 +60,9 @@ public:
         if(name!="new") return false;
         return params().numParams==0 || (params().numParams==1 && params().paramNames[0]=="this");
     }
+    bool isModuleConstructor() {
+        return name=="new" && isGlobal();
+    }
     bool isOperatorOverload() {
         return op != Operator.NOTHING;
     }

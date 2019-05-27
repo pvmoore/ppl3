@@ -151,6 +151,7 @@ public:
     }
     final ASTNode getLogicalParent() {
         if(parent.isA!Placeholder) return parent.getLogicalParent();
+        if(parent.isA!Composite && parent.as!Composite.isInline) return parent.getLogicalParent();
         return parent;
     }
     final bool isAttached() {
@@ -168,9 +169,7 @@ public:
             case LITERAL_FUNCTION:
                 return true;
             case COMPOSITE:
-                auto c = this.as!Composite;
-                return c.usage==Composite.Usage.INNER_KEEP ||
-                       c.usage==Composite.Usage.INNER_REMOVABLE;
+                return this.as!Composite.isInner();
             default:
                 return false;
         }

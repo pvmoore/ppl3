@@ -116,10 +116,7 @@ private:
                 break;
             case COMPOSITE:
                 auto comp = n.as!Composite;
-                auto u = comp.usage;
-                if(u==Composite.Usage.INLINE_KEEP ||
-                   u==Composite.Usage.INLINE_REMOVABLE)
-                {
+                if(comp.isInline) {
                     foreach(ch; comp.children[]) {
                         check(ch);
                     }

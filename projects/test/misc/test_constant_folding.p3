@@ -23,8 +23,8 @@ fn foobar() {
     @ctAssert(B==7)
 } 
 
-pub fn testConsts() {
-
+pub fn testConstantFolding() {
+    
     foobar()
 
     binaryExpressions()
@@ -39,6 +39,9 @@ pub fn testConsts() {
     //const int D        // needs initialiser
     //const const X = 1  // 'const' specified twice
     //A += 1             // modifying const
+    
+    import misc::test_constant_folding2
+    testConstantFolding2()
 }
 fn binaryExpressions() {
     const A = (((1 + (2))));    assert A == 3 

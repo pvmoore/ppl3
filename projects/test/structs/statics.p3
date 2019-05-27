@@ -49,10 +49,10 @@ struct B <T>(
 {
     pub fn orange<G>(G g) { ret 6 }
     
-    static fn foo() { ret 3 }
-    static fn foo(int a) { ret 4 } 
+    pub static fn foo() { ret 3 }
+    pub static fn foo(int a) { ret 4 } 
     
-    static fn yellow<K>(K k) { ret 5 }
+    pub static fn yellow<K>(K k) { ret 5 }
 }
 
 //static int globalStatic // not allowed
@@ -70,14 +70,14 @@ pub fn testStatics() {
         
 		assert A.s == 2
 		assert A.rs == 4
-        assert A.ps == 6   
+        //assert A.ps == 6      // private
         assert @sizeOf(A) == 12
         assert A.bar() == 2
         assert A.bar2(8) == 3
         assert A.rbar() == 5
         assert A.rbar2(5) == 6
-        assert A.pbar() == 8
-        assert A.pbar2(10) == 9
+        //assert A.pbar() == 8      // private
+        //assert A.pbar2(10) == 9   // private
         assert A.foo() == 99
         const a1 = A.s as float  ; assert @typeOf(a1) is float; assert a1 == 2.0f    
 		
@@ -87,7 +87,7 @@ pub fn testStatics() {
         assert b.orange<float>(3.14) == 6
         // static access
         assert @sizeOf(B<int>) == 4
-        assert B<int>.s == 2
+        //assert B<int>.s == 2  // private
         assert B<int>.foo() == 3
         assert B<int>.foo(7) == 4
         assert B<int>.yellow<float>(3.14) == 5
@@ -144,9 +144,10 @@ pub fn testStatics() {
 		a()
 		b()
 		c()
-		struct test_statics(static bool boo)
+		struct test_statics(pub static bool boo)
 		test_statics t
-		t.boo = true
+		test_statics.boo 
+        //test_statics.boo = true // can not be modified outside the struct
 	}
     testLocal()
     testExternal()

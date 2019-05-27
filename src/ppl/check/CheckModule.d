@@ -236,7 +236,6 @@ public:
             /// Tuple properties are public and modifiable
             if(v.isTupleMember) return;
 
-            assert(v.isStructMember);
             Struct targetStruct = v.getStruct;
 
             /// POD struct properties are public and modifiable
@@ -244,7 +243,7 @@ public:
 
             auto access       = v.access;
             Struct thisStruct = n.getAncestor!Struct;
-            bool isExternalAccess = thisStruct is null || thisStruct != targetStruct;
+            bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
 
         //    // allow writing to indexed pointer value
         //    auto idx = findAncestor!Index;
@@ -258,7 +257,18 @@ public:
             }
         }
 
+        /// Check struct static variables
+        if(n.target.isVariable) {
+            auto var = n.target.getVariable;
+            if(var.isStatic) {
+                checkStaticVariablePrivateAccess(n, var);
+                checkReadOnlyModification(var);
+            }
+        }
+
+        /// Check struct member variables
         if(n.target.isMemberVariable) {
+
             auto var = n.target.getVariable;
             checkMemberVariablePrivateAccess(n, var);
             checkReadOnlyModification(var);
@@ -598,6 +608,9 @@ public:
         if(n.isLocalAlloc) {
 
         }
+        if(n.isGlobal) {
+
+        }
     }
     //==========================================================================
 private:
@@ -668,7 +681,28 @@ private:
 
         Struct targetStruct   = targetVar.getStruct;
         Struct thisStruct     = self.getAncestor!Struct;
-        bool isExternalAccess = thisStruct is null || thisStruct != targetStruct;
+        bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
+
+        if(isExternalAccess) {
+            module_.addError(self, "Property %s.%s is private".format(targetStruct.name, targetVar.name), true);
+        }
+    }
+    void checkStaticVariablePrivateAccess(ASTNode self, Variable targetVar) {
+        if(targetVar.access.isPublic) return;
+
+        Struct targetStruct = targetVar.getStruct;
+        Struct thisStruct   = self.getAncestor!Struct;
+        if(!thisStruct) {
+            /// It might be in the module new function
+            auto ini = self.getAncestor!Initialiser;
+            if(ini) {
+                auto f = self.getAncestor!Function;
+                if(f && f.isModuleConstructor()) {
+                    thisStruct = targetStruct;
+                }
+            }
+        }
+        bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
 
         if(isExternalAccess) {
             module_.addError(self, "Property %s.%s is private".format(targetStruct.name, targetVar.name), true);
@@ -679,7 +713,7 @@ private:
 
         Struct targetStruct   = targetFunc.getStruct;
         Struct thisStruct     = self.getAncestor!Struct;
-        bool isExternalAccess = thisStruct is null || thisStruct != targetStruct;
+        bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
 
         if(isExternalAccess) {
             module_.addError(self, "Function %s.%s is private".format(targetStruct.name, targetFunc.name), true);

@@ -13,7 +13,7 @@ final class Composite : Expression {
         INLINE_KEEP,
 
         INNER_REMOVABLE,
-        INLINE_REMOVABLE,       // do we need this?
+        INLINE_REMOVABLE,
     }
 
     Usage usage = Usage.INNER_KEEP;
@@ -48,6 +48,8 @@ final class Composite : Expression {
                            e.comptime();
     }
 
+    bool isInline() { return usage==Usage.INLINE_KEEP || usage==Usage.INLINE_REMOVABLE; }
+    bool isInner()  { return !isInline(); }
 
     bool endsWithReturn() {
         return numChildren > 0 && last().isReturn;

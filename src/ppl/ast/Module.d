@@ -7,7 +7,6 @@ private:
     int tempCounter;
     Lambda[] lambdas;
     LiteralString[][string] literalStrings;
-    Set!ASTNode activeRoots;  /// Active root nodes
 public:
     string canonicalName;
     string fileName;
@@ -61,7 +60,6 @@ public:
         dce               = new DeadCodeEliminator(this);
         gen               = new GenerateModule(this, llvmWrapper);
         templates         = new Templates(this);
-        activeRoots       = new Set!ASTNode;
 
         attrParser        = new ParseAttribute(this);
         stmtParser        = new ParseStatement(this);
@@ -82,7 +80,6 @@ public:
     void clearState() {
         lambdas = null;
         literalStrings.clear();
-        activeRoots.clear();
         children.clear();
         numRefs = 0;
         tempCounter = 0;
@@ -120,13 +117,6 @@ public:
     Lambda[] getLambdas()       { return lambdas; }
     void addLambda(Lambda c)    { lambdas ~= c; }
     void removeLambda(Lambda c) { import common : remove; lambdas.remove(c); }
-
-    auto getCopyOfActiveRoots()      { return activeRoots.values.dup; }
-    void addActiveRoot(ASTNode node) { activeRoots.add(node.getRoot); }
-    bool isActive(ASTNode node) {
-        auto root = node.getRoot();
-        return root && activeRoots.contains(root);
-    }
 
     NodeBuilder builder(ASTNode n) {
         return nodeBuilder.forNode(n);
