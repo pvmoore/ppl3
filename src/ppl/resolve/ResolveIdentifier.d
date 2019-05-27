@@ -238,7 +238,7 @@ private:
 
             module_.buildState.functionRequired(func.moduleName, func.name);
 
-            if(func.isStructMember) {
+            if(func.isStructFunc) {
                 auto ns = n.getAncestor!Struct();
                 assert(ns);
 
@@ -250,13 +250,13 @@ private:
         } else {
             Variable var = res.isVar ? res.var : null;
 
-            if(var.isStructMember) {
+            if(var.isStructVar && !var.isStatic) {
                 auto struct_ = n.getAncestor!Struct();
                 assert(struct_);
 
                 n.target.set(var, struct_.getMemberIndex(var));
 
-            } else if(var.isTupleMember) {
+            } else if(var.isTupleVar) {
                 auto tuple = n.getAncestor!Tuple();
                 assert(tuple);
 

@@ -20,7 +20,7 @@ struct Callable {
     bool isVariable()          { return var !is null; }
     bool isFunction()          { return func !is null; }
     bool isStatic()            { return var ? var.isStatic : func.isStatic; }
-    bool isStructMember()      { return func ? func.isStructMember : var.isStructMember; }
+    bool isStructMember()      { return func ? func.isStructFunc : var.isStructVar; }
     bool isTemplateBlueprint() { return func ? func.isTemplateBlueprint : false; }
     bool isPrivate()           { return (func ? func.access : var.access).isPrivate; }
 
@@ -400,7 +400,7 @@ private:
 
             if(isPossibleImplicitThisCall) {
                 /// There may be an implied "this." in front of this call
-                if(callable.isStructMember) {
+                if(callable.isStructMember && !callable.isStatic) {
                     auto callerStruct = call.getAncestor!Struct;
                     auto funcStruct   = callable.getNode.getAncestor!Struct;
                     if(callerStruct.nid==funcStruct.nid) {

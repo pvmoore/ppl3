@@ -29,27 +29,32 @@ final class Variable : Statement {
 
     bool isLocalAlloc() {
         return !isParameter &&
-               !isTupleMember &&
+               !isTupleVar &&
                cast(Type)parent is null &&
                getContainer().id()==NodeID.LITERAL_FUNCTION;
     }
-    bool isStructMember() {
-        // todo - should this ignore isStatic?
-        return !isStatic && parent.id==NodeID.STRUCT;
+    bool isStructVar() {
+        return getLogicalParent().id==NodeID.STRUCT;
     }
-    bool isTupleMember() {
-        return parent.id==NodeID.TUPLE;
+    bool isTupleVar() {
+        return getLogicalParent().id==NodeID.TUPLE;
     }
+
+    //bool isStructMember() {
+    //    // todo - should this ignore isStatic?
+    //    return !isStatic && parent.id==NodeID.STRUCT;
+    //}
     bool isGlobal() {
         return isAtModuleScope();
     }
     bool isParameter() {
         return parent.isA!Parameters;
     }
-
     bool isFunctionPtr() {
         return type.isKnown && type.isFunction;
     }
+
+
     bool hasInitialiser() {
         return children[].any!(it=>it.isInitialiser);
     }
@@ -68,7 +73,7 @@ final class Variable : Statement {
     }
 
     Tuple getTuple() {
-        assert(isTupleMember);
+        assert(isTupleVar);
         return parent.as!Tuple;
     }
     Struct getStruct() {

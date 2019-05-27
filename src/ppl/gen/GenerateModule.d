@@ -126,8 +126,9 @@ public:
         if(n.target.isMemberVariable) {
 
             /// Get the "this" variable
-            if(n.target.getVariable.isStructMember) {
-                auto ns = n.target.getVariable.getStruct;
+            auto v = n.target.getVariable;
+            if(v.isStructVar && !v.isStatic) {
+                auto ns = v.getStruct;
                 assert(ns);
 
                 lhs = structMemberThis[ns.name];
@@ -230,7 +231,8 @@ public:
         } else if(n.target.isMemberVariable) {
 
             /// Get the "this" variable
-            if(!n.parent.isDot && n.target.getVariable.isStructMember) {
+            auto v = n.target.getVariable;
+            if(!n.parent.isDot && v.isStructVar && !v.isStatic) {
                 auto ns = n.target.getVariable.getStruct;
                 assert(ns);
 
@@ -389,9 +391,9 @@ public:
     void visit(Variable n) {
         if(n.isGlobal) {
 
-        } else if(n.isTupleMember) {
+        } else if(n.isTupleVar) {
 
-        } else if(n.isStructMember) {
+        } else if(n.isStructVar) {
 
         } else {
             //// it must be a local/parameter

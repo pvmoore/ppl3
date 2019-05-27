@@ -234,7 +234,7 @@ public:
 
         void checkReadOnlyModification(Variable v) {
             /// Tuple properties are public and modifiable
-            if(v.isTupleMember) return;
+            if(v.isTupleVar) return;
 
             Struct targetStruct = v.getStruct;
 
@@ -561,7 +561,7 @@ public:
     void visit(Variable n) {
         if(n.isConst) {
 
-            if(!n.isGlobal && !n.isStructMember) {
+            if(!n.isGlobal && !n.isStructVar) {
 
                 /// Initialiser must be const
                 //auto ini = n.initialiser();
@@ -570,7 +570,7 @@ public:
                 //}
             }
         }
-        if(n.isStructMember) {
+        if(n.isStructVar) {
 
             auto s = n.getStruct;
 

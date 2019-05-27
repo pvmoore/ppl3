@@ -297,7 +297,7 @@ private:
     ///
     ///
     void tryToFoldStructMember(Function f) {
-        assert(f.isStructMember);
+        assert(f.isStructFunc);
 
         if(f.access.isPublic) return;
 

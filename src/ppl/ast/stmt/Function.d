@@ -49,11 +49,11 @@ public:
     bool isProgramEntry() {
         return "main"==name || "WinMain"==name;
     }
-    bool isStructMember() const {
-        return getContainer().id==NodeID.STRUCT;
+    bool isStructFunc() {
+        return getLogicalParent().id==NodeID.STRUCT;
     }
-    bool isGlobal() const {
-        return getContainer().id==NodeID.MODULE;
+    bool isGlobal() {
+        return getLogicalParent().id==NodeID.MODULE;
     }
     bool isDefaultConstructor() {
         if(isImport || isExtern) return false;
@@ -71,7 +71,7 @@ public:
         return isExtern ? null : getBody().params();
     }
     Struct getStruct() {
-        assert(isStructMember());
+        assert(isStructFunc());
         return parent.as!Struct;
     }
     bool hasBody() {

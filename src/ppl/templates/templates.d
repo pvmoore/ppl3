@@ -55,7 +55,7 @@ public:
             Struct ns;
             string key = mangledName;
 
-            if(f.isStructMember || f.isStatic) {
+            if(f.isStructFunc || f.isStatic) {
                 ns = f.getStruct();
                 assert(ns);
                 key = ns.name ~ "." ~ mangledName;
