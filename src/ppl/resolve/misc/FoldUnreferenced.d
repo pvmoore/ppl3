@@ -34,23 +34,50 @@ public:
 
     /// Attempt to remove any unreferenced nodes.
     /// Called after each resolution phase.
-    void process() {
+    void processModule() {
 
-        /// Process function bodies
+        /// Remove any Variable or Function that is not referenced
+        if(allTargetsResolved(module_)) {
+            /// All global variables are private
+            foreach(v; module_.getVariables()) {
+                tryToFold(v);
+            }
+            foreach(f; module_.getFunctions()) {
+                /// Only check private global functions
+                if(f.access.isPrivate) {
+                    tryToFold(f);
+                }
+            }
+        }
+        /// Recurse all function bodies
         foreach(f; module_.getFunctions()) {
             if(f.hasBody()) {
                 processNode(f.getBody());
             }
         }
-        /// Process structs
+        /// Try to fold private structs
         foreach(s; module_.getStructs()) {
-            processStruct(s);
+            /// Fold if:
+            ///     * Struct is private
+            ///     * Struct is not a template blueprint
+            ///     * Struct is not referenced in module
+            if(s.access.isPrivate &&
+               !s.isTemplateBlueprint &&
+               !isStructReferenced(s, module_))
+            {
+                fold(s);
+            }
         }
-
-        /// Remove any Variable or Function that is not referenced
-        if(allTargetsResolved(module_)) {
-            foreach(v; module_.getVariables()) tryToFold(v);
-            foreach(f; module_.getFunctions()) tryToFold(f);
+        /// Try to fold private enums
+        foreach(e; module_.getEnums()) {
+            /// Fold if:
+            ///     * Enum i private
+            ///     * Enum is not referenced in module
+            if(e.access.isPrivate &&
+               !isEnumReferenced(e, module_))
+            {
+                fold(e);
+            }
         }
     }
     void fold(ASTNode replaceMe, ASTNode withMe, bool dereference = true) {
@@ -76,10 +103,10 @@ public:
 private:
     void processNode(ASTNode scope_) {
         if(scope_.isA!Struct) {
-            processStruct(scope_.as!Struct);
+            processInnerStruct(scope_.as!Struct);
             return;
         } else if(scope_.isA!Enum) {
-            processEnum(scope_.as!Enum);
+            processInnerEnum(scope_.as!Enum);
             return;
         } else if(!scope_.isAScope) {
             return;
@@ -100,7 +127,7 @@ private:
             processNode(ch);
         }
     }
-    void processEnum(Enum e) {
+    void processInnerEnum(Enum e) {
         /// Not possible to remove
         if(e.isAtModuleScope() && e.access.isPublic) return;
 
@@ -148,7 +175,7 @@ private:
             fold(e);
         }
     }
-    void processStruct(Struct s) {
+    void processInnerStruct(Struct s) {
 
         bool _isStructRemovable(ASTNode scope_) {
             bool removable = true;
@@ -208,7 +235,7 @@ private:
             foreach(f; s.getMemberFunctions()) tryToFold(f);
             foreach(f; s.getStaticFunctions()) tryToFold(f);
         }
-        foreach(e; s.getEnums()) processEnum(e);
+        foreach(e; s.getEnums()) processInnerEnum(e);
         // todo - aliases
 
         /// Recurse function bodies
@@ -353,5 +380,51 @@ private:
         foreach(ch; n.children) {
             recursiveDereference(ch);
         }
+    }
+    bool isStructReferenced(Struct s, ASTNode scope_) {
+        bool notReferenced = true;
+
+        scope_.recurse!ASTNode(
+            n => notReferenced &&
+                (n !is s) &&
+                (n !is scope_) &&
+                (n.id!=NodeID.IMPORT) && (n.parent.id!=NodeID.IMPORT),
+            (n) {
+                auto type = n.getType;
+                if(type.isUnknown) {
+                    /// Assume it could be
+                    notReferenced = false;
+                } else {
+                    auto ns = n.getType.getStruct;
+                    if(ns && ns is s) {
+                        notReferenced = false;
+                    }
+                }
+            }
+        );
+        return !notReferenced;
+    }
+    bool isEnumReferenced(Enum e, ASTNode scope_) {
+        bool notReferenced = true;
+
+        scope_.recurse!ASTNode(
+            n=>notReferenced &&
+                (n !is e) &&
+                (n !is scope_) &&
+                (!n.parent || n.parent !is e),
+            (n) {
+                auto type = n.getType;
+                if(type.isUnknown) {
+                    /// Assume it could be
+                    notReferenced = false;
+                } else {
+                    auto enum_ = n.getType.getEnum;
+                    if(enum_ && enum_.nid==e.nid) {
+                        notReferenced = false;
+                    }
+                }
+            }
+        );
+        return !notReferenced;
     }
 }

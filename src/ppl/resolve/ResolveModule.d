@@ -109,7 +109,7 @@ public:
             recursiveVisit(r);
         }
 
-        foldUnreferenced.process();
+        foldUnreferenced.processModule();
 
         this.isResolved = unresolved.length==0 &&
                           modified==false &&
