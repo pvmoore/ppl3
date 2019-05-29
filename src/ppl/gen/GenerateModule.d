@@ -140,7 +140,7 @@ public:
             rhs = builder.load(lhs, "rvalue");
             rhs = builder.call(rhs, argValues, LLVMCallConv.LLVMFastCallConv);
         } else if(n.target.isMemberFunction) {
-            assert(n.target.llvmValue);
+            assert(n.target.llvmValue, "llvmValue is null %s %s".format(n, n.target));
             rhs = builder.call(n.target.llvmValue, argValues, LLVMCallConv.LLVMFastCallConv);
 
             //if(rhs.getType.isPointer) {

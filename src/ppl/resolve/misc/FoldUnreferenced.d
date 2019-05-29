@@ -74,6 +74,8 @@ private:
         assert(node.isA!Struct || node.isA!Enum);
 
         ASTNode scope_ = node.getLogicalParent;
+        if(getAccess(node).isPrivate) return scope_;
+
         if(scope_.isA!Struct && scope_.as!Struct.access.isPublic) {
             return findAccessScope(scope_);
         }
@@ -129,22 +131,22 @@ private:
             }
         }
 
-        /// NOTE: We can't remove any struct member variables or functions because that
-        /// would affect indexing eg. str[1].var will be broken if the variable/function
+        /// NOTE: We can't remove any struct member variables because that
+        /// would affect indexing eg. str[1].var will be broken if the variable
         /// index changes.
-        /// Static members should be ok to remove if possible.
-        /// NOTE2: We could leave the Variable or Function as a dummy which would
-        ///        be treated as empty but I'm not sure there is much value to this.
+        /// Static member variables should be ok to remove if possible.
 
         /// Try to fold public struct Variables and Functions
         /// (The access scope is the same as for the struct)
-        if(!scope_.isModule && allTargetsResolved(scope_)) {
+        if((struct_.access.isPrivate || !scope_.isModule) &&
+           allTargetsResolved(scope_))
+        {
             // foreach(v; struct_.getMemberVariables()) {
             //     tryToFold(v);
             // }
-            // foreach(f; struct_.getMemberFunctions()) {
-            //     tryToFold(f);
-            // }
+            foreach(f; struct_.getMemberFunctions()) {
+                tryToFold(f);
+            }
             foreach(v; struct_.getStaticVariables()) {
                 tryToFold(v);
             }
@@ -160,11 +162,11 @@ private:
             //         tryToFold(v);
             //     }
             // }
-            // foreach(f; struct_.getMemberFunctions()) {
-            //     if(f.access.isPrivate) {
-            //         tryToFold(f);
-            //     }
-            // }
+            foreach(f; struct_.getMemberFunctions()) {
+                if(f.access.isPrivate) {
+                    tryToFold(f);
+                }
+            }
             foreach(v; struct_.getStaticVariables()) {
                 if(v.access.isPrivate) {
                     tryToFold(v);
@@ -277,6 +279,7 @@ private:
     bool typeHasReferencesInScope(ASTNode node, ASTNode scope_) {
         assert(node.isA!Struct || node.isA!Enum);
         bool referenced = false;
+        bool isStruct   = node.isA!Struct;
 
         scope_.recurse!ASTNode(
             n => !referenced &&
@@ -291,8 +294,8 @@ private:
                     /// Assume it could be referenced
                    referenced = true;
                 } else {
-                    auto t = node.isA!Enum ? n.getType.getEnum :
-                                             n.getType.getStruct;
+                    auto t = isStruct ? n.getType.getStruct :
+                                        n.getType.getEnum;
                     if(t && t.nid==node.nid) {
                         /// It's definitely referenced
                         referenced = true;

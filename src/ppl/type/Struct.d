@@ -66,6 +66,14 @@ public:
         return attributes.get!PodAttribute !is null;
     }
 
+    bool isVisibleToOtherModules() {
+        if(access.isPrivate) return false;
+        auto lp = getLogicalParent;
+        if(lp.isModule) return true;
+        if(lp.isA!Struct) return lp.as!Struct.isVisibleToOtherModules();
+        return false;
+    }
+
 /// ASTNode interface
     override bool isResolved() { return true; }
     override NodeID id() const { return NodeID.STRUCT; }
@@ -241,7 +249,7 @@ public:
         return getMemberFunctions(fname).length > 0;
     }
     //========================================================================================
-    override string toString() {
+    override string toString() const {
         return "%s".format(name);
     }
 }

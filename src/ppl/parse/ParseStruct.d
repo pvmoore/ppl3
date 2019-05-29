@@ -182,6 +182,7 @@ private:
             defCons            = makeNode!Function(t);
             defCons.name       = "new";
             defCons.moduleName = module_.canonicalName;
+            defCons.access     = Access.PUBLIC;
             ns.add(defCons);
 
             auto params = makeNode!Parameters(t);

@@ -35,7 +35,7 @@ public:
             } else if(f.numRefs==0 && f.name!="new") {
                 log("\t  unreferenced func %s", f);
 
-                if(f.access.isPrivate) {
+                if(f.isGlobal && f.access.isPrivate) {
                     warn(f, "Unreferenced function %s should have been removed during resolve phase".format(f));
                     //module_.addError(f, "Unreferenced function %s should have been removed during resolve phase".format(f), true);
                 }
@@ -78,7 +78,8 @@ public:
                 log("\t  template blueprint named struct %s", ns.name);
                 remove(ns);
             } else if(ns.numRefs==0) {
-                if(ns.access.isPrivate) {
+
+                if(!ns.isVisibleToOtherModules) {
                     warn(ns, "Unreferenced struct %s should have been removed during resolve phase".format(ns));
                 }
                 log("\t  unreferenced named struct %s", ns.name);
@@ -87,7 +88,6 @@ public:
                 /// The struct is referenced but some of the functions may not be
                 foreach(f; ns.getMemberFunctions()) {
                     if(f.numRefs==0) {
-
                         log("\t  unreferenced func %s.%s", ns.name, f.name);
                         remove(f);
                     }
