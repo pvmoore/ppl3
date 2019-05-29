@@ -134,7 +134,8 @@ public:
                 lhs = structMemberThis[ns.name];
             }
 
-            int index = n.target.structMemberIndex;
+            int index = n.target.getMemberIndex();
+
             lhs = builder.getElementPointer_struct(lhs, index);
             rhs = builder.load(lhs, "rvalue");
             rhs = builder.call(rhs, argValues, LLVMCallConv.LLVMFastCallConv);
@@ -229,7 +230,6 @@ public:
             //lhs = builder.getElementPointer_struct(lhs, index);
             //rhs = builder.load(lhs);
         } else if(n.target.isMemberVariable) {
-
             /// Get the "this" variable
             auto v = n.target.getVariable;
             if(!n.parent.isDot && v.isStructVar && !v.isStatic) {
@@ -239,7 +239,7 @@ public:
                 lhs = structMemberThis[ns.name];
             }
 
-            int index = n.target.structMemberIndex;
+            int index = n.target.getMemberIndex();
             lhs = builder.getElementPointer_struct(lhs, index);
             rhs = builder.load(lhs);
         } else if(n.target.isFunction) {

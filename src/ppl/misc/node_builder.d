@@ -58,15 +58,7 @@ final class NodeBuilder {
         call.target = new Target(module_);
         call.name   = name;
         if(f) {
-            if(f.isStructFunc) {
-                auto tuple = f.parent.as!Tuple;
-                assert(tuple);
-                auto ns = tuple.parent.as!Struct;
-                assert(ns);
-                call.target.set(f, ns.getMemberIndex(f));
-            } else {
-                call.target.set(f);
-            }
+            call.target.set(f);
         }
         return call;
     }
@@ -120,18 +112,7 @@ final class NodeBuilder {
         auto id   = makeNode!Identifier(node);
         id.target = new Target(module_);
         id.name   = v.name;
-
-        if(v.isTupleVar) {
-            auto tuple = v.parent.as!Tuple;
-            assert(tuple);
-            id.target.set(v, tuple.getMemberIndex(v));
-        } else if(v.isStructVar && !v.isStatic) {
-            auto struct_ = v.parent.as!Struct;
-            assert(struct_);
-            id.target.set(v, struct_.getMemberIndex(v));
-        } else {
-            id.target.set(v);
-        }
+        id.target.set(v);
         return id;
     }
     Identifier identifier(string name) {

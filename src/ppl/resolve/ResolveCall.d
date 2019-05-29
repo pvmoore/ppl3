@@ -4,11 +4,11 @@ import ppl.internal;
 import common : contains;
 
 ///
-/// Resolve a call.                                                                    
-///                                                                                    
+/// Resolve a call.
+///
 /// - The target may be either a Function or a Variable (of function ptr type)
 /// - The target may be in any module, not just the current one
-///                                                                                    
+///
 /// - If we find a Function match that is a proxy for one or more external functions of
 ///   a given name then we need to pull in the external module
 ///
@@ -34,14 +34,6 @@ public:
         }
         void _setVarTarget(Variable v) {
             n.target.set(v);
-            resolver.setModified(n);
-        }
-        void _setMemberFuncTarget(Function f, int index) {
-            n.target.set(f, index);
-            resolver.setModified(n);
-        }
-        void _setMemberVarTarget(Variable v, int index) {
-            n.target.set(v, index);
             resolver.setModified(n);
         }
 
@@ -159,10 +151,10 @@ public:
                         /// If we get here then we have 1 good match
 
                         if(callable.isFunction) {
-                            _setMemberFuncTarget(callable.func, ns.getMemberIndex(callable.func));
+                            _setFuncTarget(callable.func);
                         }
                         if(callable.isVariable) {
-                            _setMemberVarTarget(callable.var, ns.getMemberIndex(callable.var));
+                            _setVarTarget(callable.var);
                         }
                     }
                 }

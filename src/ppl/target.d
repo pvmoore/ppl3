@@ -2,7 +2,7 @@ module ppl.Target;
 
 import ppl.internal;
 ///
-/// Call or identifier target.
+/// Call or Identifier target.
 ///
 final class Target {
 private:
@@ -12,7 +12,6 @@ private:
     TargetType ttype;
     Variable var;
     Function func;
-    int memberIndex;
 public:
     bool isSet = false;
     Module targetModule;
@@ -26,7 +25,8 @@ public:
         if(isSet && v==var) return;
         if(isSet) removeRef();
         this.isSet        = true;
-        this.ttype        = TargetType.VAR;
+        this.ttype        = (v.isStructVar || v.isTupleVar) && !v.isStatic ? TargetType.STRUCTVAR :
+                                                                             TargetType.VAR;
         this.var          = v;
         this.targetModule = v.getModule;
         assert(targetModule);
@@ -37,35 +37,9 @@ public:
         if(isSet && f==func) return;
         if(isSet) removeRef();
         this.isSet        = true;
-        this.ttype        = TargetType.FUNC;
+        this.ttype        = f.isStructFunc && !f.isStatic ? TargetType.STRUCTFUNC : TargetType.FUNC;
         this.func         = f;
         this.targetModule = f.getModule;
-        assert(targetModule);
-        addRef();
-    }
-    /// Struct member variable (could also be a func variable)
-    void set(Variable v, int memberIndex) {
-        assert(v, "Variable should not be null");
-        if(isSet && v==var) return;
-        if(isSet) removeRef();
-        this.isSet        = true;
-        this.ttype        = TargetType.STRUCTVAR;
-        this.var          = v;
-        this.targetModule = v.getModule;
-        this.memberIndex  = memberIndex;
-        assert(targetModule);
-        addRef();
-    }
-    /// Struct member function
-    void set(Function f, int memberIndex) {
-        assert(f, "Function should not be null");
-        if(isSet && f==func) return;
-        if(isSet) removeRef();
-        this.isSet        = true;
-        this.ttype        = TargetType.STRUCTFUNC;
-        this.func         = f;
-        this.targetModule = f.getModule;
-        this.memberIndex  = memberIndex;
         assert(targetModule);
         addRef();
     }
@@ -90,9 +64,22 @@ public:
         if(var) return var.type;
         return TYPE_UNKNOWN;
     }
-    int structMemberIndex() const { return memberIndex; }
     Variable getVariable() { return var; }
     Function getFunction() { return func; }
+
+    int getMemberIndex() {
+        assert(isSet);
+        assert(ttype==TargetType.STRUCTVAR || ttype==TargetType.STRUCTFUNC);
+
+        if(var) {
+            auto parent = var.getLogicalParent;
+            if(var.isStructVar) return parent.as!Struct.getMemberIndex(var);
+            return parent.as!Tuple.getMemberIndex(var);
+        }
+        auto parent = func.getLogicalParent;
+        assert(parent.isA!Struct);
+        return parent.as!Struct.getMemberIndex(func);
+    }
 
     bool isFunction() const { return func !is null; }
     bool isVariable() const { return var !is null; }

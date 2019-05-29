@@ -49,7 +49,7 @@ public:
         module_.selectDescendents!Alias(aliases);
         foreach(a; aliases) {
             if(a.access.isPrivate) {
-                warn(a, "Unreferenced alias %s should have been removed during resolve phase".format(a));
+                //warn(a, "Unreferenced alias %s should have been removed during resolve phase".format(a));
             }
             log("\t alias %s", a.name);
             remove(a);

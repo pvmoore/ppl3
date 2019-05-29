@@ -60,7 +60,6 @@ final class GenerateLiteral {
         }
 
         gen.rhs = llvmValue;
-
     }
     void generate(LiteralNull n) {
         gen.rhs = constNullPointer(n.type.getLLVMType());

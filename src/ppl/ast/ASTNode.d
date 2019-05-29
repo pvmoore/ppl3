@@ -304,12 +304,12 @@ public:
         if(parent) return parent.getContainer();
         throw new Exception("We are not inside a container!!");
     }
-    final bool hasAncestor(T)() {
+    bool hasAncestor(T)() {
         if(parent is null) return false;
         if(parent.isA!T) return true;
         return parent.hasAncestor!T;
     }
-    final T getAncestor(T)() {
+    T getAncestor(T)() {
         if(parent is null) return null;
         if(parent.isA!T) return parent.as!T;
         return parent.getAncestor!T;
@@ -321,7 +321,7 @@ public:
         }
         return p !is null;
     }
-    final bool hasDescendent(T)() {
+    bool hasDescendent(T)() {
         auto d = cast(T)this;
         if(d) return true;
         foreach(ch; children) {
@@ -338,7 +338,7 @@ public:
         }
         return false;
     }
-    final T getDescendent(T)() {
+    T getDescendent(T)() {
         auto d = cast(T)this;
         if(d) return d;
         foreach(ch; children) {
@@ -350,7 +350,7 @@ public:
     ///
     /// Return a list of all descendents that are of type T.
     ///
-    final void selectDescendents(T)(DynamicArray!T array) {
+    void selectDescendents(T)(DynamicArray!T array) {
         auto t = cast(T)this;
         if(t) array.add(t);
 
@@ -367,32 +367,32 @@ public:
             n.recursiveCollect(array, filter);
         }
     }
-    final void recursiveCollect(T)(DynamicArray!T array, bool delegate(T n) filter) {
+    void recursiveCollect(T)(DynamicArray!T array, bool delegate(T n) filter) {
         T t = this.as!T;
         if(t && filter(t)) array.add(t);
         foreach(n; children) {
             n.recursiveCollect!T(array, filter);
         }
     }
-    final void recurse(T)(void delegate(T n) functor) {
+    void recurse(T)(void delegate(T n) functor) {
         if(this.isA!T) functor(this.as!T);
         foreach(n; children) {
             n.recurse!T(functor);
         }
     }
-    final void recurse(T)(bool delegate(T n) filter, void delegate(T n) functor) {
+    void recurse(T)(bool delegate(T n) filter, void delegate(T n) functor) {
         if(this.isA!T && filter(this)) functor(this.as!T);
         foreach(n; children) {
             n.recurse!T(filter, functor);
         }
     }
-    final void recurse(T)(void delegate(int level, T n) functor, int level = 0) {
+    void recurse(T)(void delegate(int level, T n) functor, int level = 0) {
         if(this.isA!T) functor(level, this.as!T);
         foreach(n; children) {
             n.recurse!T(functor, level+1);
         }
     }
-    final T[] getChildren(T)() {
+    T[] getChildren(T)() {
         T[] array;
         foreach(ch; children) {
             if(ch.isA!T) array ~= ch.as!T;

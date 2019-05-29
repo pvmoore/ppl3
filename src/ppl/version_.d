@@ -6,7 +6,8 @@ const string VERSION = "3.29.0";
 
 /*
 
-3.29.0 - Replace Variable isStructMember() to isStructVar() to separate the isStatic check.
+3.29.0 - Rename Variable isStructMember() to isStructVar() to separate the isStatic check.
+         No need to store memberIndex in Target. It can be calculated.
 
 3.28.0 - Tidy up some more node folding.
          Remove concept of active/inactive nodes for resolution. Everything is now expected

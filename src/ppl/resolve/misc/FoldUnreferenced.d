@@ -1,27 +1,7 @@
 module ppl.resolve.misc.FoldUnreferenced;
 
 import ppl.internal;
-/*
-Scope:                  | Visible to scope:
-0   1   2               |
-=====================================================
-Module                  |
-    pub function        | 1 and external module
-    function            | 1
-                        |
-    variable            | 1
-                        |
-    pub struct          | 1 and external module
-        pub variable    | 1 and external module
-        variable        | internal struct only
-                        |
-        pub function    |
-        function        | internal struct only
-                        |
-    struct              | 1
-        pub variable    |
-        variable        |
-*/
+
 final class FoldUnreferenced {
 private:
     Module module_;
@@ -38,13 +18,13 @@ public:
 
         /// Remove any Variable or Function that is not referenced
         if(allTargetsResolved(module_)) {
-            /// All global variables are private
+            /// All global variables are private so potentially foldable
             foreach(v; module_.getVariables()) {
                 tryToFold(v);
             }
             foreach(f; module_.getFunctions()) {
-                /// Only check private global functions
-                if(f.access.isPrivate) {
+                /// Don't try to fold public global functions or the module constructor
+                if(f.access.isPrivate && f.name!="new") {
                     tryToFold(f);
                 }
             }
@@ -52,34 +32,21 @@ public:
         /// Recurse all function bodies
         foreach(f; module_.getFunctions()) {
             if(f.hasBody()) {
-                processNode(f.getBody());
+                processInnerScope(f.getBody());
             }
         }
-        /// Try to fold private structs
+        /// Try to fold structs
         foreach(s; module_.getStructs()) {
-            /// Fold if:
-            ///     * Struct is private
-            ///     * Struct is not a template blueprint
-            ///     * Struct is not referenced in module
-            if(s.access.isPrivate &&
-               !s.isTemplateBlueprint &&
-               !isStructReferenced(s, module_))
-            {
-                fold(s);
-            }
+            processStruct(s);
         }
         /// Try to fold private enums
         foreach(e; module_.getEnums()) {
-            /// Fold if:
-            ///     * Enum i private
-            ///     * Enum is not referenced in module
-            if(e.access.isPrivate &&
-               !isEnumReferenced(e, module_))
-            {
-                fold(e);
+            if(e.access.isPrivate) {
+                processEnum(e);
             }
-        }
+         }
     }
+    /// Called from ResolveXXX classes to fold a node
     void fold(ASTNode replaceMe, ASTNode withMe, bool dereference = true) {
 
         auto p = replaceMe.parent;
@@ -93,6 +60,7 @@ public:
             recursiveDereference(replaceMe);
         }
     }
+    /// Called from ResolveXXX classes to fold a node
     void fold(ASTNode removeMe, bool dereference = true) {
         if(dereference) {
             recursiveDereference(removeMe);
@@ -101,164 +69,152 @@ public:
         removeMe.detach();
     }
 private:
-    void processNode(ASTNode scope_) {
+    /// Find outer-most scope of visibility
+    ASTNode findAccessScope(ASTNode node) {
+        assert(node.isA!Struct || node.isA!Enum);
+
+        ASTNode scope_ = node.getLogicalParent;
+        if(scope_.isA!Struct && scope_.as!Struct.access.isPublic) {
+            return findAccessScope(scope_);
+        }
+        return scope_;
+    }
+    /// Look at a scope with a view to folding nodes within it
+    void processInnerScope(ASTNode scope_) {
         if(scope_.isA!Struct) {
-            processInnerStruct(scope_.as!Struct);
+            processStruct(scope_.as!Struct);
             return;
         } else if(scope_.isA!Enum) {
-            processInnerEnum(scope_.as!Enum);
+            processEnum(scope_.as!Enum);
             return;
         } else if(!scope_.isAScope) {
             return;
         }
         /// This is an inner scope
 
-        assert(scope_.isLiteralFunction || scope_.isComposite);
+        assert(scope_.isLiteralFunction || (scope_.isComposite && scope_.as!Composite.isInner));
 
         /// Remove Variable, Function, Call -> All targets must be known
         if(allTargetsResolved(scope_)) {
-            scope_.recurse!Variable( (v) { tryToFold(v); });
-            scope_.recurse!Call( (call)  { tryToFold(call); });
-            scope_.recurse!Function( (f) { tryToFold(f);});
+            scope_.recurse!Variable( (v) {
+                if(v.isLocalAlloc) {
+                    tryToFold(v);
+                }
+            });
+            scope_.recurse!Call( (call)  {
+                tryToFold(call);
+            });
+            scope_.recurse!Function( (f) {
+                tryToFold(f);
+            });
         }
 
         /// recurse
         foreach(ch; scope_.children) {
-            processNode(ch);
+            processInnerScope(ch);
         }
     }
-    void processInnerEnum(Enum e) {
-        /// Not possible to remove
-        if(e.isAtModuleScope() && e.access.isPublic) return;
+    void processStruct(Struct struct_) {
+        if(struct_.isTemplateBlueprint) return;
 
-        auto scope_ = e.getLogicalParent();
+        auto scope_ = findAccessScope(struct_);
 
-        if(scope_.isA!Struct && e.access.isPublic) {
-            /// scope
-            ///     struct
-            ///         pub enum
-            ///     node (can access)
-
-            /// Can be accessed by struct parent scope
-            scope_ = scope_.getLogicalParent();
+        if(scope_.isModule && struct_.access.isPublic) {
+            /// We can't remove the struct because it could be referenced outside the module
         } else {
-            /// Must be one of these.
-
-            /// struct (scope_)
-            ///     enum (private)
-            ///     node (can access)
-            /// node (no access)
-
-            ///
-            /// scope
-            ///     enum
-            ///     node (can access)
-        }
-
-        bool removable = true;
-
-        scope_.recurse!ASTNode(
-            n=>removable && (n !is e) && (!n.parent || n.parent !is e),
-            (n) {
-                auto type = n.getType;
-                if(type.isUnknown) {
-                    removable = false;
-                } else {
-                    auto enum_ = n.getType.getEnum;
-                    if(enum_ && enum_.nid==e.nid) {
-                        removable = false;
-                    }
-                }
-            }
-        );
-        if(removable) {
-            fold(e);
-        }
-    }
-    void processInnerStruct(Struct s) {
-
-        bool _isStructRemovable(ASTNode scope_) {
-            bool removable = true;
-
-            scope_.recurse!ASTNode(
-                n => removable &&
-                (n !is s) &&
-                (n.id!=NodeID.MODULE) &&
-                (n.id!=NodeID.IMPORT) &&
-                (n.parent.id!=NodeID.IMPORT),
-                (n) {
-                    auto type = n.getType;
-                    if(type.isUnknown) {
-                        removable = false;
-                        //if(s.name=="S2") {
-                        //    dd("unknown n=", n);
-                        //    n.dumpToConsole();
-                        //}
-                    } else {
-                        auto ns = n.getType.getStruct;
-                        if(ns && ns is s) {
-                            removable = false;
-                            //if(s.name=="S2") {
-                            //    dd("referenced n=", n.line+1, n);
-                            //    n.dumpToConsole();
-                            //}
-                        }
-                    }
-                }
-            );
-            return removable;
-        }
-
-        if(s.isTemplateBlueprint) return;
-
-        /// scope_
-        ///     struct
-        ///
-        auto scope_ = s.getLogicalParent();
-
-        /// If this struct is a private global or an inner struct then see if it can be removed
-        if(s.access.isPrivate || !s.isAtModuleScope()) {
-
-            if(_isStructRemovable(scope_)) {
-                fold(s);
+            /// If we find no references in the access scope, remove it
+            if(!typeHasReferencesInScope(struct_, scope_)) {
+                fold(struct_);
                 return;
             }
         }
 
-        /// We can't remove the struct. See if we can remove any
-        /// Variables, Functions, Enums or Aliases declared at struct scope
+        /// NOTE: We can't remove any struct member variables or functions because that
+        /// would affect indexing eg. str[1].var will be broken if the variable/function
+        /// index changes.
+        /// Static members should be ok to remove if possible.
+        /// NOTE2: We could leave the Variable or Function as a dummy which would
+        ///        be treated as empty but I'm not sure there is much value to this.
 
-        if(allTargetsResolved(scope_)) {
-            foreach(v; s.getMemberVariables()) tryToFold(v);
-            foreach(v; s.getStaticVariables()) tryToFold(v);
-
-            foreach(f; s.getMemberFunctions()) tryToFold(f);
-            foreach(f; s.getStaticFunctions()) tryToFold(f);
-        }
-        foreach(e; s.getEnums()) processInnerEnum(e);
-        // todo - aliases
-
-        /// Recurse function bodies
-        foreach(f; s.getMemberFunctions()) {
-            if(f.hasBody) {
-                processNode(f.getBody());
+        /// Try to fold public struct Variables and Functions
+        /// (The access scope is the same as for the struct)
+        if(!scope_.isModule && allTargetsResolved(scope_)) {
+            // foreach(v; struct_.getMemberVariables()) {
+            //     tryToFold(v);
+            // }
+            // foreach(f; struct_.getMemberFunctions()) {
+            //     tryToFold(f);
+            // }
+            foreach(v; struct_.getStaticVariables()) {
+                tryToFold(v);
+            }
+            foreach(f; struct_.getStaticFunctions()) {
+                tryToFold(f);
             }
         }
-        foreach(f; s.getStaticFunctions()) {
-            if(f.hasBody) {
-                processNode(f.getBody());
+        /// Try to fold private Variables and Functions
+        /// (The access scope is the struct itself)
+        if(allTargetsResolved(struct_)) {
+            // foreach(v; struct_.getMemberVariables()) {
+            //     if(v.access.isPrivate) {
+            //         tryToFold(v);
+            //     }
+            // }
+            // foreach(f; struct_.getMemberFunctions()) {
+            //     if(f.access.isPrivate) {
+            //         tryToFold(f);
+            //     }
+            // }
+            foreach(v; struct_.getStaticVariables()) {
+                if(v.access.isPrivate) {
+                    tryToFold(v);
+                }
             }
+            foreach(f; struct_.getStaticFunctions()) {
+                if(f.access.isPrivate) {
+                    tryToFold(f);
+                }
+            }
+        }
+
+        /// Recurse struct functions
+        /// Recurse all function bodies
+        foreach(f; struct_.getMemberFunctions()) {
+            if(f.hasBody()) {
+                processInnerScope(f.getBody());
+            }
+        }
+        foreach(f; struct_.getStaticFunctions()) {
+            if(f.hasBody()) {
+                processInnerScope(f.getBody());
+            }
+        }
+        /// Try to fold inner structs
+        foreach(s; struct_.getStructs()) {
+            processStruct(s);
+        }
+        /// Try to fold inner enums
+        foreach(e; struct_.getEnums()) {
+            processEnum(e);
         }
     }
-    bool allTargetsResolved(ASTNode scope_) {
-        Target[] targets;
-        scope_.collectTargets(targets);
-        return targets.all!(it=>it.isResolved);
+    void processEnum(Enum enum_) {
+        auto scope_ = findAccessScope(enum_);
+
+        /// If we find no references, remove it
+        if(!typeHasReferencesInScope(enum_, scope_)) {
+           fold(enum_);
+           return;
+        }
+    }
+    void tryToFold(Function f) {
+        if(f.numRefs==0) {
+            fold(f);
+        } else {
+
+        }
     }
     void tryToFold(Variable v) {
-        /// Must be a local variable or a private global
-        if(!v.isGlobal && !v.isLocalAlloc) return;
-
         if(v.numRefs==0) {
             /// If numRefs==0 then remove it
             fold(v);
@@ -280,58 +236,6 @@ private:
                     fold(v);
                 }
             }
-        }
-    }
-    void tryToFold(Function f) {
-
-        /// Don't fold any module constructors
-        if(f.name=="new" && f.isAtModuleScope()) return;
-
-        /// Public module scope functions can not be folded yet
-        if(f.access.isPublic && f.isAtModuleScope()) return;
-
-        // todo - we should be able to fold some public struct members
-        if(f.access.isPublic) return;
-
-        if(f.numRefs==0) {
-            fold(f);
-        } else {
-
-        }
-    }
-    /// Module
-    ///     pub struct          | cannot be removed
-    ///         pub variable    | cannot be removed
-    ///         variable        | check targets within struct
-    ///                         |
-    ///         pub function    | cannot be removed
-    ///         function        | check targets within struct
-    ///                         |
-    ///         pub struct|enum | cannot be removed
-    ///         struct|enum     | check types within parent struct
-    ///                         |
-    ///     struct              | check types from parent scope
-    ///         pub variable    | check targets of struct parent scope
-    ///         variable        | check targets within struct
-    ///
-    ///     function
-    ///         struct              | check types with parent scope
-    ///             pub function    | check targets of struct parent scope
-    ///             function        | check targets within struct
-    ///                             |
-    ///             pub variable    |
-    ///             variable        |
-    ///
-    ///
-    void tryToFoldStructMember(Function f) {
-        assert(f.isStructFunc);
-
-        if(f.access.isPublic) return;
-
-        if(f.numRefs==0) {
-            fold(f);
-        } else {
-
         }
     }
     void tryToFold(Call call) {
@@ -365,6 +269,39 @@ private:
             }
         }
     }
+    bool allTargetsResolved(ASTNode scope_) {
+        Target[] targets;
+        scope_.collectTargets(targets);
+        return targets.all!(it=>it.isResolved);
+    }
+    bool typeHasReferencesInScope(ASTNode node, ASTNode scope_) {
+        assert(node.isA!Struct || node.isA!Enum);
+        bool referenced = false;
+
+        scope_.recurse!ASTNode(
+            n => !referenced &&
+                (n !is node) &&
+                (n !is scope_) &&
+                (n.id != NodeID.IMPORT) &&
+                (n.parent.id != NodeID.IMPORT) &&
+                (n.parent.id != NodeID.ENUM),
+            (n) {
+                auto type = n.getType;
+                if(type.isUnknown) {
+                    /// Assume it could be referenced
+                   referenced = true;
+                } else {
+                    auto t = node.isA!Enum ? n.getType.getEnum :
+                                             n.getType.getStruct;
+                    if(t && t.nid==node.nid) {
+                        /// It's definitely referenced
+                        referenced = true;
+                    }
+                }
+            }
+        );
+        return referenced;
+    }
     void recursiveDereference(ASTNode n) {
         /// dereference
         if(n.isIdentifier) {
@@ -380,51 +317,5 @@ private:
         foreach(ch; n.children) {
             recursiveDereference(ch);
         }
-    }
-    bool isStructReferenced(Struct s, ASTNode scope_) {
-        bool notReferenced = true;
-
-        scope_.recurse!ASTNode(
-            n => notReferenced &&
-                (n !is s) &&
-                (n !is scope_) &&
-                (n.id!=NodeID.IMPORT) && (n.parent.id!=NodeID.IMPORT),
-            (n) {
-                auto type = n.getType;
-                if(type.isUnknown) {
-                    /// Assume it could be
-                    notReferenced = false;
-                } else {
-                    auto ns = n.getType.getStruct;
-                    if(ns && ns is s) {
-                        notReferenced = false;
-                    }
-                }
-            }
-        );
-        return !notReferenced;
-    }
-    bool isEnumReferenced(Enum e, ASTNode scope_) {
-        bool notReferenced = true;
-
-        scope_.recurse!ASTNode(
-            n=>notReferenced &&
-                (n !is e) &&
-                (n !is scope_) &&
-                (!n.parent || n.parent !is e),
-            (n) {
-                auto type = n.getType;
-                if(type.isUnknown) {
-                    /// Assume it could be
-                    notReferenced = false;
-                } else {
-                    auto enum_ = n.getType.getEnum;
-                    if(enum_ && enum_.nid==e.nid) {
-                        notReferenced = false;
-                    }
-                }
-            }
-        );
-        return !notReferenced;
     }
 }

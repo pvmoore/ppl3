@@ -242,7 +242,7 @@ private:
                 auto ns = n.getAncestor!Struct();
                 assert(ns);
 
-                n.target.set(func, ns.getMemberIndex(func));
+                n.target.set(func);
             } else {
                 /// Global, local or parameter
                 n.target.set(func);
@@ -254,13 +254,13 @@ private:
                 auto struct_ = n.getAncestor!Struct();
                 assert(struct_);
 
-                n.target.set(var, struct_.getMemberIndex(var));
+                n.target.set(var);
 
             } else if(var.isTupleVar) {
                 auto tuple = n.getAncestor!Tuple();
                 assert(tuple);
 
-                n.target.set(var, tuple.getMemberIndex(var));
+                n.target.set(var);
 
             } else {
                 /// Global, local or parameter
@@ -376,7 +376,6 @@ private:
         }
 
         Variable var;
-        int index;
 
         /// Is it an enum member?
         Enum e = prevType.getEnum;
@@ -417,18 +416,16 @@ private:
                 module_.addError(n, "Tuple member '%s' not found".format(n.name), true);
                 return;
             }
-            index = tuple.getMemberIndex(var);
         } else {
             var = struct_.getMemberVariable(n.name);
             if(!var) {
                 module_.addError(n, "Struct '%s' does not have member '%s'".format(struct_.name, n.name), true);
                 return;
             }
-            index = struct_.getMemberIndex(var);
         }
 
         if(var) {
-            n.target.set(var,index);
+            n.target.set(var);
         }
     }
     void chat(A...)(lazy string fmt, lazy A args) {
