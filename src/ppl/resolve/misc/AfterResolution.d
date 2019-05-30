@@ -12,13 +12,13 @@ public:
         this.buildState = buildState;
     }
     void process(Module[] modules) {
-        bool hasMainModule = buildState.mainModule !is null;
-        Module mainModule  = buildState.mainModule;
-        Function entry     = hasMainModule ?
-                mainModule.getFunctions(buildState.config.getEntryFunctionName())[0]
-                : null;
+        //bool hasMainModule = buildState.mainModule !is null;
+        //Module mainModule  = buildState.mainModule;
+        //Function entry     = hasMainModule ?
+        //        mainModule.getFunctions(buildState.config.getEntryFunctionName())[0]
+        //        : null;
 
-        auto calls = new DynamicArray!Call;
+        //auto calls = new DynamicArray!Call;
 
         foreach(mod; modules) {
 
@@ -37,7 +37,7 @@ public:
             foreach_reverse(v; mod.getVariables()) {
 
                 if(v.hasInitialiser) {
-                    /// Arguments should always be the 1st child of body so we insert at 1
+                    /// Parameters should always be the 1st child of body so we insert at 1
                     initBody.insertAt(1, v.initialiser);
                 }
             }

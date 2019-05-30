@@ -57,20 +57,19 @@ public:
         p.replaceChild(replaceMe, withMe);
 
         if(dereference) {
-            recursiveDereference(replaceMe);
+            recursiveDereference(replaceMe, module_);
         }
     }
     /// Called from ResolveXXX classes to fold a node
     void fold(ASTNode removeMe, bool dereference = true) {
         if(dereference) {
-            recursiveDereference(removeMe);
+            recursiveDereference(removeMe, module_);
         }
         resolveModule.setModified(removeMe);
         removeMe.detach();
     }
-private:
     /// Find outer-most scope of visibility
-    ASTNode findAccessScope(ASTNode node) {
+    static ASTNode findAccessScope(ASTNode node) {
         assert(node.isA!Struct || node.isA!Enum);
 
         ASTNode scope_ = node.getLogicalParent;
@@ -80,6 +79,58 @@ private:
             return findAccessScope(scope_);
         }
         return scope_;
+    }
+    static bool typeHasReferencesInScope(ASTNode node, ASTNode scope_) {
+        assert(node.isA!Struct || node.isA!Enum);
+
+        bool referenced = false;
+        bool isStruct   = node.isA!Struct;
+
+        scope_.recurse!ASTNode(
+            n => !referenced &&
+                (n !is node) &&
+                (n !is scope_) &&
+                (n.id != NodeID.IMPORT) &&
+                (n.parent.id != NodeID.IMPORT) &&
+                (n.parent.id != NodeID.ENUM),
+            (n) {
+                auto type = n.getType;
+                if(type.isUnknown) {
+                    /// Assume it could be referenced
+                   referenced = true;
+                } else {
+                    auto t = isStruct ? n.getType.getStruct :
+                                        n.getType.getEnum;
+                    if(t && t.nid==node.nid) {
+                        /// It's definitely referenced
+                        referenced = true;
+                    }
+                }
+            }
+        );
+        return referenced;
+    }
+    static void recursiveDereference(ASTNode n, Module m) {
+        /// dereference
+        if(n.isIdentifier) {
+            auto t = n.as!Identifier.target;
+            t.dereference();
+        } else if(n.isCall) {
+            auto t = n.as!Call.target;
+            t.dereference();
+        } else if(n.isLambda) {
+            m.removeLambda(n.as!Lambda);
+        }
+
+        foreach(ch; n.children) {
+            recursiveDereference(ch, m);
+        }
+    }
+private:
+    static bool allTargetsResolved(ASTNode scope_) {
+        Target[] targets;
+        scope_.collectTargets(targets);
+        return targets.all!(it=>it.isResolved);
     }
     /// Look at a scope with a view to folding nodes within it
     void processInnerScope(ASTNode scope_) {
@@ -269,56 +320,6 @@ private:
                     }
                 }
             }
-        }
-    }
-    bool allTargetsResolved(ASTNode scope_) {
-        Target[] targets;
-        scope_.collectTargets(targets);
-        return targets.all!(it=>it.isResolved);
-    }
-    bool typeHasReferencesInScope(ASTNode node, ASTNode scope_) {
-        assert(node.isA!Struct || node.isA!Enum);
-        bool referenced = false;
-        bool isStruct   = node.isA!Struct;
-
-        scope_.recurse!ASTNode(
-            n => !referenced &&
-                (n !is node) &&
-                (n !is scope_) &&
-                (n.id != NodeID.IMPORT) &&
-                (n.parent.id != NodeID.IMPORT) &&
-                (n.parent.id != NodeID.ENUM),
-            (n) {
-                auto type = n.getType;
-                if(type.isUnknown) {
-                    /// Assume it could be referenced
-                   referenced = true;
-                } else {
-                    auto t = isStruct ? n.getType.getStruct :
-                                        n.getType.getEnum;
-                    if(t && t.nid==node.nid) {
-                        /// It's definitely referenced
-                        referenced = true;
-                    }
-                }
-            }
-        );
-        return referenced;
-    }
-    void recursiveDereference(ASTNode n) {
-        /// dereference
-        if(n.isIdentifier) {
-            auto t = n.as!Identifier.target;
-            t.dereference();
-        } else if(n.isCall) {
-            auto t = n.as!Call.target;
-            t.dereference();
-        } else if(n.isLambda) {
-            module_.removeLambda(n.as!Lambda);
-        }
-
-        foreach(ch; n.children) {
-            recursiveDereference(ch);
         }
     }
 }

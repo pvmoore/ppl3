@@ -21,7 +21,6 @@ public:
 
     ResolveModule resolver;
     CheckModule checker;
-    DeadCodeEliminator dce;
     GenerateModule gen;
     Templates templates;
 
@@ -57,7 +56,6 @@ public:
         parser            = new ParseModule(this);
         resolver          = new ResolveModule(this);
         checker           = new CheckModule(this);
-        dce               = new DeadCodeEliminator(this);
         gen               = new GenerateModule(this, llvmWrapper);
         templates         = new Templates(this);
 
@@ -87,7 +85,6 @@ public:
         parser.clearState();
         resolver.clearState();
         checker.clearState();
-        dce.clearState();
         gen.clearState();
         templates.clearState();
         llvmValue = null;

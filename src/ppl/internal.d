@@ -22,6 +22,7 @@ import std.algorithm.sorting   : sort;
 import common : DynamicArray = Array;
 import common : From, Hash, Hasher, Queue, Set, Stack, StringBuffer,
                 as, dynamicDispatch, isA, firstNotNull, flushConsole, endsWith,
+                putIfAbsent,
                 removeChars, repeat, toInt, visit;
 
 import llvm.all;
@@ -82,7 +83,6 @@ import ppl.ast.stmt.Statement;
 import ppl.ast.stmt.Variable;
 
 import ppl.build.BuildState;
-import ppl.build.ReferenceInformation;
 
 import ppl.check.CheckModule;
 import ppl.check.EscapeAnalysis;
@@ -101,8 +101,6 @@ import ppl.gen.GenerateModule;
 import ppl.gen.GenerateSelect;
 import ppl.gen.GenerateStruct;
 import ppl.gen.GenerateVariable;
-
-import ppl.opt.opt_dead_code;
 
 import ppl.misc.JsonWriter;
 import ppl.misc.linker;
@@ -144,6 +142,7 @@ import ppl.resolve.ResolveUnary;
 import ppl.resolve.ResolveVariable;
 
 import ppl.resolve.misc.AfterResolution;
+import ppl.resolve.misc.DeadCodeEliminator;
 import ppl.resolve.misc.FoldUnreferenced;
 import ppl.resolve.misc.FunctionFinder;
 import ppl.resolve.misc.ImportFinder;

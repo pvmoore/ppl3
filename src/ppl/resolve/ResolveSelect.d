@@ -14,6 +14,9 @@ public:
         this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(Select n) {
+        if(!n.isExpr) {
+            n.type = TYPE_VOID;
+        }
         if(!n.isResolved) {
 
             assert(n.isExpr);

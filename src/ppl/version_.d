@@ -2,9 +2,12 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.29.0";
+const string VERSION = "3.30.0";
 
 /*
+
+3.30.0 - Refactor DeadCodeEliminator. Enum and Struct numRefs properties should not be required
+         any more. Due to be removed in the next version.
 
 3.29.0 - Rename Variable isStructMember() to isStructVar() to separate the isStatic check.
          No need to store memberIndex in Target. It can be calculated.

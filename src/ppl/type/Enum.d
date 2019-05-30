@@ -97,7 +97,7 @@ final class EnumMember : Expression {
 
     Expression expr() { return first().as!Expression; }
 
-    override string toString() {
+    override string toString() const {
         return "EnumMember %s (type=%s)".format(name, type);
     }
 }
