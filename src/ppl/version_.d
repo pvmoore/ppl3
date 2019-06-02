@@ -2,10 +2,14 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.31.0";
+const string VERSION = "3.33.0";
 
 /*
-3.31.0 -
+3.33.0 -
+
+3.32.0 - Tidy up Alias. Remove all Aliases other than STANDARD once they've been resolved.
+
+3.31.0 - Remove numRefs from Alias, Enum and struct.
 
 3.30.0 - Refactor DeadCodeEliminator. Enum and Struct numRefs properties should not be required
          any more. Due to be removed in the next version.

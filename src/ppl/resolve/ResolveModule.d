@@ -105,7 +105,7 @@ public:
         this.iteration++;
         this.unresolved.clear();
 
-        foreach(r; module_.children) {
+        foreach(r; module_.children[].dup) {
             recursiveVisit(r);
         }
 
@@ -123,17 +123,6 @@ public:
         log("Resolving %s func '%s'", module_, funcName);
 
         isResolved = false;
-
-        /// Visit all functions at module scope with the right name
-        foreach(n; module_.children) {
-            auto f = cast(Function)n;
-            if(f && f.name==funcName) {
-                log("\t  Adding Function root %s", f);
-
-                /// Don't add reference here. Add it once we have filtered possible
-                /// overload sets down to the one we are going to use.
-            }
-        }
     }
     void resolveAliasEnumOrStruct(string AliasName) {
         watch.start();
@@ -142,33 +131,11 @@ public:
 
         isResolved = false;
 
-        module_.recurse!Type((it) {
-            auto ns = it.as!Struct;
-            auto en = it.as!Enum;
-            auto al = it.as!Alias;
-
-            if(ns) {
-                if(ns.name==AliasName) {
-                    if(ns.parent.isModule) {
-                        log("\t  Adding Struct root %s", it);
-                    }
-                }
-            } else if(en) {
-                if(en.name==AliasName) {
-                    if(en.parent.isModule) {
-                        log("\t  Adding Enum root %s", en);
-                    }
-                }
-            } else if(al) {
-                if(al.name==AliasName) {
-                    if(al.parent.isModule) {
-                        log("\t  Adding Alias root %s", al);
-                    }
-
-                    /// Could be a chain of Aliases in different modules
-                    if(al.isImport) {
-                        module_.buildState.aliasEnumOrStructRequired(al.moduleName, al.name);
-                    }
+        module_.recurse!Alias((al) {
+            if(al.name==AliasName) {
+                /// Could be a chain of Aliases in different modules
+                if(al.isImport) {
+                    module_.buildState.aliasEnumOrStructRequired(al.moduleName, al.name);
                 }
             }
         });
@@ -185,11 +152,9 @@ public:
     void visit(Alias n) {
         if(n.isTypeof) {
             if(n.first.isResolved) {
-                n.type     = n.first.getType;
-                n.isTypeof = false;
-                modified   = true;
-                n.first().detach();
-                assert(!n.hasChildren());
+                n.type = n.first.getType;
+                n.convertToStandard();
+                foldUnreferenced.fold(n.first());
             }
         } else {
             aliasResolver.resolve(n, n.type);

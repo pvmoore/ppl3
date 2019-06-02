@@ -78,8 +78,7 @@ public:
                     }
 
                     /// ( Enum | Struct | Struct<...> )
-                    auto a        = makeNode!Alias(t);
-                    a.isInnerType = true;
+                    auto a        = Alias.make(t, Alias.Kind.INNER_TYPE);
                     a.name        = t.value;
                     a.moduleName  = module_.canonicalName;
                     t.next;
@@ -91,9 +90,7 @@ public:
                     }
 
                     /// optional <...>
-                    a.templateParams = collectTemplateParams(t, node);
-
-                    //dd("a:", a);
+                    a.setTemplateParams(collectTemplateParams(t, node));
 
                     alias_ = a;
                 }
@@ -101,8 +98,6 @@ public:
                     node.add(alias_);
                 }
                 type = alias_;
-
-                //dd("alias_:", alias_);
             }
 
             /// ptr depth
@@ -314,8 +309,7 @@ private:
         /// (
         t.skip(TT.LBRACKET);
 
-        auto a = makeNode!Alias(t);
-        a.isTypeof = true;
+        auto a = Alias.make(t, Alias.Kind.TYPEOF);
         node.add(a);
 
         exprParser().parse(t, a);

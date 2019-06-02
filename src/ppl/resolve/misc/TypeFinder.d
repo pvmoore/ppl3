@@ -119,7 +119,7 @@ public:
 
         /// Create a template proxy Alias which can
         /// be replaced later by the concrete Struct
-        auto proxy           = makeNode!Alias(node);
+        auto proxy           = Alias.make(node, Alias.Kind.TEMPLATE_PROXY);
         proxy.name           = module_.makeTemporary("templateProxy");
         proxy.type           = type;
         proxy.moduleName     = module_.canonicalName;
@@ -132,8 +132,8 @@ public:
 
         return type;
     }
-    private Type found(Type t) {
-
+private:
+    Type found(Type t) {
         auto alias_ = t.getAlias;
         auto ns     = t.getStruct;
         auto en     = t.getEnum;

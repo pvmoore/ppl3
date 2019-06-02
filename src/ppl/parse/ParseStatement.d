@@ -422,7 +422,7 @@ private: //=====================================================================
                 imp.add(fn);
             }
             foreach(d; imp.mod.parser.publicTypes.values) {
-                auto def        = makeNode!Alias(t);
+                auto def        = Alias.make(t);
                 def.name        = d;
                 def.type        = TYPE_UNKNOWN;
                 def.moduleName  = imp.moduleName;
@@ -440,7 +440,7 @@ private: //=====================================================================
     ///
     void parseAlias(Tokens t, ASTNode parent) {
 
-        auto alias_ = makeNode!Alias(t);
+        auto alias_ = Alias.make(t);
         parent.add(alias_);
 
         alias_.access = t.access();
