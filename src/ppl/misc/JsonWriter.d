@@ -30,7 +30,7 @@ final class JsonWriter {
     void visit(Struct n, ref JSONValue v) {
         v["name"]   = n.name;
         v["access"] = toJson(n.access);
-        v["refs"]   = n.numRefs;
+        //v["refs"]   = n.numRefs;
     }
     void visit(Variable n, ref JSONValue v) {
         v["name"]   = n.name;

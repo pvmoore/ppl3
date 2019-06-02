@@ -21,7 +21,6 @@ public:
     Access access = Access.PUBLIC;
     Type type;
     Type[] templateParams;
-    int numRefs;
 
     bool isTypeof;      /// true if this is a @typeof(expr) alias
     bool isInnerType;   /// true if this is an inner type alias eg. type::type

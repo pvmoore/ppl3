@@ -143,10 +143,8 @@ public:
             module_.buildState.aliasEnumOrStructRequired(alias_.moduleName, alias_.name);
         } else if(en) {
             module_.buildState.aliasEnumOrStructRequired(en.moduleName, en.name);
-            en.numRefs++;
         } else {
             module_.buildState.aliasEnumOrStructRequired(ns.moduleName, ns.name);
-            ns.numRefs++;
         }
 
         return t;

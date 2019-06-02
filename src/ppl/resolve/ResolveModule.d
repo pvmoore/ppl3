@@ -86,7 +86,7 @@ public:
     }
 
     ///
-    /// Pass through any unresolved nodes and try to resolve them.   
+    /// Pass through any unresolved nodes and try to resolve them.
     /// Return true if all nodes and aliases are resolved and no modifications occurred.
     ///
     bool resolve(bool isStalemate) {
@@ -152,21 +152,18 @@ public:
                     if(ns.parent.isModule) {
                         log("\t  Adding Struct root %s", it);
                     }
-                    ns.numRefs++;
                 }
             } else if(en) {
                 if(en.name==AliasName) {
                     if(en.parent.isModule) {
                         log("\t  Adding Enum root %s", en);
                     }
-                    en.numRefs++;
                 }
             } else if(al) {
                 if(al.name==AliasName) {
                     if(al.parent.isModule) {
                         log("\t  Adding Alias root %s", al);
                     }
-                    al.numRefs++;
 
                     /// Could be a chain of Aliases in different modules
                     if(al.isImport) {

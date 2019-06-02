@@ -2,9 +2,10 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.30.0";
+const string VERSION = "3.31.0";
 
 /*
+3.31.0 -
 
 3.30.0 - Refactor DeadCodeEliminator. Enum and Struct numRefs properties should not be required
          any more. Due to be removed in the next version.

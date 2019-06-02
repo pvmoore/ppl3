@@ -11,7 +11,6 @@ protected:
 public:
     string name;
     string moduleName;
-    int numRefs;
     Access access = Access.PUBLIC;
 
     /// Set to true if no body is specified.

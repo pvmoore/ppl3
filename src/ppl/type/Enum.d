@@ -13,7 +13,6 @@ public:
     string moduleName;
     Type elementType;
     Access access = Access.PUBLIC;
-    int numRefs;
 
     this() {
         this.elementType = TYPE_INT;
