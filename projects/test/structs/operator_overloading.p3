@@ -2,7 +2,6 @@
 struct Red(pub int a) {
     
     pub fn new(int a) { this.a = a }
-    
     pub fn reset(int value) { a = value }
     
     pub fn test() { 
@@ -50,7 +49,7 @@ struct Red(pub int a) {
     
     // scalar comparison
     pub fn operator==(int s) { ret a==s }
-    pub fn operator<>(int s) { ret a<>s }
+    pub fn operator!=(int s) { ret a!=s }
     pub fn operator<(int s) { ret a<s }
     pub fn operator>(int s) { ret a>s }
     pub fn operator<=(int s) { ret a<=s }
@@ -84,7 +83,7 @@ struct Red(pub int a) {
     
     // object comparison
     pub fn operator==(Red s) { ret a==s.a }
-    pub fn operator<>(Red s) { ret a<>s.a }
+    pub fn operator!=(Red s) { ret a!=s.a }
     pub fn operator<(Red s) { ret a<s.a }
     pub fn operator>(Red s) { ret a>s.a }
     pub fn operator<=(Red s) { ret a<=s.a }
@@ -102,7 +101,7 @@ struct Green(pub int a ) {
 struct Blue(pub int a) { 
     pub fn new(int v) { a=v }
 
-    pub fn operator<>(int s) { ret a<>s }
+    pub fn operator!=(int s) { ret a!=s }
     pub fn operator>(int s) { ret a>s }
     pub fn operator>=(int s) { ret a>=s }
 }
@@ -148,7 +147,7 @@ pub fn testOperatorOverloading() {
         assert Red(100) > 0
         assert Red(100) < 101
         assert Red(100) == 100
-        assert Red(100) <> 99
+        assert Red(100) != 99
         assert Red(100) <= 101; assert Red(100) <= 100
         assert Red(100) >= 99; assert Red(100) >= 100
         
@@ -186,7 +185,7 @@ pub fn testOperatorOverloading() {
         assert Red(100) > Red(0)
         assert Red(100) < Red(101)
         assert Red(100) == Red(100)
-        assert Red(100) <> Red(99)
+        assert Red(100) != Red(99)
         assert Red(100) <= Red(101); assert Red(100) <= Red(100)
         assert Red(100) >= Red(99); assert Red(100) >= Red(100)
         
@@ -215,15 +214,15 @@ pub fn testOperatorOverloading() {
     const substituteMissingBoolComparisons = {
         const g = Green(100)
         assert g == 100     // calls left.operator==(right)
-        assert g <> 99      // should replace with not left.operator==(right)
+        assert g != 99      // should replace with not left.operator==(right)
         assert g < 200      // calls left.operator<(right)
         assert g <= 200     // calls left.operator<=(right)
         assert g > 50       // should replace with not left.operator<=(right)
         assert g >= 50      // should replace with not left.operator<(right)
         
         const b = Blue(100)
-        assert b == 100     // should replace with not left.operator<>(right)
-        assert b <> 99      // calls left.operator<>(right)
+        assert b == 100     // should replace with not left.operator!=(right)
+        assert b != 99      // calls left.operator!=(right)
         assert b < 200      // should replace with not left.operator>=(right)
         assert b <= 200     // should replace with not left.operator>(right)
         assert b > 50       // calls left.operator>(right)
@@ -243,17 +242,37 @@ pub fn testOperatorOverloading() {
         assert 1 < a        // a >= 1
         assert 200 > a      // a <= 200
         assert 100 == a     // a == 100
-        assert 200 <> a     // a <> 200
+        assert 200 != a     // a != 200
         
         const b = Green(100)
         assert 200 > b      // b <= 200
         //assert 1 < b        // b >= 1 operator>= not defined
     }
+	const comparison = {
+		[[pod]] struct C(int a) {
+			pub fn operator==(C other) {
+				ret a==other.a
+			}
+			pub fn operator==(int b) {
+				ret a==b
+			}
+		}
+		var a = C(22)
+		var b = C(40)
+		var c = C(22)
+		
+		assert a == c
+		assert a != b
+		assert a == 22
+		assert a != 23
+	}
     scalars()
     objectValue()
     objectPtr()
     internal()
     substituteMissingBoolComparisons()
     swapScalarOrder()
+	
+	comparison()
 }
 

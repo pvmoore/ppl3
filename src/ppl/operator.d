@@ -69,32 +69,31 @@ enum Operator : Op {
     BIT_XOR  = Op(14, 7, "^"),
     BIT_OR   = Op(15, 7, "|"),
 
-    LT       = Op(16, 9, "<"),
-    GT       = Op(17, 9, ">"),
-    LTE      = Op(18, 9, "<="),
-    GTE      = Op(19, 9, ">="),
-    BOOL_EQ  = Op(20, 9, "=="),
-    BOOL_NE  = Op(21, 9, "<>"),
-
+    LT        = Op(16, 9, "<"),
+    GT        = Op(17, 9, ">"),
+    LTE       = Op(18, 9, "<="),
+    GTE       = Op(19, 9, ">="),
+    BOOL_EQ   = Op(20, 9, "=="),
+    BOOL_NE   = Op(21, 9, "!="),
     /// Is = 9
 
-    BOOL_AND = Op(22, 11, "and"),
-    BOOL_OR  = Op(23, 11, "or"),
+    BOOL_AND = Op(23, 11, "and"),
+    BOOL_OR  = Op(24, 11, "or"),
 
     /// assignments below here
-    ADD_ASSIGN     = Op(24, 14, "+="),
-    SUB_ASSIGN     = Op(25, 14, "-="),
-    MUL_ASSIGN     = Op(26, 14, "*="),
-    DIV_ASSIGN     = Op(27, 14, "/="),
-    MOD_ASSIGN     = Op(28, 14, "%="),
-    BIT_AND_ASSIGN = Op(29, 14, "&="),
-    BIT_XOR_ASSIGN = Op(30, 14, "^="),
-    BIT_OR_ASSIGN  = Op(31, 14, "|="),
+    ADD_ASSIGN     = Op(25, 14, "+="),
+    SUB_ASSIGN     = Op(26, 14, "-="),
+    MUL_ASSIGN     = Op(27, 14, "*="),
+    DIV_ASSIGN     = Op(28, 14, "/="),
+    MOD_ASSIGN     = Op(29, 14, "%="),
+    BIT_AND_ASSIGN = Op(30, 14, "&="),
+    BIT_XOR_ASSIGN = Op(31, 14, "^="),
+    BIT_OR_ASSIGN  = Op(32, 14, "|="),
 
-    SHL_ASSIGN     = Op(32, 14, "<<="),
-    SHR_ASSIGN     = Op(33, 14, ">>="),
-    USHR_ASSIGN    = Op(34, 14, ">>>="),
-    ASSIGN         = Op(35, 14, "=")
+    SHL_ASSIGN     = Op(33, 14, "<<="),
+    SHR_ASSIGN     = Op(34, 14, ">>="),
+    USHR_ASSIGN    = Op(35, 14, ">>>="),
+    ASSIGN         = Op(36, 14, "=")
 
     /// Calloc      = 15
     /// Lambda      = 15
@@ -208,6 +207,7 @@ bool isOverloadable(Operator o) {
 
         case BOOL_EQ.id:    /// ==
         case BOOL_NE.id:    /// <>
+
         case LT.id:         /// <
         case GT.id:         /// >
         case LTE.id:        /// <=
@@ -245,23 +245,3 @@ bool isPtrArithmetic(Operator o) {
             return false;
     }
 }
-//bool isInvalidRealOperator(Operator o) {
-//    switch(o.id) with(Operator) {
-//        case SHL.id:
-//        case SHR.id:
-//        case USHR.id:
-//        case BIT_AND.id:
-//        case BIT_XOR.id:
-//        case BIT_OR.id:
-//        case BOOL_AND.id:
-//        case BOOL_OR.id:
-//
-//        case SHL_ASSIGN.id:
-//        case SHR_ASSIGN.id:
-//        case USHR_ASSIGN.id:
-//        case BIT_AND_ASSIGN.id:
-//        case BIT_XOR_ASSIGN.id:
-//        case BIT_OR_ASSIGN.id:
-//        default: return false;
-//    }
-//}

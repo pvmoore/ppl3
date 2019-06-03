@@ -63,7 +63,7 @@ pub fn testEnum() {
         // booleans
         // Compares values regardless of enum type
         const g  = A.ONE == B.ONE               ; assert @typeOf(g) is bool; assert g
-        const g2 = A.ONE <> B.TWO               ; assert @typeOf(g2) is bool; assert g2
+        const g2 = A.ONE != B.TWO               ; assert @typeOf(g2) is bool; assert g2
         const g3 = A.ONE.value < A.TWO.value    ; assert g3
         const g4 = A.THREE > A.TWO  ; assert g4
         const h = A.SIX

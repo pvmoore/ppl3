@@ -14,9 +14,8 @@ public:
         this.foldUnreferenced = resolver.foldUnreferenced;
     }
     void resolve(Binary n) {
-        auto lt      = n.leftType();
-        auto rt      = n.rightType();
-        auto builder = module_.builder(n);
+        auto lt = n.leftType();
+        auto rt = n.rightType();
 
         if(n.op==Operator.BOOL_AND) {
             auto p = n.parent.as!Binary;
@@ -217,7 +216,7 @@ private:
     }
     /// @return true if we modified something
     bool rewriteToOperatorOverloadCall(Binary n) {
-        Struct leftStruct = n.leftType.getStruct;
+        Struct leftStruct  = n.leftType.getStruct;
         Struct rightStruct = n.rightType.getStruct;
 
         assert(leftStruct || rightStruct);
@@ -227,12 +226,14 @@ private:
             /// eg.
             /// 1 + struct
             /// 1 == struct
+            /// 10 <=> struct ?
 
             if(n.op.isCommutative || n.op.isBool) {
 
-                /// Reverse the operation
                 auto op2 = n.op;
+
                 if(!n.op.isCommutative) {
+                    /// Reverse the operation
                     op2 = n.op.switchLeftRightBool();
                 }
 
@@ -271,6 +272,9 @@ private:
             } else {
                 expr = b.dot(n.left, b.call("operator"~n.op.value).add(n.right));
             }
+            // if(negResult) {
+            //     expr = b.unary(Operator.NEG, expr);
+            // }
             foldUnreferenced.fold(n, expr);
             return true;
         }
@@ -281,8 +285,9 @@ private:
 
         /// Missing op | Rewrite to
         /// -----------------------------------------
-        ///    ==      | not left.operator<>(right)
-        ///    <>      | not left.operator==(right)
+        ///    ==      | not left.operator!=(right)
+        ///    !=      | not left.operator==(right)
+
         ///     <      | not left.operator>=(right) ** right.operator>(left)  / not right.operator<=(left)
         ///     >      | not left.operator<=(right) ** right.operator<(left)  / not right.operator>=(left)
         ///    <=      | not left.operator>(right)  ** right.operator>=(left) / not right.operator<(left)
@@ -293,7 +298,7 @@ private:
         switch(n.op.id) with(Operator) {
             case BOOL_EQ.id:
                 if(leftStruct.hasOperatorOverload(BOOL_NE)) {
-                    expr = b.dot(n.left, b.call("operator<>").add(n.right));
+                    expr = b.dot(n.left, b.call("operator!=").add(n.right));
                     expr = b.not(expr);
                     foldUnreferenced.fold(n, expr);
                     return true;

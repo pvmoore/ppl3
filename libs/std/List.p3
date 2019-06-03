@@ -25,7 +25,7 @@ pub struct List <T>(
         array[index] = value
     }
     pub fn operator== (List<T> other) {
-        if(length <> other.length) ret false
+        if(length != other.length) ret false
         ret memcmp(array, other.array, length*@sizeOf(T))==0
     }
     pub fn first() {

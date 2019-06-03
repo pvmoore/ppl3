@@ -440,7 +440,12 @@ public:
                     }
                     break;
                 case '!':
-                    addToken(TT.EXCLAMATION);
+                    if(peek(1)=='=') {
+                        addToken(TT.BOOL_NE, 2);
+                        index++;
+                    } else {
+                        addToken(TT.EXCLAMATION);
+                    }
                     break;
                 case '&':
                     if(peek(1)=='=') {

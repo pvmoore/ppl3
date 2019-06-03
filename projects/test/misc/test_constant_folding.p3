@@ -64,7 +64,7 @@ fn binaryExpressions() {
     const N = 1 <= 1;   assert N
     const O = 1 >= 1;   assert O
     const P = 1 == 1;   assert P
-    const Q = 1 <> 1;   assert not Q
+    const Q = 1 != 1;   assert not Q
 
     const R = 0 & 0xff; assert R == 0
     const S = 1 ^ 0xff; assert S == 0xfe

@@ -5,7 +5,8 @@ public:
 const string VERSION = "3.33.0";
 
 /*
-3.33.0 -
+3.33.0 - Show first couple of errors in detail. Subsequent errors are shown one per line.
+         Change <> operator to !=.
 
 3.32.0 - Tidy up Alias. Remove all Aliases other than STANDARD once they've been resolved.
 

@@ -51,10 +51,12 @@ void main(string[] argv) {
         auto numErrors = builder.getErrors().length;
         writefln("\nBuild failed with %s error%s:\n", numErrors, numErrors>1?"s":"");
 
-        if(numErrors==1) {
-            writefln("%s\n", builder.getErrors()[0].toPrettyString());
-        } else {
-            foreach (i, err; builder.getErrors()) {
+        const NUM_DETAILED_ERRORS = 2;
+
+        foreach(i, err; builder.getErrors()) {
+            if(i < NUM_DETAILED_ERRORS) {
+                writefln("[%s] %s\n", i+1, err.toPrettyString());
+            } else {
                 writefln("[%s] %s", i+1, err.toConciseString());
             }
         }

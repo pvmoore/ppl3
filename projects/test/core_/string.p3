@@ -29,7 +29,7 @@ pub fn testString() {
         
         assert a == "hello"
         assert a == b
-        assert a <> c and b <> c
+        assert a != c and b != c
     }
     const indexOf = {
         string s = "hello"

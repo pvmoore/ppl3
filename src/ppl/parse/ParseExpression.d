@@ -30,8 +30,8 @@ public:
 private:
     void parseLHS(Tokens t, ASTNode parent) {
         static if(VERBOSE_MODULE) {
-            if(module_.canonicalName==VERBOSE_MODULE) { 
-                dd("lhs", t.get, "parent=", parent.id); 
+            if(module_.canonicalName==VERBOSE_MODULE) {
+                dd("lhs", t.get, "parent=", parent.id);
             }
         }
         //scope(exit) dd("woops", t.get);

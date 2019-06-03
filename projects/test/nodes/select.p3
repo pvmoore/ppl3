@@ -9,7 +9,7 @@ pub fn testSelect() {
             else  : n = 10 
         }
         assert n == 10
-        
+         
         const val = { ret 2 }
         
         select(int y = 2; y) {
@@ -20,6 +20,7 @@ pub fn testSelect() {
         }
         assert n == 2
     }
+	
     const switchSelectExpr = {
         const x = 1
         const r1 = select(x) {

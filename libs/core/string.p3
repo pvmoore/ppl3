@@ -97,10 +97,10 @@ pub struct string( // 16 bytes
         ret length >= s.length and memcmp(ptr()+off, s.ptr(), s.length) == 0   
     }
     pub fn contains(int ch) {
-        ret indexOf(ch) <> -1   
+        ret indexOf(ch) != -1   
     }
     pub fn contains(string s) {
-        ret indexOf(s) <> -1
+        ret indexOf(s) != -1
     }
     pub fn trim() {
         // todo   
