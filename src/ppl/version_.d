@@ -2,9 +2,11 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.34.0";
+const string VERSION = "3.35.0";
 
 /*
+3.35.0 -
+
 3.34.0 - Remove operator overloads other than ==, != and []
 
 3.33.0 - Show first couple of errors in detail. Subsequent errors are shown one per line.

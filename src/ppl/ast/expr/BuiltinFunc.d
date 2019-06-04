@@ -32,26 +32,31 @@ import ppl.internal;
 
 final class BuiltinFunc : Expression {
     string name;
-    Type type;  // for "expect"
+    Type type;              /// for "expect"
+    bool errorsRemoved;     /// for "ctAssertError"
 
 /// ASTNode
     override bool isResolved() {
-        if(name=="expect") {
-            /// If both expressions are const then we can fold this,
-            /// otherwise it needs to be propagated down to the gen layer
-            if(numExprs()<2) return true;
-            auto e = exprs();
+        switch(name) {
+            case "expect":
+                /// If both expressions are const then we can fold this,
+                /// otherwise it needs to be propagated down to the gen layer
+                if(numExprs()<2) return true;
+                auto e = exprs();
 
-            /// Resolve both expressions
-            if(!e[0].isResolved || !e[1].isResolved) return false;
+                /// Resolve both expressions
+                if(!e[0].isResolved || !e[1].isResolved) return false;
 
-            if(e[0].comptime()==CT.UNRESOLVED) return false;
+                if(e[0].comptime()==CT.UNRESOLVED) return false;
 
-            /// If expr[0] is not comptime then we need to propagate to the gen layer
-            if(e[0].comptime()==CT.NO) return type && type.isKnown;
-        }
-        if(name=="ctUnreachable") {
-            return true;
+                /// If expr[0] is not comptime then we need to propagate to the gen layer
+                if(e[0].comptime()==CT.NO) return type && type.isKnown;
+
+                break;
+            case "ctUnreachable":
+                return true;
+            default:
+                break;
         }
         /// Everything else is waiting to be folded
         return false;

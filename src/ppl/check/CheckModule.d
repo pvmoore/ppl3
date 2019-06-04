@@ -193,18 +193,9 @@ public:
 
         switch(n.name) {
             case "operator==":
-            case "operator<>":
-            case "operator<":
-            case "operator>":
-            case "operator<=":
-            case "operator>=":
+            case "operator!=":
                 if(retType.isPtr || !retType.isBool) {
                     module_.addError(n, "%s must return bool".format(n.name), true);
-                }
-                break;
-            case "operator<=>":
-                if(!retType.exactlyMatches(TYPE_INT)) {
-                    module_.addError(n, "%s must return int".format(n.name), true);
                 }
                 break;
             case "operator[]":

@@ -967,7 +967,7 @@ private:
 
         t.next;
     }
-    /// @typeof, @sizeof etc...
+    /// @typeOf, @sizeOf etc...
     ///
     void parseBuiltinFunc(Tokens t, ASTNode parent) {
         // @
@@ -979,29 +979,42 @@ private:
         bif.name = t.value;
         t.next;
 
-        /// (
-        t.skip(TT.LBRACKET);
+        /// ( or {
+        if(t.type==TT.LBRACKET) {
+            t.skip(TT.LBRACKET);
 
-        /// Add args to a Parenthesis to act as a ceiling so that
-        /// the operator precedence never moves them above the call
-        auto parens = makeNode!Parenthesis(t);
-        bif.add(parens);
+            /// Add args to a Parenthesis to act as a ceiling so that
+            /// the operator precedence never moves them above the call
+            auto parens = makeNode!Parenthesis(t);
+            bif.add(parens);
 
-        while(t.type!=TT.RBRACKET) {
-            parse(t, parens);
+            while(t.type!=TT.RBRACKET) {
+                parse(t, parens);
 
-            t.expect(TT.RBRACKET, TT.COMMA);
-            if(t.type==TT.COMMA) t.next;
+                t.expect(TT.RBRACKET, TT.COMMA);
+                if(t.type==TT.COMMA) t.next;
+            }
+
+            /// Extract children from the parens
+            while(parens.hasChildren) {
+                bif.add(parens.first());
+            }
+            parens.detach();
+
+            /// )
+            t.skip(TT.RBRACKET);
+
+        } else if(t.type==TT.LCURLY) {
+            t.skip(TT.LCURLY);
+
+            auto c = Composite.make(bif, Composite.Usage.INNER_KEEP);
+            bif.add(c);
+
+            while(t.type!=TT.RCURLY) {
+                stmtParser.parse(t, c);
+            }
+            t.skip(TT.RCURLY);
         }
-
-        /// Extract children from the parens
-        while(parens.hasChildren) {
-            bif.add(parens.first());
-        }
-        parens.detach();
-
-        t.skip(TT.RBRACKET);
-        /// )
     }
 }
 

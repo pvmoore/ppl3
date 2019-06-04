@@ -2,9 +2,7 @@ module ppl.error.CompileError;
 
 import ppl.internal;
 
-//====================================================================================
 abstract class CompileError {
-protected:
 public:
     int id;
     int line;

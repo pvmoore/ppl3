@@ -84,9 +84,10 @@ import ppl.ast.stmt.Variable;
 
 import ppl.build.BuildState;
 
+import ppl.check.AfterSemantic;
 import ppl.check.CheckModule;
-import ppl.check.EscapeAnalysis;
 import ppl.check.ControlFlow;
+import ppl.check.EscapeAnalysis;
 
 import ppl.error.CompilationAborted;
 import ppl.error.CompileError;
