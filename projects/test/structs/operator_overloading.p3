@@ -1,15 +1,18 @@
 
 struct Red(pub int a) {
-    
-    pub fn new(int a) { this.a = a }
+    pub fn new(int a)       { this.a = a }
     pub fn reset(int value) { a = value }
     
     pub fn test() { 
         a = 0
-        const x = (*this)+1;      assert x.a == 1
-        const y = operator+(2);   assert y.a == 2
-        
-        const z = (*this)+Red(1);    assert z.a == 1
+		
+		assert operator!=(1)
+		assert operator!=(Red(1))
+		assert this.operator!=(Red*(2))
+		
+		assert this.operator==(0)
+		assert this.operator==(Red(0))
+		assert operator==(Red*(0))
     }
     
     // get
@@ -21,258 +24,94 @@ struct Red(pub int a) {
         a = index*value
     }
     
-    // scalar
-    pub fn operator+(int s) { ret Red(a+s) }
-    pub fn operator-(int s) { ret Red(a-s) }
-    pub fn operator*(int s) { ret Red(a*s) }
-    pub fn operator/(int s) { ret Red(a/s) }
-    pub fn operator%(int s) { ret Red(a%s) }
-    pub fn operator<<(int s) { ret Red(a<<s) }
-    pub fn operator>>(int s) { ret Red(a>>s) }
-    pub fn operator>>>(int s) { ret Red(a>>>s) }
-    pub fn operator|(int s) { ret Red(a|s) }
-    pub fn operator&(int s) { ret Red(a&s) }
-    pub fn operator^(int s) { ret Red(a^s) }
-    
-    // scalar assign
-    pub fn operator+=(int s) { a += s }
-    pub fn operator-=(int s) { a -= s }
-    pub fn operator*=(int s) { a *= s }
-    pub fn operator/=(int s) { a /= s }
-    pub fn operator%=(int s) { a %= s }
-    pub fn operator<<=(int s) { a <<= s }
-    pub fn operator>>=(int s) { a >>= s }
-    pub fn operator>>>=(int s) { a >>>= s }
-    pub fn operator|=(int s) { a |= s }
-    pub fn operator&=(int s) { a &= s }
-    pub fn operator^=(int s) { a ^= s }
-    
     // scalar comparison
     pub fn operator==(int s) { ret a==s }
     pub fn operator!=(int s) { ret a!=s }
-    pub fn operator<(int s) { ret a<s }
-    pub fn operator>(int s) { ret a>s }
-    pub fn operator<=(int s) { ret a<=s }
-    pub fn operator>=(int s) { ret a>=s }
-    
-    // object value
-    pub fn operator+(Red s) { ret Red(a+s.a) }
-    pub fn operator-(Red s) { ret Red(a-s.a) }
-    pub fn operator*(Red s) { ret Red(a*s.a) }
-    pub fn operator/(Red s) { ret Red(a/s.a) }
-    pub fn operator%(Red s) { ret Red(a%s.a) }
-    pub fn operator<<(Red s) { ret Red(a<<s.a) }
-    pub fn operator>>(Red s) { ret Red(a>>s.a) }
-    pub fn operator>>>(Red s) { ret Red(a>>>s.a) }
-    pub fn operator|(Red s) { ret Red(a|s.a) }
-    pub fn operator&(Red s) { ret Red(a&s.a) }
-    pub fn operator^(Red s) { ret Red(a^s.a) }
-    
-    // object assign
-    pub fn operator+=(Red s) { a += s.a }
-    pub fn operator-=(Red s) { a -= s.a }
-    pub fn operator*=(Red s) { a *= s.a }
-    pub fn operator/=(Red s) { a /= s.a }
-    pub fn operator%=(Red s) { a %= s.a }
-    pub fn operator<<=(Red s) { a <<= s.a }
-    pub fn operator>>=(Red s) { a >>= s.a }
-    pub fn operator>>>=(Red s) { a >>>= s.a }
-    pub fn operator|=(Red s) { a |= s.a }
-    pub fn operator&=(Red s) { a &= s.a }
-    pub fn operator^=(Red s) { a ^= s.a }
     
     // object comparison
-    pub fn operator==(Red s) { ret a==s.a }
-    pub fn operator!=(Red s) { ret a!=s.a }
-    pub fn operator<(Red s) { ret a<s.a }
-    pub fn operator>(Red s) { ret a>s.a }
-    pub fn operator<=(Red s) { ret a<=s.a }
-    pub fn operator>=(Red s) { ret a>=s.a }
-    
-    pub fn operator neg() { ret Red(-a) }
+    pub fn operator==(Red s)  { ret a==s.a }
+	pub fn operator==(Red* s) { ret a==s.a }
+    pub fn operator!=(Red s)  { ret a!=s.a }
+	pub fn operator!=(Red* s) { ret a!=s.a }
 }
-struct Green(pub int a ) {  
-    pub fn new(int v) { a=v }
 
-    pub fn operator==(int s) { ret a==s }
-    pub fn operator<(int s) { ret a<s }
-    pub fn operator<=(int s) { ret a<=s }
-}
-struct Blue(pub int a) { 
-    pub fn new(int v) { a=v }
-
-    pub fn operator!=(int s) { ret a!=s }
-    pub fn operator>(int s) { ret a>s }
-    pub fn operator>=(int s) { ret a>=s }
-}
 pub fn testOperatorOverloading() {
-    const scalars = {
-        Red a = Red(100)
-        Red b
-        
-        // index
-        assert a[10] == 20              // index*2
-        a[10] = 3;  assert a.a == 30    // index*value
-        
-        a.reset(100)
-        
-        // scalar
-        b = a+1;        assert b.a==101
-        b = a-1;        assert b.a==99
-        b = a*2;        assert b.a==200
-        b = a/2;        assert b.a==50
-        b = a%3;        assert b.a==1
-        b = a<<1;       assert b.a==200
-        b = a>>1;       assert b.a==50
-        b = a>>>1;      assert b.a==50;    assert (Red(-100) >>> 1).a == 0x7fff_ffce
-        b = a|1;        assert b.a==101
-        b = a&4;        assert b.a==4
-        b = a^0b1111;   assert b.a==0b0110_1011
-        
-        // scalar assign
-        a += 1;         assert a.a==101
-        a -= 1;         assert a.a==100
-        a *= 2;         assert a.a==200
-        a /= 2;         assert a.a==100
-        a %= 3;         assert a.a==1;      a += 99
-        a <<= 1;        assert a.a==200
-        a >>= 1;        assert a.a==100
-        a >>>= 1;       assert a.a==50;     a -= 150;   assert a.a==-100
-        a >>>= 1;       assert a.a == 0x7fff_ffce;      a.reset(100)
-        a |= 1;         assert a.a == 101;              a.reset(100)
-        a &= 4;         assert a.a == 4;                a.reset(100)
-        a ^= 0b1111;    assert a.a == 0b0110_1011
-        
-        // scalar comparison
-        assert Red(100) > 0
-        assert Red(100) < 101
-        assert Red(100) == 100
-        assert Red(100) != 99
-        assert Red(100) <= 101; assert Red(100) <= 100
-        assert Red(100) >= 99; assert Red(100) >= 100
-        
-        assert Red(100).operator+(1) == 101
-    }
-    const objectValue = {
-        Red a = Red(100)
-        Red b
-        // object
-        b = a+Red(1);        assert b.a==101
-        b = a-Red(1);        assert b.a==99
-        b = a*Red(2);        assert b.a==200
-        b = a/Red(2);        assert b.a==50
-        b = a%Red(3);        assert b.a==1
-        b = a<<Red(1);       assert b.a==200
-        b = a>>Red(1);       assert b.a==50
-        b = a>>>Red(1);      assert b.a==50;    assert (Red(-100) >>> Red(1)).a == 0x7fff_ffce
-        b = a|Red(1);        assert b.a==101
-        b = a&Red(4);        assert b.a==4
-        b = a^Red(0b1111);   assert b.a==0b0110_1011
-        // object assign
-        a += Red(1);         assert a.a==101
-        a -= Red(1);         assert a.a==100
-        a *= Red(2);         assert a.a==200
-        a /= Red(2);         assert a.a==100
-        a %= Red(3);         assert a.a==1;      a += 99
-        a <<= Red(1);        assert a.a==200
-        a >>= Red(1);        assert a.a==100
-        a >>>= Red(1);       assert a.a==50;     a -= 150;   assert a.a==-100
-        a >>>= Red(1);       assert a.a == 0x7fff_ffce;      a.reset(100)
-        a |= Red(1);         assert a.a == 101;              a.reset(100)
-        a &= Red(4);         assert a.a == 4;                a.reset(100)
-        a ^= Red(0b1111);    assert a.a == 0b0110_1011;      a.reset(100)
-        // object comparison
-        assert Red(100) > Red(0)
-        assert Red(100) < Red(101)
-        assert Red(100) == Red(100)
-        assert Red(100) != Red(99)
-        assert Red(100) <= Red(101); assert Red(100) <= Red(100)
-        assert Red(100) >= Red(99); assert Red(100) >= Red(100)
-        
-        assert -Red(100) == Red(-100)
-        
-        assert Red(100).operator+(Red(1)) == 101
-        
-        // needs operator+ { Red* -> }
-        //assert Red(100) + &a == 200
-    }
-    const objectPtr = {
-        var v = Red*(0);    assert v.a==0 
-        const v2 = v.operator+(1);    assert v2==1
-        
-        // These are not what you think - they are ptr arithmetic
-        Red* v3 = v + 1;    
-        Red* v4 = v - 1;
-        
-        // This should call this.operator*(int)
-        //Red* v5 = v * 2
-    }
-    const internal = {
-        Red r
-        r.test()
-    }
-    const substituteMissingBoolComparisons = {
-        const g = Green(100)
-        assert g == 100     // calls left.operator==(right)
-        assert g != 99      // should replace with not left.operator==(right)
-        assert g < 200      // calls left.operator<(right)
-        assert g <= 200     // calls left.operator<=(right)
-        assert g > 50       // should replace with not left.operator<=(right)
-        assert g >= 50      // should replace with not left.operator<(right)
-        
-        const b = Blue(100)
-        assert b == 100     // should replace with not left.operator!=(right)
-        assert b != 99      // calls left.operator!=(right)
-        assert b < 200      // should replace with not left.operator>=(right)
-        assert b <= 200     // should replace with not left.operator>(right)
-        assert b > 50       // calls left.operator>(right)
-        assert b >= 50      // calls left.operator>=(right)
-    }
-    const swapScalarOrder = {
-        Red a = Red(100)
-        
-        assert 1 + a == 101     // a + 1
-        //assert 1 - a == -99   // not commutative
-        assert 2 * a == 200     // a * 2
-        //assert 2 / a == 0     // not commutative
-        assert 0b1100 | Red(0b0011) == 0b1111;  // a | int
-        assert 0b1110 & Red(0b0011) == 0b0010;  // a & int
-        assert 0b1110 ^ Red(0b0011) == 0b1101;  // a & int
-        
-        assert 1 < a        // a >= 1
-        assert 200 > a      // a <= 200
-        assert 100 == a     // a == 100
-        assert 200 != a     // a != 200
-        
-        const b = Green(100)
-        assert 200 > b      // b <= 200
-        //assert 1 < b        // b >= 1 operator>= not defined
-    }
 	const comparison = {
 		[[pod]] struct C(int a) {
-			pub fn operator==(C other) {
-				ret a==other.a
-			}
-			pub fn operator==(int b) {
-				ret a==b
-			}
+			pub fn operator==(C other)  { ret a==other.a }
+			pub fn operator==(C* other) { ret a==other.a }
+			pub fn operator==(int b)    { ret a==b }
+			pub fn operator!=(C other)  { ret a != other.a }
+			pub fn operator!=(C* other) { ret a != other.a }
+			pub fn operator!=(int b)    { ret a != b }
+		}
+		var a = C(1)
+		var b = C(2)
+		var c = C(1)
+		var d = C*(1)
+		var e = C*(10)
+		
+		assert a == c
+		assert a == d
+		assert a != b
+		assert a != e
+		assert a == 1
+		assert a != 2
+		assert e == 10
+		assert e == C*(10)
+		assert e != 11
+		assert e != C*(100)
+		
+		assert 1 == a
+		assert 2 != a
+		assert 10 == e
+		assert 11 != e
+		assert C*(10) == e
+		assert C*(75) != e
+	}
+	const comparisonAlternative = {
+		// define operator== but not operator!=
+		[[pod]] struct C(int a) {
+			pub fn operator==(C other)  { ret a==other.a }
+			pub fn operator==(C* other) { ret a==other.a }
+			pub fn operator==(int b)    { ret a==b }
 		}
 		var a = C(22)
 		var b = C(40)
 		var c = C(22)
+		var d = C*(22)
+		var e = C*(90)
 		
-		assert a == c
-		assert a != b
-		assert a == 22
-		assert a != 23
+		assert a != b		// call not (a==b) 
+		assert a != 23		// call not (a==23)
+		assert 23 != a		// call not (a==23)
+		assert a != e		// call not (a==e)
+		assert e != a		// call not (e==a)
 	}
-    scalars()
-    objectValue()
-    objectPtr()
-    internal()
-    substituteMissingBoolComparisons()
-    swapScalarOrder()
-	
+	const index = {
+		Red a = Red(100)
+        Red b
+        
+        assert a[10] == 20              // index*2
+        a[10] = 3;  assert a.a == 30    // index*value
+        
+	}
+	const internal = {
+        Red r
+        r.test()
+    }
+	const objectPtr = {
+        var v  = Red*(0);    		assert v.a==0 
+        var v2 = v.operator==(1);   assert v2==false
+        
+        // These are ptr arithmetic
+        Red* v3 = v + 1;    
+        Red* v4 = v - 1;
+    }
 	comparison()
+	comparisonAlternative()
+	index()
+	internal()
+	objectPtr()
 }
 

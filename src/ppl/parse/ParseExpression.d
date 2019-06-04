@@ -455,7 +455,15 @@ private:
             /// Call to operator overload
 
             auto op = parseOperator(t);
-            if(!op.isOverloadable) errorBadSyntax(module_, t, "Expecting an overloadable operator");
+            switch(op.id) with(Operator) {
+                case BOOL_EQ.id:
+                case BOOL_NE.id:
+                case INDEX.id:
+                    break;
+                default:
+                    module_.addError(c, "%s is not an overloadable operator".format(op.value), true);
+                    break;
+            }
 
             c.name ~= op.value;
             t.next;

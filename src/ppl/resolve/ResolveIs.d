@@ -20,133 +20,132 @@ public:
         /// Both sides must be resolved
         if(leftType.isUnknown || rightType.isUnknown) return;
 
-        if(!n.left().isTypeExpr && !n.right().isTypeExpr) {
-            /// Identifier IS Identifier
-
-            if(leftType.isValue && rightType.isValue) {
-                /// value IS value
-
-                /// If the sizes are different then the result must be false
-                if(leftType.size != rightType.size) {
-                    rewriteToConstBool(n, false);
-                    return;
-                }
-
-                /// If one side is a struct then the other must be too
-                if(leftType.isStruct != rightType.isStruct) {
-                    rewriteToConstBool(n, false);
-                    return;
-                }
-                /// If one side is a tuple then the other side must be too
-                if(leftType.isTuple != rightType.isTuple) {
-                    rewriteToConstBool(n, false);
-                    return;
-                }
-                /// If one side is an array then the other must be too
-                if(leftType.isArray != rightType.isArray) {
-                    rewriteToConstBool(n, false);
-                    return;
-                }
-                /// If one side is a function then the other side must be too
-                if(leftType.isFunction != rightType.isFunction) {
-                    rewriteToConstBool(n, false);
-                    return;
-                }
-                /// If one side is an enum then the other side must be too
-                if(leftType.isEnum != rightType.isEnum) {
-                    rewriteToConstBool(n, false);
-                    return;
-                }
-
-                /// Two structs
-                if(leftType.isStruct) {
-
-                    /// Must be the same type
-                    if(leftType.getStruct != rightType.getStruct) {
-                        rewriteToConstBool(n, false);
-                        return;
-                    }
-
-                    rewriteToMemcmp(n);
-                    return;
-                }
-
-                /// Two tuples
-                if(leftType.isTuple) {
-                    rewriteToMemcmp(n);
-                    return;
-                }
-
-                /// Two enums
-                if(leftType.isEnum) {
-                    auto leftEnum  = leftType.getEnum;
-                    auto rightEnum = rightType.getEnum;
-
-                    /// Must be the same enum type
-                    if (!leftEnum.exactlyMatches(rightEnum)) {
-                        rewriteToConstBool(n, false);
-                        return;
-                    }
-
-                    rewriteToEnumMemberValues(n, leftEnum);
-                    return;
-                }
-
-                /// Two arrays
-                if(leftType.isArray) {
-
-                    /// Must be the same subtype
-                    if (!leftType.getArrayType.subtype.exactlyMatches(rightType.getArrayType.subtype)) {
-                        rewriteToConstBool(n, false);
-                        return;
-                    }
-
-                    rewriteToMemcmp(n);
-                    return;
-                }
-
-                /// Two functions
-                if(leftType.isFunction) {
-                    assert(false, "implement me");
-                }
-
-                assert(leftType.isBasicType);
-                assert(rightType.isBasicType);
-
-                rewriteToBoolEquals(n);
-                return;
-
-            } else if (leftType.isPtr != rightType.isPtr) {
-                module_.addError(n, "Both sides if 'is' expression should be pointer types", true);
-                return;
-            }
-
-            /// ptr is ptr
-            assert(leftType.isPtr && rightType.isPtr);
-
-            /// null is null
-            if(n.left().isA!LiteralNull && n.right().as!LiteralNull) {
-                rewriteToConstBool(n, true);
-                return;
-            }
-
-            /// This is the only one that stays as an Is
-            return;
-
-        } else if(n.left().isTypeExpr && n.right().isTypeExpr) {
-            /// Type is Type
+        /// Type is Type
+        if(n.left().isTypeExpr && n.right().isTypeExpr) {
             rewriteToConstBool(n, leftType.exactlyMatches(rightType));
             return;
-        } else {
-            /// Type is Expression
-            /// Expression is Type
-
-
-
-            auto offendingExpr = n.left().isTypeExpr ? n.right() : n.left();
-
-            module_.addError(offendingExpr, "Comparing type and non-type. Did you mean @typeOf() ?", true);
         }
+
+        /// Type is expr
+        /// expr is Type
+        if(n.left().isTypeExpr || n.right().isTypeExpr) {
+            auto offendingExpr = n.left().isTypeExpr ? n.right() : n.left();
+            module_.addError(offendingExpr, "Comparing type to non-type. Did you mean @typeOf() ?", true);
+            return;
+        }
+
+        /// Identifier IS Identifier
+
+        if(leftType.isValue && rightType.isValue) {
+            /// value IS value
+
+            /// If the sizes are different then the result must be false
+            if(leftType.size != rightType.size) {
+                rewriteToConstBool(n, false);
+                return;
+            }
+
+            /// If one side is a struct then the other must be too
+            if(leftType.isStruct != rightType.isStruct) {
+                rewriteToConstBool(n, false);
+                return;
+            }
+            /// If one side is a tuple then the other side must be too
+            if(leftType.isTuple != rightType.isTuple) {
+                rewriteToConstBool(n, false);
+                return;
+            }
+            /// If one side is an array then the other must be too
+            if(leftType.isArray != rightType.isArray) {
+                rewriteToConstBool(n, false);
+                return;
+            }
+            /// If one side is a function then the other side must be too
+            if(leftType.isFunction != rightType.isFunction) {
+                rewriteToConstBool(n, false);
+                return;
+            }
+            /// If one side is an enum then the other side must be too
+            if(leftType.isEnum != rightType.isEnum) {
+                rewriteToConstBool(n, false);
+                return;
+            }
+
+            /// Two structs
+            if(leftType.isStruct) {
+
+                /// Must be the same type
+                if(leftType.getStruct != rightType.getStruct) {
+                    rewriteToConstBool(n, false);
+                    return;
+                }
+
+                rewriteToMemcmp(n);
+                return;
+            }
+
+            /// Two tuples
+            if(leftType.isTuple) {
+                rewriteToMemcmp(n);
+                return;
+            }
+
+            /// Two enums
+            if(leftType.isEnum) {
+                auto leftEnum  = leftType.getEnum;
+                auto rightEnum = rightType.getEnum;
+
+                /// Must be the same enum type
+                if (!leftEnum.exactlyMatches(rightEnum)) {
+                    rewriteToConstBool(n, false);
+                    return;
+                }
+
+                rewriteToEnumMemberValues(n, leftEnum);
+                return;
+            }
+
+            /// Two arrays
+            if(leftType.isArray) {
+
+                /// Must be the same subtype
+                if(!leftType.getArrayType.subtype.exactlyMatches(rightType.getArrayType.subtype)) {
+                    rewriteToConstBool(n, false);
+                    return;
+                }
+
+                rewriteToMemcmp(n);
+                return;
+            }
+
+            /// Two functions
+            if(leftType.isFunction) {
+                assert(false, "implement me");
+            }
+
+            assert(leftType.isBasicType);
+            assert(rightType.isBasicType);
+
+            rewriteToBoolEquals(n);
+            return;
+
+        }
+
+        if(leftType.isPtr != rightType.isPtr) {
+            module_.addError(n, "Both sides if 'is' expression should be pointer types", true);
+            return;
+        }
+
+        /// ptr is ptr
+        assert(leftType.isPtr && rightType.isPtr);
+
+        /// null is null
+        if(n.left().isA!LiteralNull && n.right().as!LiteralNull) {
+            rewriteToConstBool(n, true);
+            return;
+        }
+
+        /// This is the only one that stays as an Is
     }
 private:
     void rewriteToConstBool(Is n, bool result) {

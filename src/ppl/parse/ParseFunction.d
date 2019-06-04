@@ -83,7 +83,15 @@ public:
             f.name ~= f.op.value;
             t.next;
 
-            if(f.op==Operator.NOTHING) errorBadSyntax(module_, t, "Expecting an overloadable operator");
+            switch(f.op.id) with(Operator) {
+                case BOOL_EQ.id:
+                case BOOL_NE.id:
+                case INDEX.id:
+                    break;
+                default:
+                    module_.addError(f, "Cannot overload operator %s".format(f.op), true);
+                    break;
+            }
         }
 
         /// Function template

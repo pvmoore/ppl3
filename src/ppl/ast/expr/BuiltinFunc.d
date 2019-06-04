@@ -2,32 +2,33 @@ module ppl.ast.expr.BuiltinFunc;
 
 import ppl.internal;
 ///
-/// @alignOf    (expr)  // should work on TypeExpr only?
-/// @sizeOf     (expr)  // should work on TypeExpr only?
-/// @initOf     (expr)  // should work on TypeExpr only?
-/// @isRef      (expr)  // should work on TypeExpr only?
-/// @isValue    (expr)  // should work on TypeExpr only?
+/// @alignOf    (expr)
+/// @sizeOf     (expr)
+/// @initOf     (expr)
 ///
-/// @isInteger  (expr)  // should work on TypeExpr only?
-/// @isReal     (expr)  // should work on TypeExpr only?
-/// @isStruct   (expr)  // should work on TypeExpr only?
-/// @isFunction (expr)  // should work on TypeExpr only?
+/// @isRef      (expr)
+/// @isValue    (expr)
+/// @isInteger  (expr)
+/// @isReal     (expr)
+/// @isStruct   (expr)
+/// @isFunction (expr)
 ///
 /// @expect     (expr, const expr)
 ///
 /// @typeoOf     (expr)
 ///
 /// @arrayOf(type, expr... )
-/// @tupleOf( expr... )
+/// @structOf( expr... )
 ///
 ///
-/// @ctassert   (expr)  // compile time assert
+/// @ctAssert   (expr)  // compile time assert
 ///
 /// To be added:
-///     @assert     (expr)  // compile time or runtime assert
+///     @assert(expr)  // compile time or runtime assert
 ///     @as(typeexpr, expr)     ??
 ///     @listOf(type, expr... )
 ///     @mapOf(keytype, valuetype, key=value, key=value ...)
+///     @stringOf(expr...)
 
 final class BuiltinFunc : Expression {
     string name;

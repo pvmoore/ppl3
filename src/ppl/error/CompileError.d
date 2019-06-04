@@ -244,7 +244,7 @@ final class FunctionSuggestions : Suggestions {
 
             string s = "[%s L:%s] %s(%s)".format(moduleName, f.line+1, f.name, params.toString());
 
-            buf.add("\t%s", s);
+            buf.add("\t%s\n", s);
         }
         return buf.toString();
     }

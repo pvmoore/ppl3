@@ -181,59 +181,27 @@ bool isCommutative(Operator o) {
 }
 bool isOverloadable(Operator o) {
     switch(o.id) with(Operator) {
-        case ADD.id:
-        case SUB.id:
-        case MUL.id:
-        case DIV.id:
-        case MOD.id:
-        case SHL.id:
-        case SHR.id:
-        case USHR.id:
-        case BIT_OR.id:
-        case BIT_AND.id:
-        case BIT_XOR.id:
-
-        case ADD_ASSIGN.id:
-        case SUB_ASSIGN.id:
-        case MUL_ASSIGN.id:
-        case DIV_ASSIGN.id:
-        case MOD_ASSIGN.id:
-        case SHL_ASSIGN.id:
-        case SHR_ASSIGN.id:
-        case USHR_ASSIGN.id:
-        case BIT_OR_ASSIGN.id:
-        case BIT_AND_ASSIGN.id:
-        case BIT_XOR_ASSIGN.id:
-
         case BOOL_EQ.id:    /// ==
-        case BOOL_NE.id:    /// <>
-
-        case LT.id:         /// <
-        case GT.id:         /// >
-        case LTE.id:        /// <=
-        case GTE.id:        /// >=
-
-        case NEG.id:
-
-        case INDEX.id:
+        case BOOL_NE.id:    /// !=
+        case INDEX.id:      /// []
             return true;
         default:
             return false;
     }
 }
-bool isComparison(Operator o) {
-    switch(o.id) with(Operator) {
-        case LT.id:
-        case LTE.id:
-        case GT.id:
-        case GTE.id:
-        case BOOL_EQ.id:
-        case BOOL_NE.id:
-            return true;
-        default:
-            return false;
-    }
-}
+// bool isComparison(Operator o) {
+//     switch(o.id) with(Operator) {
+//         case LT.id:
+//         case LTE.id:
+//         case GT.id:
+//         case GTE.id:
+//         case BOOL_EQ.id:
+//         case BOOL_NE.id:
+//             return true;
+//         default:
+//             return false;
+//     }
+// }
 bool isPtrArithmetic(Operator o) {
     switch(o.id) with(Operator) {
         case ADD.id:

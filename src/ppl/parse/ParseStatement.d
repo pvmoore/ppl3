@@ -124,12 +124,6 @@ public:
                         structParser().parse(t, parent);
                     }
                     return;
-                case "operator":
-                    if(isOperatorOverloadFunction(t)) {
-                        funcParser().parse(t, parent);
-                        return;
-                    }
-                    break;
                 case "fn":
                     if(t.peek(1).type==TT.LBRACKET) {
                         /// fn()type
@@ -183,7 +177,7 @@ public:
         int eot = typeDetector().endOffset(t, node);
         if(eot!=-1) {
             /// First token is a type so this could be one of:
-            /// constructor, variable declaration or is_expr
+            /// constructor, variable declaration, type.xxx or is_expr
             auto nextTok = t.peek(eot+1);
 
             if(nextTok.type==TT.DOT) {
@@ -210,7 +204,6 @@ public:
         /// name<...> |a| {     // call with lambda arg
         /// name<...> {         // call with lambda arg
         if(t.type==TT.IDENTIFIER && t.peek(1).type==TT.LANGLE) {
-
             int end;
             if(ParseHelper.isTemplateParams(t, 1, end)) {
                 auto nextTok = t.peek(end+1);
@@ -272,94 +265,6 @@ private: //=====================================================================
             errorBadSyntax(module_, t, "Expressions not allowed at module scope");
         }
     }
-    ///
-    /// "operator" [+-*/%]=? "=" {"
-    ///
-    bool isOperatorOverloadFunction(Tokens t) {
-        assert(t.value=="operator");
-
-        int end;
-        if(isOperatorOverloadableType(t, 1, end)) {
-            if(t.peek(end).type==TT.LCURLY) return true;
-            return t.peek(end).type==TT.EQUALS && t.peek(end+1).type==TT.LCURLY;
-        }
-
-        t.next;
-
-        string msg = "Expecting an overloadable operator";
-        if(t.type==TT.BOOL_EQ || t.type==TT.LANGLE || t.type==TT.RANGLE || t.type==TT.LTE || t.type==TT.GTE) {
-            msg ~= ". Did you mean operator<> ?";
-        }
-
-        errorBadSyntax(module_, t, msg);
-        assert(false);
-    }
-    bool isOperatorOverloadableType(Tokens t, int offset, ref int endOffset) {
-        if(t.peek(offset).value=="neg") {
-            endOffset = offset+1;
-            return true;
-        }
-
-        switch(t.peek(offset).type) {
-            case TT.PLUS:
-            case TT.MINUS:
-            case TT.ASTERISK:
-            case TT.DIV:
-            case TT.PERCENT:
-            case TT.ADD_ASSIGN:
-            case TT.SUB_ASSIGN:
-            case TT.MUL_ASSIGN:
-            case TT.DIV_ASSIGN:
-            case TT.MOD_ASSIGN:
-            case TT.SHL:
-            case TT.SHL_ASSIGN:
-            case TT.SHR_ASSIGN:
-            case TT.USHR_ASSIGN:
-
-            case TT.PIPE:
-            case TT.AMPERSAND:
-            case TT.HAT:
-            case TT.BIT_OR_ASSIGN:
-            case TT.BIT_AND_ASSIGN:
-            case TT.BIT_XOR_ASSIGN:
-
-            case TT.LANGLE:     /// <
-            case TT.BOOL_EQ:    /// ==
-            case TT.BOOL_NE:    /// <>
-
-            case TT.LTE:        /// <=
-            case TT.GTE:        /// >=
-
-            endOffset = offset+1;
-            return true;
-
-            case TT.RANGLE:
-            if(t.peek(offset+1).type==TT.RANGLE && t.peek(offset+2).type==TT.RANGLE) {
-                /// USHR
-                /// >>>
-                endOffset = offset+3;
-            } else if(t.peek(offset+1).type==TT.RANGLE) {
-                /// SHR
-                /// >>
-                endOffset = offset+2;
-            } else {
-                /// >
-                endOffset = offset+1;
-            }
-            return true;
-            case TT.LSQBRACKET:
-            if(t.peek(offset+1).type==TT.RSQBRACKET) {
-                endOffset = offset+2;
-                return true;
-            }
-            break;
-            default:
-            break;
-        }
-        endOffset = offset;
-        return false;
-    }
-    ///
     /// import       ::= "import" [identifier "="] module_paths
     /// module_path  ::= identifier { "::" identifier }
     /// module_paths ::= module_path { "," module-path }
