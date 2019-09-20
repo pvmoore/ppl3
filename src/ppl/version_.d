@@ -5,6 +5,9 @@ public:
 const string VERSION = "3.35.0";
 
 /*
+
+// todo - change @structOf back to @tupleOf
+
 3.35.0 -
 
 3.34.0 - Remove operator overloads other than ==, != and []
@@ -122,12 +125,6 @@ TODO Compiler:
       member property updates or function calls.
 
     - Fold for/loop (wait for syntax change?)
-
-    ** struct decl syntax change:
-        struct A <T> (pub int a, bool b) {
-            # functions
-        }
-      so that it is similar to tuple decl syntax eg. struct(int a)
 
     ** Change 'loop' to 'for' eg. for(array) v, i {}
         - for(i in 0..10) {}
