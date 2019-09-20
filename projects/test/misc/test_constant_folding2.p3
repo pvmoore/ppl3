@@ -9,11 +9,11 @@ pub struct P(           // cannot be removed
     pub fn f1() {}      // cannot be removed
     fn f2() {}          // check targets within struct
 
-    pub struct P1()     // cannot be removed
-    pub enum E1 { E1 }  // cannot be removed
+    pub struct S1()     // cannot be removed
+    pub enum E1 { A }   // cannot be removed
     
-    struct P2()         // check types within struct   
-    enum E2 { E2 }      // check types within struct   
+    struct S2()         // check types within struct   
+    enum E2 { A }       // check types within struct   
 }
 // private struct with unreferenced members
 struct Q(               // check types from parent scope
@@ -25,11 +25,11 @@ struct Q(               // check types from parent scope
     pub fn f1() {}      // check targets within module
     fn f2() {}          // check targets within struct
 
-    pub struct Q1()     // cannot be removed
-    pub enum E1 { E1 }  // cannot be removed
+    pub struct S1()     // cannot be removed
+    pub enum E1 { A }   // cannot be removed
     
-    struct Q2()         // check types within struct   
-    enum E2 { E2 }      // check types within struct 
+    struct S2()         // check types within struct   
+    enum E2 { A }       // check types within struct 
 }
 
 struct R()  // check types from parent scope(Module)
@@ -48,8 +48,11 @@ fn globalFuncPriv() {       // check targets of parent scope
         pub static fn f3() {}
         static fn f4() {}
         
-        pub struct A2() {}
-        struct A3() {}
+        pub struct S1() {}
+        struct S2() {}
+        
+        pub enum E1 { A }
+        enum E2 { A }
     }
     
     A a
@@ -62,8 +65,11 @@ fn globalFuncPriv() {       // check targets of parent scope
     A.f3()
     //A.f4()  // private
     
-    A::A2 a2
-    //A::A3 a3    // private
+    A::S1 a2
+    //A::S2 a3    // private
+    
+    A::E1 e1
+    //A::E2 e2    // private
 }
 
 pub fn testConstantFolding2() {
@@ -72,8 +78,8 @@ pub fn testConstantFolding2() {
     //p.v2    // private
     p.f1()
     //p.f2()  // private
-    P::P1 p1
-    //P::P2 p2    // private
+    P::S1 p1
+    //P::S2 p2    // private
     P::E1 pe1
     //P::E2 pe2    // private
     
@@ -82,8 +88,8 @@ pub fn testConstantFolding2() {
     //q.v2    // private
     q.f1()
     //q.f2()  // private
-    Q::Q1 q1
-    //Q::Q2 q2 // private
+    Q::S1 q1
+    //Q::S2 q2 // private
     Q::E1 qe1
     //Q::E2 eq2   // private
     
