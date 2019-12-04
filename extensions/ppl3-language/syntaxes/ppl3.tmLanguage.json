@@ -1,0 +1,109 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "PPL3",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#function-calls"
+		},
+		{
+			"include" : "#line-comment"
+		},
+		{
+			"include" : "#block-comment"
+		},
+		{
+			"include" : "#number-literals"
+		}
+	],
+	"repository": {
+
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.ppl3",
+					"match": "\\b(var|const|if|while|ret|assert|not|is|as|and|or|else|break|continue|loop|select)\\b"
+				},
+				{
+					"name": "storage.type.ppl3",
+					"match": "\\b(bool|byte|short|int|long|float|double|void|struct|enum|fn|alias)(\\**|\\b)"
+				},
+				{
+					"name" : "storage.modifier.ppl3",
+					"match": "\\b(pub|extern|static)\\b"
+				},
+				{
+					"name" : "support.function.ppl3",
+					"match" : "@[_\\w]+\\b"
+				},
+				{
+					"name" : "entity.name.tag.ppl3",
+					"match" : "\\[\\[.*\\]\\]"
+				},
+				{
+
+					"name": "constant.numeric",
+					"match": "\\b(true|false|null)(\\**|\\b)"
+				}
+			]
+		},
+		"function-calls": {
+			"patterns": [
+				{
+					"match": "\\b([_\\w]+)\\(",
+					"captures": {
+						"1" : {
+							"name" : "entity.name.function"
+						}
+					}
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.ppl3",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.ppl3",
+					"match": "\\\\."
+				}
+			]
+		},
+		"number-literals": {
+			"patterns": [
+				{
+					"name"  : "constant.numeric",
+					"match" : "\\b[\\d_]+\\b"
+				},
+				{
+					"name"  : "constant.numeric.binary",
+					"match" : "\\b0b[0-1_]+\\b"
+				},
+				{
+					"name"  : "constant.numeric.hex",
+					"match" : "\\b0x[\\d_a-fA-F]+\\b"
+				}
+			]
+		},
+		"line-comment": {
+			"patterns": [{
+				"match": "//.*$",
+				"name": "comment.line.ppl3"
+			}]
+		},
+		"block-comment": {
+			"patterns": [{
+				"begin": "/\\*",
+				"end": "\\*/",
+				"name": "comment.block.ppl3"
+			}]
+		}
+	},
+	"scopeName": "source.ppl3"
+}

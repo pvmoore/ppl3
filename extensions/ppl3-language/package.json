@@ -1,0 +1,25 @@
+{
+    "name": "ppl3",
+    "displayName": "PPL3",
+    "description": "PPL3 language syntax highlighting support",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.38.0"
+    },
+    "categories": [
+        "Programming Languages"
+    ],
+    "contributes": {
+        "languages": [{
+            "id": "ppl3",
+            "aliases": ["PPL3", "ppl3"],
+            "extensions": [".p3"],
+            "configuration": "./language-configuration.json"
+        }],
+        "grammars": [{
+            "language": "ppl3",
+            "scopeName": "source.ppl3",
+            "path": "./syntaxes/ppl3.tmLanguage.json"
+        }]
+    }
+}
