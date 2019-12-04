@@ -84,3 +84,30 @@ enum Flag : int {
 }
 Flag f = Flag.B
 ```
+### Control Flow
+```
+if(1 < 3) {
+    // do this
+} else  {
+    // do this
+}
+const r = if(true) 3 else 5
+
+select {
+    1 > 2 : { /* do this */ }
+    1 > 1 : { /* do this */ }
+    else  : { /* do this */}
+}
+
+var i = 5
+const r = select(i) {
+    1,2   : 1
+    3,4,5 : 2
+    else  : 3
+}
+assert r == 2
+
+loop(var i = 0; i<2; i+=1) {
+
+}
+```
