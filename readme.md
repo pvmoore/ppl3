@@ -32,6 +32,10 @@ foo(3)
 fn bar<T>(T p) {}
 
 bar<double>(3.14)
+
+const lambda = |int a| { return a*10 }
+
+assert 30 == lambda(3)
 ```
 ### Structs
 ```
