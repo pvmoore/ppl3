@@ -32,6 +32,7 @@ foo(3)
 fn bar<T>(T p) {}
 
 bar<double>(3.14)
+bar(3.14)           // bar<float>(3.14) inferred
 
 const lambda = |int a| { return a*10 }
 
