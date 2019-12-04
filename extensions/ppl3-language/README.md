@@ -1,6 +1,6 @@
-# Spindle README
+# PPL3 Language Extension
 
-This is the README for your extension "spindle". After writing up a brief description, we recommend including the following sections.
+This is the README for your extension "ppl3-language". After writing up a brief description, we recommend including the following sections.
 
 ## Features
 
