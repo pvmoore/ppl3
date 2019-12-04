@@ -71,6 +71,9 @@ const v = Vector<float>(1.0, 2.0, 3.0)
 
 alias Vec = Vector<float>
 const v2 = v.dot(Vec(4.0, 5.0, 6.0))
+
+assert Vec(0,0,0) != v
+assert v[1] == 2.0
 ```
 ### Enums
 ```
