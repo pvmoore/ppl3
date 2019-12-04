@@ -6,7 +6,7 @@ const string VERSION = "3.35.0";
 
 /*
 
-// todo - change @structOf back to @tupleOf
+// todo - add @structPtrOf, @arrayPtrOf
 
 3.35.0 -
 
@@ -112,7 +112,6 @@ TODO Compiler:
     - Implement [[range]] attribute and add checks if boundsChecks=true
 
     - Replace pointers with ref / const ref
-    - Remove module, replace with struct for entire file??
     - Change import syntax
     - Add coroutine intrinsics eg. @coroPrelude, @coroHandle, @coroSuspend, @coroResume
 
