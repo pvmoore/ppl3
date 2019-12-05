@@ -11,9 +11,9 @@ Prototype Programming Language
 
 ### Variables
 ```
-var a = 0       // int
+var a   = 0       // int
 const b = 3.2   // const float
-int c = 0
+int c   = 0
 float d = 3.0 + b
 ```
 ### Types
@@ -70,7 +70,7 @@ struct Vector<T>(T x, T y, T z) {
 const v = Vector<float>(1.0, 2.0, 3.0)
 
 alias Vec = Vector<float>
-const v2 = v.dot(Vec(4.0, 5.0, 6.0))
+const v2  = v.dot(Vec(4.0, 5.0, 6.0))
 
 assert Vec(0,0,0) != v
 assert v[1] == 2.0

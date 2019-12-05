@@ -27,11 +27,11 @@
 			"patterns": [
 				{
 					"name": "keyword.control.ppl3",
-					"match": "\\b(var|const|if|while|ret|assert|not|is|as|and|or|else|break|continue|loop|select)\\b"
+					"match": "\\b(var|const|if|while|ret|import|assert|not|is|as|and|or|else|break|continue|loop|select)\\b"
 				},
 				{
 					"name": "storage.type.ppl3",
-					"match": "\\b(bool|byte|short|int|long|float|double|void|struct|enum|fn|alias)(\\**|\\b)"
+					"match": "\\b(bool|byte|short|int|long|float|double|void|struct|enum|fn|alias)(\\*+|\\b)"
 				},
 				{
 					"name" : "storage.modifier.ppl3",
