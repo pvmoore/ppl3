@@ -9,6 +9,7 @@ const string VERSION = "3.35.0";
 // todo - add @structPtrOf, @arrayPtrOf
 //      - rename ret back to return
         - force this. prefix when accessing functions or members from within a class function.
+        - restrict groovy-style functions slightly by forcing || {} syntax rather than just {}
 
 3.35.0 -
 
