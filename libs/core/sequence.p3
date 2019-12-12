@@ -1,0 +1,7 @@
+[[module priority=-1_000_000]]
+
+pub struct Sequence<T>() {
+
+    pub fn hasNext() { ret false }
+    pub fn next() { ret @initOf(T) }
+}

@@ -5,16 +5,22 @@
 pub fn ucmp(int a, int b) {
     ret 0
 }
+pub fn ucmp(long a, long b) {
+    ret 0
+}
 
 pub fn ult(int a, int b) {
     ret false
 }
+
 pub fn ulte(int a, int b) {
     ret false
 }
+
 pub fn ugt(int a, int b) {
     ret false
 }
+
 pub fn ugte(int a, int b) {
     ret false
 }

@@ -218,6 +218,8 @@ private:
             "core::assert",
             "core::string",
             "core::unsigned",
+            "core::sequence",
+
 
             "std::console",
             "std::List",

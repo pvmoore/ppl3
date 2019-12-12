@@ -1,5 +1,5 @@
 [[module priority=-900_000]]
 
-pub fn new() {
+fn new() {
 
 }

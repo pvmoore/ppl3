@@ -3,27 +3,27 @@
 main {
     import test_implicit_template_funcs
     testImplicitTemplateFunctions()
-} 
+}
 */
 
 var s = "hello"
 
 import imports::imports             // Bat, Cat, Dog, IntPtrPtr, Wolf, importedFunc()
-import nodes::literals       
-import test_arrays  
-import misc::test_constant_folding   
+import nodes::literals
+import test_arrays
+import misc::test_constant_folding
 
-alias AA = int 
-alias BB = AA*     // int*  
+alias AA = int
+alias BB = AA*     // int*
 alias CC = BB      // int*
 alias DD = CC*     // int**
 DD dd              // int**
-alias EE = IntPtrPtr* 
-EE ee              // int*** 
+alias EE = IntPtrPtr*
+EE ee              // int***
 
 // declare for later
 struct Gold
-struct Gold // ok 
+struct Gold // ok
 
 struct Silver(Gold* gold)
 struct Gold( // definition
@@ -46,7 +46,7 @@ struct Animal(
     Goal g)
 {
     struct(int,bool) anon
-    
+
     pub fn bark() { // Animal* this
         assert true
     }
@@ -73,7 +73,7 @@ struct Thingy(pub int a) {
     //new = { Thingy* this }    // implicit
 }
 
-fn myfunc(bool flag) { 
+fn myfunc(bool flag) {
     ret flag
 }
 
@@ -84,7 +84,7 @@ fn someArrays() {
 
 struct Array <A,B>(
     A a,
-    B b 
+    B b
 )
 
 fn noofoo(int a) {
@@ -92,17 +92,17 @@ fn noofoo(int a) {
     ret b
 }
 fn tempfoo<T>(T a, int b) void {
-    
-}  
+
+}
 
 struct wagahagahgahg(int a) { fn sdasdasdasd() {} }
 
-//pub WinMain {   
+//pub WinMain {
 pub fn main() {
-   
+
     fn()int fptr      = { ret 1 }
     fn(int)void fptr2 = |int a| {}
-    
+
     const noobar = {
         ret 1
     }
@@ -110,24 +110,26 @@ pub fn main() {
     noofoo(1)
     noobar()
     tempfoo(true, 1)
-    
+
     ////////
 
     import misc::misc;              testMisc()
-    import misc::builtin_funcs;     testBuiltinFuncs() 
+    import misc::builtin_funcs;     testBuiltinFuncs()
     import nodes::select;           testSelect()
     import functions::closures;     testClosures()
     import test_enum;               testEnum()
     import misc::attributes;        testAttributes()
     import misc::ptr_arithmetic;    testPtrArithmetic()
     import misc::escape_analysis;   testEscapees()
-    
+
     import texpr = test_expressions;    texpr.testExpressions()
-    
+
+    import core_::sequences;    testSequences()
+
     testLiterals()
     testConstantFolding()
     testArrays()
-	
+
     const testGlobals = {
         assert @typeOf(dd) is int**
         assert @typeOf(ee) is int***
@@ -144,7 +146,7 @@ pub fn main() {
         Animal** animal2
         AnimalPtr animalPtr
         IntPtr ip
-        
+
         var animal3 = Animal()
         animal3.bark()
         dothings(0, animal3)
@@ -211,7 +213,7 @@ pub fn main() {
 
     testModules()
     testStatements()
-    testExpressions() 
+    testExpressions()
     testFunctions()
     testStructures()
     testTemplates()
@@ -224,37 +226,37 @@ fn testModules() {
     import misc::unreferenced_module
 
     testImports()
-    
-    importedFunc()  
-    
+
+    importedFunc()
+
     Cat cat             // from test_imports
     Dog dog1 = Dog()
     var dogsAge = dog1.age + 1
-    
+
     Dog* dog2 = null     // from test_imports
     dog2 = &dog1
     dog2 = null
-    
+
     var dog3 = Dog*()
-    
+
     alias GreyWolf = Wolf
     GreyWolf wolf
-    
+
     struct(int, Bat berty) bertyStruct
 }
 fn testStatements() {
-    import l = nodes::loop, 
+    import l = nodes::loop,
            v = nodes::variable
 
     l.testLoop()
     v.testVariables()
 }
 fn testExpressions() {
-    import nodes::as, 
-           nodes::if, 
+    import nodes::as,
+           nodes::if,
            tuples::literal_tuple,
            tuples::tuple_decl
-    
+
     testAs()
     testIf()
     testLiteralTuple()
@@ -266,9 +268,9 @@ fn testFunctions() {
     testCalls()
 }
 fn testStructures() {
-    import structs::structs, 
-           structs::constructors, 
-           structs::statics, 
+    import structs::structs,
+           structs::constructors,
+           structs::statics,
            structs::operator_overloading
 
     testStructs()
@@ -277,22 +279,22 @@ fn testStructures() {
     testOperatorOverloading()
 }
 fn testTemplates() {
-    import templates::template_functions, 
+    import templates::template_functions,
            templates::template_structs,
            templates::implicit_template_funcs
-           
+
     testTemplateStructs()
     testTemplateFunctions()
     testImplicitTemplateFunctions()
 }
 fn testCore() {
-    import core_::console, 
-           core_::list, 
-           core_::string, 
+    import core_::console,
+           core_::list,
+           core_::string,
            core_::unsigned
 
-    testConsole()   
-    testList()   
+    testConsole()
+    testList()
     testString()
     testUnsigned()
 }
