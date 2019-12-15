@@ -127,6 +127,8 @@ pub fn main() {
 
     import core_::sequences;    testSequences()
 
+    import test_optional; testOptional()
+
     testLiterals()
     testConstantFolding()
     testArrays()

@@ -150,7 +150,10 @@ private:
 
         /// return type
         int end2 = endOffset(t, node);
-        if(end2==-1) return false;
+        if(end2==-1) {
+            errorBadSyntax(module_, t, "Function ptr return type is missing");
+            return false;
+        }
 
         t.next(end2 + 1);
 

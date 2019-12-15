@@ -31,8 +31,11 @@ pub fn testCalls() {
             closure()
         }
 
+
         blah()   { println("hello") }
         blah2(1) { println("hello2") }
+        blah3<int> |int a| {}
+        //blah3 |int a| {}      // should be inferred but isn't
 
         // blah { println("hello halh") }  not valid syntax
 
@@ -41,6 +44,10 @@ pub fn testCalls() {
         blah2(2) || { println("hello blah2") }
     }
     testGroovyStyleCall()
+}
+
+fn blah3<T>(fn(T p)void closure) {
+
 }
 
 fn a() {

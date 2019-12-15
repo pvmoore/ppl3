@@ -115,7 +115,6 @@ private:
 
         /// name (          // call
         /// name |          // call with lambda arg
-        /// name {          // call with lambda arg
         /// name<...> (     // call
         /// name<...> |     // call with lambda arg
         /// name<...> {     // call with lambda arg

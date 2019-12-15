@@ -221,6 +221,7 @@ private:
             "core::sequence",
 
 
+            "std::optional",
             "std::console",
             "std::List",
             "std::file",
