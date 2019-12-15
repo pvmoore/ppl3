@@ -41,7 +41,6 @@ public:
                     warn(t, "Statement on the same line: %s %s %s".format(parent.id, lastChild.id, t.get()));
                 }
             }
-
         }
 
         consumeAttributes(t, parent);
@@ -49,7 +48,7 @@ public:
 
         /// Handle access
 
-        /// Default to private
+        /// Default to private access
         t.setAccess(Access.PRIVATE);
 
         if(t.type==TT.IDENTIFIER) {
@@ -149,12 +148,6 @@ public:
                     return;
                 default:
                     break;
-            }
-
-            /// name {
-            if(t.peek(1).type==TT.LCURLY) {
-                funcParser().parse(t, parent);
-                return;
             }
         }
         switch(t.type) with(TT) {

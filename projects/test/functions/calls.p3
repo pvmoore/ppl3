@@ -22,6 +22,7 @@ pub fn testCalls() {
 
     const testGroovyStyleCall = {
         println("Test ... Groovy type function calls")
+
         // declarations
 		const blah = |fn()void closure| {
             closure()
@@ -30,9 +31,14 @@ pub fn testCalls() {
             closure()
         }
 
-		//calls
         blah()   { println("hello") }
         blah2(1) { println("hello2") }
+
+        // blah { println("hello halh") }  not valid syntax
+
+        blah || { println("hello halh") }
+        blah() || { println("hello halh") }
+        blah2(2) || { println("hello blah2") }
     }
     testGroovyStyleCall()
 }

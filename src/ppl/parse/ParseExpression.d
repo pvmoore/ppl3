@@ -129,15 +129,10 @@ private:
                 return;
             }
             if(t.peek(1).type==TT.LCURLY) {
-                /// Groovy-style call with funcptr arg
-                /// func { }
-                //if(parent.isDot) {
-                    parseCall(t, parent);
-                    return;
-                //}
+                errorBadSyntax(module_, t, "Function call should be eg. %s() or %s || {}".format(t.value, t.value));
             }
             if(t.peek(1).type==TT.PIPE) {
-                /// Groovy-style call with funcptr arg
+                /// Call with lambda arg
                 /// func |...| {
                 if(ParseHelper.isLambdaParams(t, parent, 1)) {
                     parseCall(t, parent);
@@ -145,7 +140,7 @@ private:
                 }
             }
             if(t.peek(1).type==TT.LANGLE) {
-                /// Could be a call or a Binary name < expr
+                /// Could be a call or identifier < expr
                 int end;
                 if(ParseHelper.isTemplateParams(t, 1, end)) {
                     parseCall(t, parent);
