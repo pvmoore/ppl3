@@ -85,7 +85,9 @@ public:
         return type()==TT.IDENTIFIER && value()==k;
     }
     bool onSameLine(int offset = 0) {
-        return peek(offset).line==peek(offset-1).line;
+        auto a = peek(offset).line;
+        auto b = peek(offset-1).line;
+        return a!=-1 && b!=-1 && a==b;
     }
     //=======================================
     void next(int numToMove=1) {

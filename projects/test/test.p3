@@ -107,6 +107,7 @@ pub fn main() {
         ret 1
     }
 
+
     noofoo(1)
     noobar()
     tempfoo(true, 1)

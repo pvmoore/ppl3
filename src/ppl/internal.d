@@ -21,7 +21,7 @@ import std.algorithm.sorting   : sort;
 
 import common : DynamicArray = Array;
 import common : From, Hash, Hasher, Queue, Set, Stack, StringBuffer,
-                as, dynamicDispatch, isA, firstNotNull, flushConsole, endsWith,
+                as, dynamicDispatch, isA, isOneOf, firstNotNull, flushConsole, endsWith,
                 putIfAbsent,
                 removeChars, repeat, toInt, visit;
 

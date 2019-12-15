@@ -30,6 +30,20 @@ public:
             }
         }
 
+        // Check for statements on the same line that are not separated by semicolons
+        if(t.type != TT.SEMICOLON && t.onSameLine && !t.peek(-1).type.isOneOf(TT.SEMICOLON, TT.COMMA)) {
+            auto lastChild = parent.last;
+            if(lastChild) {
+                if(parent.id!=NodeID.STRUCT &&
+                   !lastChild.isParameters &&
+                   !lastChild.isComposite)
+                {
+                    warn(t, "Statement on the same line: %s %s %s".format(parent.id, lastChild.id, t.get()));
+                }
+            }
+
+        }
+
         consumeAttributes(t, parent);
         if(!t.hasNext) return;
 

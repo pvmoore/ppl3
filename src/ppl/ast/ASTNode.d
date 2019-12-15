@@ -99,6 +99,7 @@ bool isLiteralNumber(inout ASTNode n)   { return n.id()==NodeID.LITERAL_NUMBER; 
 bool isLiteralFunction(inout ASTNode n) { return n.id()==NodeID.LITERAL_FUNCTION; }
 bool isLoop(inout ASTNode n)            { return n.id()==NodeID.LOOP; }
 bool isModule(inout ASTNode n)          { return n.id()==NodeID.MODULE; }
+bool isParameters(inout ASTNode n)      { return n.id()==NodeID.PARAMETERS; }
 bool isReturn(inout ASTNode n)          { return n.id()==NodeID.RETURN; }
 bool isSelect(inout ASTNode n)          { return n.id()==NodeID.SELECT; }
 bool isTypeExpr(inout ASTNode n)        { return n.id()==NodeID.TYPE_EXPR; }

@@ -7,13 +7,17 @@ const string VERSION = "3.35.0";
 /*
 
 // todo - add @structPtrOf, @arrayPtrOf
-//      - rename ret back to return
+        - rename 'ret' back to 'return'
         - force this. prefix when accessing functions or members from within a class function.
         - restrict groovy-style functions slightly by forcing || {} syntax rather than just {}
+        - Add Optional<T> .exists, get(), getOr(T t), else(|T t| }), .then(|T t| {})
+        - Add formatted string f"My name is ${name}, age ${04f:age}"
+        - Ensure literal string concatenation is working eg. "hello " "there" --> "hello there"
+        - Force ';' between statements on the same line
 
 3.35.0 -
 
-3.34.0 - Remove operator overloads other than ==, != and []
+3.34.0 - Remove operator verloads other than ==, != and []
 
 3.33.0 - Show first couple of errors in detail. Subsequent errors are shown one per line.
          Change <> operator to !=.

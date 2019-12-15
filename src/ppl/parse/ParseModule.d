@@ -205,7 +205,7 @@ private:
         Token tok(string value) {
             Token t;
             t.type   = TT.IDENTIFIER;
-            t.line   = 1;
+            t.line   = -1;
             t.column = 1;
             t.value  = value;
             return t;

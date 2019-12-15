@@ -3,9 +3,9 @@ pub fn testVariables() {
     const basicTypes = {
         bool a
         bool a1  = true
-        bool* a2 = &a1      ; assert *a2 == true 
+        bool* a2 = &a1      ; assert *a2 == true
 
-        byte b 
+        byte b
         byte b1  = 1 as byte
         byte b2  = b1
         byte* b3 = &b2;     ; assert *b3 == 1
@@ -17,15 +17,19 @@ pub fn testVariables() {
         int d
         int d1   = 3
         int* d2  = &d1      ; assert *d2 == 3
-        int** d3 = &d2        assert @typeOf(*d3) is int*
+        int** d3 = &d2      ; assert @typeOf(*d3) is int*
                               assert @typeOf(**d3) is int
-                              assert **d3 == 3 
+                              assert **d3 == 3
+        int d4 = 0b0000_1111; assert d4 == 15
+        int d5 = 0xffff;      assert d5 == 65535
+
+
         half e
         half e1 = 1.1h
 
         float f
         float f1 = 1.1f
-    
+
         double g
         double g1 = 1.2d
 
@@ -33,7 +37,7 @@ pub fn testVariables() {
         long h1 = 4
 
         const i = 0   ; assert @typeOf(i) is int
-        
+
         //var var X = 1  // var specified twice
     }
     const anonStructs = {
@@ -46,11 +50,11 @@ pub fn testVariables() {
         struct(float, int b)   b3
 
         struct(float) c = @structOf(1.3f)
-        const c1 = &c      ; assert @typeOf(c1) is struct(float)*     
-                             assert @typeOf(*c1) is struct(float) 
+        const c1 = &c      ; assert @typeOf(c1) is struct(float)*
+                             assert @typeOf(*c1) is struct(float)
                              assert *c1 == @structOf(1.3f)
         const c2 = &c1     ; assert @typeOf(c2) is struct(float)**
-                               
+
     }
     const namedStructs = {
         struct A(pub float a = 9)
@@ -58,7 +62,7 @@ pub fn testVariables() {
         A a1   = A()
         A* a2  = &a1    ; assert @typeOf(a2) is A*   ; assert (*a2).a == 9
         A** a3 = &a2    ; assert @typeOf(a3) is A**  ; assert (**a3).a == 9
-    }   
+    }
     const arrays = {
         int[1] a
         double[2] b
@@ -72,9 +76,9 @@ pub fn testVariables() {
         float[2]* e1 = &e       ; assert @typeOf(e1) is float[2]*    ; assert (*e1)[0]==5
         const e2     = &e1      ; assert @typeOf(e2) is float[2]**   ; assert (**e2)[0]==5
     }
-    basicTypes() 
-    anonStructs()  
-    namedStructs() 
+    basicTypes()
+    anonStructs()
+    namedStructs()
     arrays()
 }
 
