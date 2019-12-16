@@ -2,7 +2,7 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.35.0";
+const string VERSION = "3.36.0";
 
 /*
 
@@ -15,7 +15,7 @@ const string VERSION = "3.35.0";
         - Add formatted string f"My name is ${name}, age ${04f:age}"
         - Ensure literal string concatenation is working eg. "hello " "there" --> "hello there"
 
-3.35.0 -
+3.35.0 - Rename 'ret' back to 'return'
 
 3.34.0 - Remove operator verloads other than ==, != and []
 

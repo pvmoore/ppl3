@@ -94,7 +94,7 @@ public:
                 case"loop":
                     parseLoop(t, parent);
                     return;
-                case "ret":
+                case "return":
                     parseReturn(t, parent);
                     return;
                 case "select":

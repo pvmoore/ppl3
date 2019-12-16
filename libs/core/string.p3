@@ -14,114 +14,114 @@ pub struct string( // 16 bytes
         this.length  = len
     }
     pub static fn of(int v) {
-        if(v==0) ret ""
+        if(v==0) return ""
         var list = List<byte>()
         if(v<0) {
             list.add('-' as byte)
-            v = -v   
+            v = -v
         }
         loop(; v>0; v/=10) {
             var mod = v%10
             list.add((mod + '0') as byte)
         }
-        
-         
-        ret string(list.ptr(), 0, list.length)      
+
+
+        return string(list.ptr(), 0, list.length)
     }
-    pub fn ptr()   { ret basePtr+offset }
-    pub fn empty() { ret length==0 }
-    pub fn first() { assert not empty(); ret ptr()[0] }
-    pub fn last()  { assert not empty(); ret ptr()[length-1] }
-    
+    pub fn ptr()   { return basePtr+offset }
+    pub fn empty() { return length==0 }
+    pub fn first() { assert not empty(); return ptr()[0] }
+    pub fn last()  { assert not empty(); return ptr()[length-1] }
+
     pub fn cstr() {
         // todo - this might seg fault
-        if(ptr()[length]==0) ret ptr() 
-            
+        if(ptr()[length]==0) return ptr()
+
         var copy = GC.alloc(length+1) as byte*
         memcpy(copy, ptr(), length)
         copy[length] = 0 as byte
-        
-        ret copy
+
+        return copy
     }
-    
-    pub fn operator[](int index) { ret ptr()[index] }
-    
+
+    pub fn operator[](int index) { return ptr()[index] }
+
     pub fn operator==(string s) {
-        ret length==s.length and memcmp(ptr(), s.ptr(), length) == 0 
-    } 
-           
+        return length==s.length and memcmp(ptr(), s.ptr(), length) == 0
+    }
+
     pub fn indexOf(int ch) {
         const p = memchr(ptr(), ch, length)
-        ret if(p) (p-ptr()) as int else -1
+        return if(p) (p-ptr()) as int else -1
     }
     pub fn indexOf(string s) {
         //ret indexOf(s, 0)  // fixme
-        ret this.indexOf(s, 0)
+        return this.indexOf(s, 0)
     }
     pub fn indexOf(int ch, int startIndex) {
-        if(startIndex<0 or startIndex>=length) ret -1
+        if(startIndex<0 or startIndex>=length) return -1
         const p = memchr(basePtr+offset+startIndex, ch, length-startIndex)
-        ret if(p) (p-ptr()) as int else -1
+        return if(p) (p-ptr()) as int else -1
     }
     pub fn indexOf(string s, int startIndex) {
-        if(s.empty()) ret -1
-        if(startIndex<0) ret -1
-            
+        if(s.empty()) return -1
+        if(startIndex<0) return -1
+
         const end = length-s.length
-        if(end<0) ret -1
-        
+        if(end<0) return -1
+
         loop(int pos=startIndex; pos<=end; pos += 1) {
             pos = indexOf(s.first(), pos)
-            
+
             select(pos) {
                 -1 : break
                 else : {
-                    if(memcmp(ptr()+pos, s.ptr(), s.length)==0) ret pos 
-                }   
+                    if(memcmp(ptr()+pos, s.ptr(), s.length)==0) return pos
+                }
             }
         }
-        ret -1   
+        return -1
     }
     pub fn startsWith(int ch) {
-        ret length>0 and ptr()[0]==ch   
+        return length>0 and ptr()[0]==ch
     }
     pub fn startsWith(string s) {
-        ret length >= s.length and memcmp(ptr(), s.ptr(), s.length) == 0           
+        return length >= s.length and memcmp(ptr(), s.ptr(), s.length) == 0
     }
     pub fn endsWith(int ch) {
-        ret length>0 and ptr()[length-1]==ch 
+        return length>0 and ptr()[length-1]==ch
     }
     pub fn endsWith(string s) {
-        if(s.length==0) ret false
+        if(s.length==0) return false
         const off = length-s.length;
-        ret length >= s.length and memcmp(ptr()+off, s.ptr(), s.length) == 0   
+        return length >= s.length and memcmp(ptr()+off, s.ptr(), s.length) == 0
     }
     pub fn contains(int ch) {
-        ret indexOf(ch) != -1   
+        return indexOf(ch) != -1
     }
     pub fn contains(string s) {
-        ret indexOf(s) != -1
+        return indexOf(s) != -1
     }
     pub fn trim() {
-        // todo   
+        // todo
         assert false
     }
     pub fn toInt(int default) {
         var value = 0
         var mul   = 1
-            
+
         loop(var i = length-1; i>=0; i -= 1) {
-            var ch = this[i] - '0' 
-            
-            if(ch<0 or ch>9) ret default    
+            var ch = this[i] - '0'
+
+            if(ch<0 or ch>9) return default
             value += ch*mul
-            mul   *= 10     
+            mul   *= 10
         }
-        ret value          
+        return value
     }
     pub fn toFloat(float default) {
         assert false
-    }    
+    }
 }
 //=================================================================================================
 // Large string
@@ -129,10 +129,10 @@ pub struct string( // 16 bytes
 pub struct lstring( // 24 bytes
     byte* basePtr,
     long offset,
-    pub long length     
+    pub long length
 )
-    
+
 fn new() {
-    assert @sizeOf(string)==16   
-    assert @sizeOf(lstring)==24   
+    assert @sizeOf(string)==16
+    assert @sizeOf(lstring)==24
 }

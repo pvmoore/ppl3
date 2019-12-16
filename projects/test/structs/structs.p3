@@ -23,7 +23,7 @@ struct Fruit(
     pub fn bar(/* Fruit* this, */ int a) {
         struct Vegetable(bool isGreen)
         isABanana = true
-        ret a
+        return a
     }
     pub fn baz(/* Fruit* this, */ bool sing) {
         int loc
@@ -38,7 +38,7 @@ struct Fruit(
         this.a += 1
     }
     pub fn retThis() {
-        ret this
+        return this
     }
 }
 struct Colour() {
@@ -66,22 +66,22 @@ pub fn testStructs() {
 
     t.foo()
     //t.boo(3.1)
-    
+
     //Fruit::foobar(1)
 
     t.retThis().foo()
 
     //Colour col
-    
+
     Alpha alpha
     Beta beta
     Gamma gamma
     Delta<float> delta
     Epsilon<double> epsilon
-    
+
     alpha.init(7)
     delta.init(9.0)
-    
+
     import structs::inner_structs
     testInnerStructs()
 }

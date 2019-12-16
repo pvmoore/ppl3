@@ -1,6 +1,6 @@
 
 pub fn i3func() {
-    ret 77
+    return 77
 }
 
 pub struct I3Object(int a)

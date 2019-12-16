@@ -23,7 +23,7 @@ pub fn print(long n) {
         n = -n
     } else if(n==0) {
         print("0")
-        ret
+        return
     }
     loop(int i; n>0; n /= 10) {
         const mod = n%10
@@ -41,11 +41,11 @@ pub fn print(string s) {
     print(s.ptr(), s.length)
 }
 pub fn print(byte* bytes) {
-    if(not bytes) ret
+    if(not bytes) return
     print(bytes, strlen(bytes))
 }
 pub fn print(byte* bytes, long length) {
-    if(not bytes) ret
+    if(not bytes) return
     loop(long i; i<length; i+=1) {
         putchar(bytes[i])
     }

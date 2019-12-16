@@ -3,19 +3,19 @@ import imports::imports
 
 struct M1() {
     pub fn foo(int a) {
-        ret 10
+        return 10
     }
     pub fn foo<T>(T a) {
-        ret 20
+        return 20
     }
     pub fn foo<A,B>(A a, B b) {
-        ret 30
+        return 30
     }
     pub fn foo0<A>(int a, int b, struct(A,A) c) {
-        ret 40
+        return 40
     }
-    pub fn foo0<A>(int a, fn(A,A)A b) { 
-        ret 50
+    pub fn foo0<A>(int a, fn(A,A)A b) {
+        return 50
     }
     pub fn bar() {
         // internal standard call
@@ -36,18 +36,18 @@ struct M1() {
 
         // implicit
         assert 40 == foo0(1, 1, @structOf(1,1) )
-        assert 50 == foo0(1, |int a, int b| {ret a+b} )
+        assert 50 == foo0(1, |int a, int b| {return a+b} )
     }
 }
 struct M2 <T>(pub T t) {
     pub fn foo<F>(F a) {
-        ret 100
+        return 100
     }
     pub fn foo<A,B>(A a, B b) {
-        ret 101
+        return 101
     }
     pub fn foo(float f) {
-        ret 102
+        return 102
     }
 }
 //struct BadTemplate <int> {}
@@ -107,8 +107,8 @@ pub fn testTemplateFunctions() {
         assert 5 == func2(1, 1, @structOf(1,1) ) // <int>(int,int,[int,int])
         assert 5 == func2<float>(1,1, @structOf(1.1, 2.2) )
 
-        assert 6 == func2(1, |float a, float b| {ret a+b})   // <float>(int,{float,bool}*)
-        assert 6 == func2<byte>(2 as byte, |byte a, byte b| {ret 1 as byte})
+        assert 6 == func2(1, |float a, float b| {return a+b})   // <float>(int,{float,bool}*)
+        assert 6 == func2<byte>(2 as byte, |byte a, byte b| {return 1 as byte})
 
         assert 7 == func3(@arrayOf(int, 1,2), 3d) // func3<int,double>(int[2])
         assert 7 == func3<float,bool>(@arrayOf(float, 1.1,2.2), true)
@@ -137,23 +137,23 @@ pub fn testTemplateFunctions() {
 }
 
 fn func<T>(T a) {
-    ret 1
+    return 1
 }
 fn func<T>(T* a) {
-    ret 4
+    return 4
 }
 fn func<A,B>(A a, B b) {
-    ret 3
+    return 3
 }
 fn func2<A>(int a, int b, struct(A,A) c) {
-    ret 5
+    return 5
 }
 fn func2<A>(int a, fn(A,A)A c) {
-    ret 6
+    return 6
 }
 fn func3<A,B>(A[2] a, B b) {
-    ret 7
+    return 7
 }
 fn func(float a) {
-    ret 2
+    return 2
 }

@@ -12,10 +12,8 @@ pub struct Optional<T>(
         this.value = value
     }
 
-    pub fn get() { ret if(exists) value else @initOf(T) }
-    pub fn getOr(T other) { ret if(exists) value else other }
+    pub fn get() { return if(exists) value else @initOf(T) }
+    pub fn getOr(T other) { return if(exists) value else other }
     pub fn else(fn()void doThis) { if(not exists) doThis() }
     pub fn then(fn(T t)void doThis) { if(exists) doThis(value) }
-
-    fn foo(fn(T t) bar) {}
 }

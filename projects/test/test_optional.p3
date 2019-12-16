@@ -16,8 +16,7 @@ pub fn testOptional() {
 
 
     // fixme - missing template parameter
-    //Optional opt3
-    //assert not opt3.exists
+    Optional opt4
 
     var opt3 = Optional<float>*()
     assert not opt3.exists

@@ -2,6 +2,6 @@
 
 pub struct Sequence<T>() {
 
-    pub fn hasNext() { ret false }
-    pub fn next() { ret @initOf(T) }
+    pub fn hasNext() { return false }
+    pub fn next() { return @initOf(T) }
 }

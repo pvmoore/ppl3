@@ -4,48 +4,48 @@ struct A
 pub fn testClosures() {
     A a = A()
     a.foo()
-    
+
     int hello = 1
-    
+
     // fn(bool)void
     const closure0 = |bool a| {}
-    
+
     const lambda = || {}
-    
+
     const closure1 = |int a| {
         // this     // nope
         // hello    // nope
-        ret 2 
+        return 2
     }
-    const closure2 = |int a| { 
-        ret 3 
+    const closure2 = |int a| {
+        return 3
     }
     fn(int)int funcptr  = closure2
-    fn(int)int funcptr2 = closure2  
+    fn(int)int funcptr2 = closure2
 
     assert 2 == closure1(1)
     assert 3 == closure2(1)
-    assert 3 == funcptr(1)  
-} 
+    assert 3 == funcptr(1)
+}
 struct A(pub int member = 1) {
     pub fn foo() {
         assert @typeOf(this) is A*
         int hello = 1
-        member 
-        
+        member
+
         const closure1 = |int a| {
             // this     // nope
             // hello    // nope
             // member   // nope
-            ret 1
-        }   
+            return 1
+        }
         fn()int closure2 = {
-            ret 2
+            return 2
         }
         assert 1 == closure1(1)
         assert 2 == closure2()
-        
+
         assert @typeOf(closure1) is fn(int)int
         assert @typeOf(closure2) is fn()int
-    }   
+    }
 }

@@ -21,33 +21,33 @@ struct tgc_t(
     long nitems, long nslots, long mitems, long nfrees
 )
 
-extern fn tgc_start(tgc_t* gc, void* stk) void 
-extern fn tgc_stop(tgc_t* gc) void 
-extern fn tgc_pause(tgc_t* gc) void 
-extern fn tgc_resume(tgc_t* gc) void 
-extern fn tgc_run(tgc_t* gc) void 
+extern fn tgc_start(tgc_t* gc, void* stk) void
+extern fn tgc_stop(tgc_t* gc) void
+extern fn tgc_pause(tgc_t* gc) void
+extern fn tgc_resume(tgc_t* gc) void
+extern fn tgc_run(tgc_t* gc) void
 
-extern fn tgc_alloc      (tgc_t* gc, long size) void* 
-extern fn tgc_calloc     (tgc_t* gc, long num, long size) void* 
-extern fn tgc_realloc    (tgc_t* gc, void* ptr, long size) void* 
-extern fn tgc_alloc_opt  (tgc_t* gc, long size, int flags, Destructor dtor) void* 
-extern fn tgc_calloc_opt (tgc_t* gc, long num, long size, int flags, Destructor dtor) void* 
-extern fn tgc_free       (tgc_t* gc, void* ptr) void 
+extern fn tgc_alloc      (tgc_t* gc, long size) void*
+extern fn tgc_calloc     (tgc_t* gc, long num, long size) void*
+extern fn tgc_realloc    (tgc_t* gc, void* ptr, long size) void*
+extern fn tgc_alloc_opt  (tgc_t* gc, long size, int flags, Destructor dtor) void*
+extern fn tgc_calloc_opt (tgc_t* gc, long num, long size, int flags, Destructor dtor) void*
+extern fn tgc_free       (tgc_t* gc, void* ptr) void
 
 extern fn tgc_set_flags (tgc_t* gc, void* ptr, int flags) void
-extern fn tgc_get_flags (tgc_t* gc, void *ptr) int 
+extern fn tgc_get_flags (tgc_t* gc, void *ptr) int
 
-extern fn tgc_get_size (tgc_t* gc, void* ptr) long 
+extern fn tgc_get_size (tgc_t* gc, void* ptr) long
 
 extern fn tgc_set_dtor ( tgc_t* gc, void* ptr, Destructor dtor) void
-extern fn tgc_get_dtor ( tgc_t* gc, void* ptr) Destructor 
+extern fn tgc_get_dtor ( tgc_t* gc, void* ptr) Destructor
 
 // todo - This needs to be thread-local
 tgc_t gc
 
 pub struct GC(
-    static long numAllocs, 
-    static long numFrees,  
+    static long numAllocs,
+    static long numFrees,
     static long totalAlloced)
 {
     pub static fn start() {
@@ -63,32 +63,32 @@ pub struct GC(
     pub static fn alloc(long size) {
         numAllocs    += 1
         totalAlloced += size
-        ret tgc_alloc(&gc, size)
+        return tgc_alloc(&gc, size)
     }
     pub static fn alloc(long size, Destructor d) {
         numAllocs    += 1
         totalAlloced += size
-        ret tgc_alloc_opt(&gc, size, 0, d)
+        return tgc_alloc_opt(&gc, size, 0, d)
     }
     pub static fn calloc(long size) {
         numAllocs    += 1
         totalAlloced += size
-        ret tgc_calloc(&gc, 1, size)
+        return tgc_calloc(&gc, 1, size)
     }
     pub static fn calloc(long size, Destructor d) {
         numAllocs    += 1
         totalAlloced += size
-        ret tgc_calloc_opt(&gc, 1, size, 0, d)
+        return tgc_calloc_opt(&gc, 1, size, 0, d)
     }
     pub static fn realloc(void* ptr, long size) {
-        ret tgc_realloc(&gc, ptr, size)
+        return tgc_realloc(&gc, ptr, size)
     }
     pub static fn free(void* ptr) {
         numFrees += 1
         tgc_free(&gc, ptr)
-    } 
+    }
     pub static fn getSize(void* ptr) {
-        ret tgc_get_size(&gc, ptr)
+        return tgc_get_size(&gc, ptr)
     }
     pub static fn dump() {
         println("")
@@ -101,6 +101,6 @@ pub struct GC(
 }
 
 pub fn new() {
-    
+
 }
 

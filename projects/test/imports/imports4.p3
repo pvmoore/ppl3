@@ -1,26 +1,26 @@
 
 pub fn func() {
-	ret 1
+	return 1
 }
 pub fn func2<T>(T a) {
-	ret 2
+	return 2
 }
 
 pub struct Rabbit(
     pub int a,
 	pub static int b = 12)
 {
-	pub fn foo(int a) { ret 10 }
-	pub static fn bar(int t) { ret 11 }
+	pub fn foo(int a) { return 10 }
+	pub static fn bar(int t) { return 11 }
 }
 pub struct Badger <T>(
     pub T a,
 	pub static T b = 22)
 {
-	pub fn foo(int a) { ret 20 }
-	pub static fn bar(T t) { ret 21 }
-	pub static fn baz<J>(T t, J j) { ret 23 }
+	pub fn foo(int a) { return 20 }
+	pub static fn bar(T t) { return 21 }
+	pub static fn baz<J>(T t, J j) { return 23 }
 }
 pub struct Skunk <T>(pub static T a) {
-	pub static fn bar(T a) { ret 30 }
+	pub static fn bar(T a) { return 30 }
 }

@@ -42,7 +42,7 @@
 			"patterns": [
 				{
 					"name": "keyword.control.ppl3",
-					"match": "\\b(var|const|if|while|ret|import|assert|not|is|as|and|or|else|break|continue|loop|select)\\b"
+					"match": "\\b(var|const|if|while|return|import|assert|not|is|as|and|or|else|break|continue|loop|select)\\b"
 				},
 				{
 					"name": "storage.type.ppl3",

@@ -5,46 +5,46 @@ pub struct Static(
     pub int rm = 30,
     pub static int rs = 40,
     int pm = 50,
-    static int ps = 60) 
+    static int ps = 60)
 {
     pub fn foo(/* Static* this */) {
-        ret 10
+        return 10
     }
     pub static fn bar() {
-        ret 20
+        return 20
     }
     pub static fn bar2(int a) {
-        ret 30
+        return 30
     }
-    
+
     pub fn rfoo(/* Static* this */) {
-        ret 40
+        return 40
     }
     pub static fn rbar() {
-        ret 50
+        return 50
     }
     pub static fn rbar2(int a) {
-        ret 60
+        return 60
     }
 
     fn pfoo(/* Static* this */) {
-        ret 70
+        return 70
     }
     static fn pbar() {
-        ret 80
+        return 80
     }
     static fn pbar2(int a) {
-        ret 90
+        return 90
     }
 }
 pub struct Statics2 <T>(
     pub T m = 1,
-    pub static T s = 2) 
+    pub static T s = 2)
 {
-    pub fn orange<G>(G g) { ret 6 }
-    
-    pub static fn foo() { ret 3 }
-    pub static fn foo(int a) { ret 4 } 
-    
-    pub static fn yellow<K>(K k) { ret 5 }
+    pub fn orange<G>(G g) { return 6 }
+
+    pub static fn foo() { return 3 }
+    pub static fn foo(int a) { return 4 }
+
+    pub static fn yellow<K>(K k) { return 5 }
 }

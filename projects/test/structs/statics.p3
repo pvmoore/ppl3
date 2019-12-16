@@ -3,56 +3,56 @@ import structs::statics2
 
 struct A(
     pub int m = 1,
-    pub static int s = 2,  
+    pub static int s = 2,
     //pub const int T = 4,           // fixme
     //pub const static int S = 9,    // fixme
     pub int rm = 3,
     pub static int rs = 4,
     int pm = 5,
     static int ps = 6,
-) 
+)
 {
     pub fn foo() /* A* this */  {
-        ret 1
+        return 1
     }
-	pub static fn foo() { ret 99 }
+	pub static fn foo() { return 99 }
     pub static fn bar() {
-        ret 2
+        return 2
     }
     pub static fn bar2(int v) {
-        ret 3
+        return 3
     }
-    
+
     pub fn rfoo( /* A* this */ ) {
-        ret 4
+        return 4
     }
     pub static fn rbar() {
-        ret 5
+        return 5
     }
     pub static fn rbar2(int v) {
-        ret 6
+        return 6
     }
 
     fn pfoo(/* A* this */ ) {
-        ret 7
+        return 7
     }
     static fn pbar() {
-        ret 8
+        return 8
     }
     static fn pbar2(int v) {
-        ret 9
+        return 9
     }
 }
 struct B <T>(
     pub T m = 1,
-    static T s = 2) 
+    static T s = 2)
 {
-    pub fn orange<G>(G g) { ret 6 }
-    
-    pub static fn foo() { ret 3 }
-    pub static fn foo(int a) { ret 4 } 
-    
-    pub static fn yellow<K>(K k) { ret 5 }
+    pub fn orange<G>(G g) { return 6 }
+
+    pub static fn foo() { return 3 }
+    pub static fn foo(int a) { return 4 }
+
+    pub static fn yellow<K>(K k) { return 5 }
 }
 
 //static int globalStatic // not allowed
@@ -64,10 +64,10 @@ pub fn testStatics() {
         // member access
         assert a.m == 1
         assert a.foo() == 1
-		
+
         // static access
         //var ss = a.s      // not allowed
-        
+
 		assert A.s == 2
 		assert A.rs == 4
         //assert A.ps == 6      // private
@@ -79,8 +79,8 @@ pub fn testStatics() {
         //assert A.pbar() == 8      // private
         //assert A.pbar2(10) == 9   // private
         assert A.foo() == 99
-        const a1 = A.s as float  ; assert @typeOf(a1) is float; assert a1 == 2.0f    
-		
+        const a1 = A.s as float  ; assert @typeOf(a1) is float; assert a1 == 2.0f
+
         const b = B<int>()
         // member access
         assert b.m == 1
@@ -91,7 +91,7 @@ pub fn testStatics() {
         assert B<int>.foo() == 3
         assert B<int>.foo(7) == 4
         assert B<int>.yellow<float>(3.14) == 5
-        
+
         //A::foo()         // not allowed - (fixme.needs better error msg)
         //a.bar()           // not allowed
         //[static int] anon // not allowed
@@ -103,20 +103,20 @@ pub fn testStatics() {
         // member access
         assert a.m == 10
         assert a.foo() == 10
-        
+
         // static access
         assert Static.s == 20
         assert Static.rs == 40
         //assert Static::ps == 60     // private external
         assert @sizeOf(Static) == 12
-        
+
         assert Static.bar() == 20
         assert Static.bar2(1) == 30
         assert Static.rbar() == 50
         assert Static.rbar2(5) == 60
         //assert Static::pbar() == 80       // private external
         //assert Static::pbar2(10) == 90    // private external
-        
+
         const b = Statics2<int>()
         // member access
         assert b.m == 1
@@ -146,10 +146,10 @@ pub fn testStatics() {
 		c()
 		struct test_statics(pub static bool boo)
 		test_statics t
-		test_statics.boo 
+		test_statics.boo
         //test_statics.boo = true // can not be modified outside the struct
 	}
     testLocal()
     testExternal()
 	testNameClashes()
-} 
+}
