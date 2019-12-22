@@ -63,7 +63,7 @@ struct Vector<T>(T x, T y, T z) {
         return x==o.x and y==o.y and z==o.z
     }
     pub operator==(Vector<T> o) {
-        return this is o
+        return *this is o
     }
 }
 
