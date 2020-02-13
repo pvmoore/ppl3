@@ -1,0 +1,27 @@
+
+# Sequences and Ranges
+
+Sequence<T>
+    .hasNext():bool
+    .next():T
+    
+Range<T>
+    .isEOF():bool
+    .isAtEnd():bool
+    .current():T
+    .next()
+    
+for(n in sequence {}
+    
+0..N
+or    
+intRange(0,N).step(-1)
+
+# Remove implicit 'this' and add shortcut 
+
+this.x
+.x
+
+# Language Server Protocol
+
+Look at lsp4j for example
