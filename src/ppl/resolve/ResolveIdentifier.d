@@ -23,7 +23,7 @@ public:
 
         this(resolver.module_);
     }
-    struct Result {
+    static struct Result {
         union {
             Variable var;
             Function func;
@@ -250,11 +250,14 @@ private:
         } else {
             Variable var = res.isVar ? res.var : null;
 
-            if(var.isStructVar && !var.isStatic) {
-                auto struct_ = n.getAncestor!Struct();
-                assert(struct_);
+            if(var.isStructVar/* && !var.isStatic*/) {
 
-                n.target.set(var);
+                auto msg = var.isStatic ?
+                    "Struct static access requires the struct class name eg. %s.%s".format(var.getStruct().name, n.name) :
+                    "Struct member access requires this eg. this.%s".format(n.name);
+
+                module_.addError(n, msg, true);
+                return;
 
             } else if(var.isTupleVar) {
                 auto tuple = n.getAncestor!Tuple();
@@ -296,7 +299,7 @@ private:
 
         // check this - it might be ok since each dot resolves itself in order
         // todo - this dot may not be the one we want if we have a complex chain eg imp::static.length
-        // todo - in this case we might need a findStartOfChain method
+        //        In this case we might need a findStartOfChain method
 
         /// Properties:
         switch(n.name) {

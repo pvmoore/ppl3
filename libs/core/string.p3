@@ -28,18 +28,18 @@ pub struct string( // 16 bytes
 
         return string(list.ptr(), 0, list.length)
     }
-    pub fn ptr()   { return basePtr+offset }
-    pub fn empty() { return length==0 }
+    pub fn ptr()   { return this.basePtr + this.offset }
+    pub fn empty() { return this.length==0 }
     pub fn first() { assert not empty(); return ptr()[0] }
-    pub fn last()  { assert not empty(); return ptr()[length-1] }
+    pub fn last()  { assert not empty(); return ptr()[this.length-1] }
 
     pub fn cstr() {
         // todo - this might seg fault
-        if(ptr()[length]==0) return ptr()
+        if(ptr()[this.length]==0) return ptr()
 
-        var copy = GC.alloc(length+1) as byte*
-        memcpy(copy, ptr(), length)
-        copy[length] = 0 as byte
+        var copy = GC.alloc(this.length+1) as byte*
+        memcpy(copy, ptr(), this.length)
+        copy[this.length] = 0 as byte
 
         return copy
     }
@@ -47,11 +47,11 @@ pub struct string( // 16 bytes
     pub fn operator[](int index) { return ptr()[index] }
 
     pub fn operator==(string s) {
-        return length==s.length and memcmp(ptr(), s.ptr(), length) == 0
+        return this.length==s.length and memcmp(ptr(), s.ptr(), this.length) == 0
     }
 
     pub fn indexOf(int ch) {
-        const p = memchr(ptr(), ch, length)
+        const p = memchr(ptr(), ch, this.length)
         return if(p) (p-ptr()) as int else -1
     }
     pub fn indexOf(string s) {
@@ -59,15 +59,15 @@ pub struct string( // 16 bytes
         return this.indexOf(s, 0)
     }
     pub fn indexOf(int ch, int startIndex) {
-        if(startIndex<0 or startIndex>=length) return -1
-        const p = memchr(basePtr+offset+startIndex, ch, length-startIndex)
+        if(startIndex<0 or startIndex>=this.length) return -1
+        const p = memchr(this.basePtr+this.offset+startIndex, ch, this.length-startIndex)
         return if(p) (p-ptr()) as int else -1
     }
     pub fn indexOf(string s, int startIndex) {
         if(s.empty()) return -1
         if(startIndex<0) return -1
 
-        const end = length-s.length
+        const end = this.length-s.length
         if(end<0) return -1
 
         loop(int pos=startIndex; pos<=end; pos += 1) {
@@ -83,18 +83,18 @@ pub struct string( // 16 bytes
         return -1
     }
     pub fn startsWith(int ch) {
-        return length>0 and ptr()[0]==ch
+        return this.length>0 and ptr()[0]==ch
     }
     pub fn startsWith(string s) {
-        return length >= s.length and memcmp(ptr(), s.ptr(), s.length) == 0
+        return this.length >= s.length and memcmp(ptr(), s.ptr(), s.length) == 0
     }
     pub fn endsWith(int ch) {
-        return length>0 and ptr()[length-1]==ch
+        return this.length>0 and ptr()[this.length-1]==ch
     }
     pub fn endsWith(string s) {
         if(s.length==0) return false
-        const off = length-s.length;
-        return length >= s.length and memcmp(ptr()+off, s.ptr(), s.length) == 0
+        const off = this.length-s.length;
+        return this.length >= s.length and memcmp(ptr()+off, s.ptr(), s.length) == 0
     }
     pub fn contains(int ch) {
         return indexOf(ch) != -1
@@ -110,7 +110,7 @@ pub struct string( // 16 bytes
         var value = 0
         var mul   = 1
 
-        loop(var i = length-1; i>=0; i -= 1) {
+        loop(var i = this.length-1; i>=0; i -= 1) {
             var ch = this[i] - '0'
 
             if(ch<0 or ch>9) return default

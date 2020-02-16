@@ -23,7 +23,7 @@ EE ee              // int***
 
 // declare for later
 struct Gold
-struct Gold // ok
+struct Gold // ok 
 
 struct Silver(Gold* gold)
 struct Gold( // definition
@@ -113,6 +113,7 @@ pub fn main() {
     tempfoo(true, 1)
 
     ////////
+
 
     import misc::misc;              testMisc()
     import misc::builtin_funcs;     testBuiltinFuncs()

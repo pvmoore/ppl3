@@ -7,7 +7,7 @@ import ppl.internal;
 final class Initialiser : Expression {
 private:
     bool astGenerated;
-    LiteralNumber _literal;
+    //LiteralNumber _literal;
 public:
     Variable var;
 
@@ -61,10 +61,54 @@ public:
         return "Initialiser var=%s, type=%s".format(var.name, getType);
     }
 private:
+    ///
+    /// Convert:
+    ///
+    /// Initialiser
+    ///     LiteralNumber
+    ///
+    /// to (for local or global vars):
+    ///
+    /// Initialiser
+    ///     Binary =
+    ///         identifier (var.name)
+    ///         LiteralNumber
+    ///
+    /// to (for struct member vars):
+    ///
+    /// Initialiser
+    ///     Binary =
+    ///         Dot
+    ///             identifier "this"
+    ///             identifer (var.name)
+    ///         LiteralNumber
+    ///
+    /// to (for struct static vars):
+    ///
+    /// Initialiser
+    ///     Binary =
+    ///         Dot
+    ///             TypeExpr (struct)
+    ///             identifer (var.name)
+    ///         LiteralNumber
+    ///
     void convertToAssignment() {
-        _literal = last().as!LiteralNumber;
-        auto b      = getModule.builder(var);
-        auto assign = b.binary(Operator.ASSIGN, b.identifier(var), last().as!Expression, var.type);
+        //_literal = last().as!LiteralNumber;
+
+        auto b = getModule.builder(var);
+
+        Expression left  = b.identifier(var);
+        auto right = last().as!Expression;
+
+        if(var.isStructVar) {
+            if(var.isStatic) {
+                left = b.dot(b.typeExpr(var.getStruct()), left);
+            } else {
+                left = b.dot(b.identifier("this"), left);
+            }
+        }
+
+        auto assign = b.binary(Operator.ASSIGN, left, right, var.type);
         add(assign);
     }
 }

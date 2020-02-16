@@ -3,14 +3,14 @@
 struct S(
     pub int a,
     pub int b = 1,   // This initialisation will be moved to 'new' func
-    pub bool flag) 
+    pub bool flag)
 {
     pub fn new() { /*S* this*/
         // All struct var initialisers will be put in here
         // This will be called before properties are set manually during initialisation
 
-        b += 3
-        flag = true
+        this.b += 3
+        this.flag = true
     }
     // rename me
     pub fn new( /*S* this,*/ int value) {

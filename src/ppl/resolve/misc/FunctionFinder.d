@@ -74,8 +74,7 @@ public:
     Callable standardFind(Call call, ModuleAlias modAlias=null) {
         //dd("resolveCall", call.name);
 
-        Struct ns = call.isStartOfChain() ?
-        call.getAncestor!Struct : null;
+        Struct ns = call.isStartOfChain() ? call.getAncestor!Struct : null;
 
         if(call.isTemplated && !call.name.contains("<")) {
             /// We can't do anything until the template types are known
@@ -378,10 +377,10 @@ private:
         funcTemplates.clear();
 
         bool isPossibleImplicitThisCall =
-        call.name!="new" &&
-        !call.implicitThisArgAdded &&
-        call.isStartOfChain &&
-        call.hasAncestor!Struct;
+            call.name!="new" &&
+            !call.implicitThisArgAdded &&
+            call.isStartOfChain &&
+            call.hasAncestor!Struct;
 
         lp:foreach(callable; overloads[].dup) {
 
@@ -476,14 +475,11 @@ private:
                         auto param = params[index];
 
                         if(!matcher(arg,param)) continue lp;
-
-                        //if(!arg.exactlyMatches(param)) continue lp;
                     }
                 } else {
                     /// standard arg list
                     foreach(i, a; call.argTypes) {
                         if(!matcher(a, params[i])) continue lp;
-                        //if(!a.exactlyMatches(params[i])) continue lp;
                     }
                 }
 

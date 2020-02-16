@@ -36,15 +36,12 @@ enum D : long {
 
 pub fn testEnum() {
     const initialisation = {
-        const a = A.SIX
-            assert @typeOf(a) is A
-            assert a.value == 3
-        const b = a
-            assert @typeOf(b) is A
-            assert b.value == 3
-        const c = A.FIVE.value
-            assert @typeOf(c) is int
-            assert c == 2
+        const a = A.SIX;    assert @typeOf(a) is A
+                            assert a.value == 3
+        const b = a;        assert @typeOf(b) is A
+                            assert b.value == 3
+        const c = A.FIVE.value; assert @typeOf(c) is int
+                                assert c == 2
 
         A d
         A e = A.THREE          ; assert e.value == 5
@@ -65,7 +62,7 @@ pub fn testEnum() {
         const g  = A.ONE == B.ONE               ; assert @typeOf(g) is bool; assert g
         const g2 = A.ONE != B.TWO               ; assert @typeOf(g2) is bool; assert g2
         const g3 = A.ONE.value < A.TWO.value    ; assert g3
-        const g4 = A.THREE > A.TWO  ; assert g4
+        const g4 = A.THREE > A.TWO              ; assert g4
         const h = A.SIX
         const i = B.TWO
         assert h == A.SIX
@@ -86,13 +83,13 @@ pub fn testEnum() {
     const manipulation = {
         const a = A.TWO + A.TWO     ; assert @typeOf(a) is A;    assert a.value == 2
         var b   = D.ONE | D.TWO     ; assert @typeOf(b) is D;    assert b.value == 3
-        A c = A.TWO + 1           ; assert c.value == 2
+        A c = A.TWO + 1             ; assert c.value == 2
 
-        c = c + A.TWO              ; assert c.value == 3
+        c = c + A.TWO               ; assert c.value == 3
 
         // op assign
-        b += D.THREE               ; assert @typeOf(b) is D;    assert b.value == 7
-        b += 1                     ; assert @typeOf(b) is D;    assert b.value == 8
+        b += D.THREE                ; assert @typeOf(b) is D;    assert b.value == 7
+        b += 1                      ; assert @typeOf(b) is D;    assert b.value == 8
 
         const d = D.ONE | D.TWO | D.THREE
             assert @typeOf(d) is D

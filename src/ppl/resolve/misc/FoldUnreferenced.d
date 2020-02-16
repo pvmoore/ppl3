@@ -268,6 +268,12 @@ private:
         }
     }
     void tryToFold(Variable v) {
+
+        if(v.isStructVar) {
+            /// Don't remove struct properties
+            return;
+        }
+
         if(v.numRefs==0) {
             /// If numRefs==0 then remove it
             fold(v);

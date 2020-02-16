@@ -65,9 +65,12 @@
 					"match" : "\\[\\[.*\\]\\]"
 				},
 				{
-
 					"name": "constant.numeric",
 					"match": "\\b(true|false|null)(\\**|\\b)"
+				},
+				{
+					"name": "entity.other.this.ppl3",
+					"match": "\\b(this)(\\**|\\b)"
 				}
 			]
 		},

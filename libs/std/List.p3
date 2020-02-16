@@ -8,52 +8,52 @@ pub struct List <T>(
     pub fn new(int reserve) {
         expand(reserve)
     }
-    pub fn ptr() { return array }
+    pub fn ptr() { return this.array }
     pub fn empty() {
-        return length==0
+        return this.length==0
     }
     pub fn add(T value) {
         expand(1)
-        array[length] = value
-        length += 1
+        this.array[this.length] = value
+        this.length += 1
         return this
     }
     pub fn operator[] (int index) {
-        return array[index]
+        return this.array[index]
     }
     pub fn operator[] (int index, T value) {
-        array[index] = value
+        this.array[index] = value
     }
     pub fn operator== (List<T> other) {
-        if(length != other.length) return false
-        return memcmp(array, other.array, length*@sizeOf(T))==0
+        if(this.length != other.length) return false
+        return memcmp(this.array, other.array, this.length*@sizeOf(T))==0
     }
     pub fn first() {
-        assert length > 0
-        return array[0]
+        assert this.length > 0
+        return this.array[0]
     }
     pub fn last() {
-        assert length > 0
-        return array[length-1]
+        assert this.length > 0
+        return this.array[this.length-1]
     }
     pub fn each(fn(T)void closure) {
-        loop(var i = 0; i<length; i+=1) {
-            closure(array[i])
+        loop(var i = 0; i<this.length; i+=1) {
+            closure(this.array[i])
         }
     }
     pub fn each(fn(int,T)void closure) {
-        loop(var i = 0; i<length; i+=1) {
-            closure(i,array[i])
+        loop(var i = 0; i<this.length; i+=1) {
+            closure(i,this.array[i])
         }
     }
     pub fn eachReverse(fn(T)void closure) {
-        loop(var i = length-1; i>=0; i-=1) {
-            closure(array[i])
+        loop(var i = this.length-1; i>=0; i-=1) {
+            closure(this.array[i])
         }
     }
     pub fn eachReverse(fn(int,T)void closure) {
-        loop(var i = length-1; i>=0; i-=1) {
-            closure(i, array[i])
+        loop(var i = this.length-1; i>=0; i-=1) {
+            closure(i, this.array[i])
         }
     }
     pub fn removeAt(int index) {
@@ -63,7 +63,7 @@ pub struct List <T>(
         return this
     }
     pub fn clear() {
-        length = 0
+        this.length = 0
         return this
     }
     pub fn pack() {
@@ -71,22 +71,22 @@ pub struct List <T>(
         return this
     }
     pub fn reversed() {
-        var copy = List<T>(length)
-        loop(var dest = 0, var src=length-1; src>=0; src -= 1) {
-            copy.array[dest] = array[src]
+        var copy = List<T>(this.length)
+        loop(var dest = 0, var src=this.length-1; src>=0; src -= 1) {
+            copy.array[dest] = this.array[src]
         }
         return copy
     }
     fn expand(int required) {
         if(required < 1) return
-        if(not array) {
-            arrayLength = required + 7
-            array       = malloc(arrayLength*@sizeOf(T)) as T*
-            assert array
-        } else if(length+required > arrayLength) {
-            arrayLength = (length+required) * 2
-            array       = realloc(array, arrayLength*@sizeOf(T)) as T*
-            assert array
+        if(not this.array) {
+            this.arrayLength = required + 7
+            this.array       = malloc(this.arrayLength*@sizeOf(T)) as T*
+            assert this.array
+        } else if(this.length+required > this.arrayLength) {
+            this.arrayLength = (this.length+required) * 2
+            this.array       = realloc(this.array, this.arrayLength*@sizeOf(T)) as T*
+            assert this.array
         }
     }
 }

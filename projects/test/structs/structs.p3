@@ -15,14 +15,14 @@ struct Fruit(
         // All struct var initialisers will be put in here
         // This will be called before properties are set manually during initialisation
 
-        b += 3
+        this.b += 3
     }
     pub fn foo(/* Fruit* this */) {
         boo(inc:1)
     }
     pub fn bar(/* Fruit* this, */ int a) {
         struct Vegetable(bool isGreen)
-        isABanana = true
+        this.isABanana = true
         return a
     }
     pub fn baz(/* Fruit* this, */ bool sing) {
@@ -31,7 +31,7 @@ struct Fruit(
             // inner func
         }
 
-        z += 1
+        this.z += 1
     }
     pub fn boo(/* Fruit* this, */ float inc) {
 

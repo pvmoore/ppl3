@@ -50,6 +50,12 @@ pub struct GC(
     static long numFrees,
     static long totalAlloced)
 {
+    fn hello() {
+
+    }
+    fn there() {
+        hello()
+    }
     pub static fn start() {
         int local
         tgc_start(&gc, &local)
@@ -61,30 +67,30 @@ pub struct GC(
         tgc_run(&gc)
     }
     pub static fn alloc(long size) {
-        numAllocs    += 1
-        totalAlloced += size
+        GC.numAllocs    += 1
+        GC.totalAlloced += size
         return tgc_alloc(&gc, size)
     }
     pub static fn alloc(long size, Destructor d) {
-        numAllocs    += 1
-        totalAlloced += size
+        GC.numAllocs    += 1
+        GC.totalAlloced += size
         return tgc_alloc_opt(&gc, size, 0, d)
     }
     pub static fn calloc(long size) {
-        numAllocs    += 1
-        totalAlloced += size
+        GC.numAllocs    += 1
+        GC.totalAlloced += size
         return tgc_calloc(&gc, 1, size)
     }
     pub static fn calloc(long size, Destructor d) {
-        numAllocs    += 1
-        totalAlloced += size
+        GC.numAllocs    += 1
+        GC.totalAlloced += size
         return tgc_calloc_opt(&gc, 1, size, 0, d)
     }
     pub static fn realloc(void* ptr, long size) {
         return tgc_realloc(&gc, ptr, size)
     }
     pub static fn free(void* ptr) {
-        numFrees += 1
+        GC.numFrees += 1
         tgc_free(&gc, ptr)
     }
     pub static fn getSize(void* ptr) {
@@ -94,8 +100,8 @@ pub struct GC(
         println("")
         println("")
         println("== GC Stats =====================")
-        print("Num allocs ... "); print(numAllocs); print(" ("); print(totalAlloced/1); println(" bytes)")
-        print("Num Frees .... "); println(numFrees)
+        print("Num allocs ... "); print(GC.numAllocs); print(" ("); print(GC.totalAlloced/1); println(" bytes)")
+        print("Num Frees .... "); println(GC.numFrees)
         println("=================================")
     }
 }

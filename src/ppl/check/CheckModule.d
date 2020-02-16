@@ -152,10 +152,10 @@ public:
 
         /// Check access
         if(n.target.isMemberFunction) {
-            checkMemberFunctionPrivateAccess(n, n.target.getFunction);
+            checkMemberFunctionAccess(n, n.target.getFunction);
         }
         if(n.target.isMemberVariable) {
-            checkMemberVariablePrivateAccess(n, n.target.getVariable);
+            checkMemberVariableAccess(n, n.target.getVariable);
         }
     }
     void visit(Case n) {
@@ -228,37 +228,12 @@ public:
     }
     void visit(Identifier n) {
 
-        void checkReadOnlyModification(Variable v) {
-            /// Tuple properties are public and modifiable
-            if(v.isTupleVar) return;
-
-            Struct targetStruct = v.getStruct;
-
-            /// POD struct properties are public and modifiable
-            if(targetStruct.isPOD) return;
-
-            auto access       = v.access;
-            Struct thisStruct = n.getAncestor!Struct;
-            bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
-
-        //    // allow writing to indexed pointer value
-        //    auto idx = findAncestor!Index;
-        //    if(idx) return;N
-        //
-            if(isExternalAccess) {
-                auto a = n.getAncestor!Binary;
-                if(a && a.op.isAssign && n.isDescendentOf(a.left)) {
-                    module_.addError(n, "Property %s.%s can only be modified by a %s member function".format(targetStruct.name, v.name, targetStruct.name), true);
-                }
-            }
-        }
-
         /// Check struct static variables
         if(n.target.isVariable) {
             auto var = n.target.getVariable;
             if(var.isStatic) {
-                checkStaticVariablePrivateAccess(n, var);
-                checkReadOnlyModification(var);
+                checkStaticVariableAccess(n, var);
+                checkReadOnlyModification(n, var);
             }
         }
 
@@ -266,8 +241,8 @@ public:
         if(n.target.isMemberVariable) {
 
             auto var = n.target.getVariable;
-            checkMemberVariablePrivateAccess(n, var);
-            checkReadOnlyModification(var);
+            checkMemberVariableAccess(n, var);
+            checkReadOnlyModification(n, var);
 
             /// Check for static access to non-static variable
             if(!var.isStatic) {
@@ -672,47 +647,112 @@ private:
             }
         });
     }
-    void checkMemberVariablePrivateAccess(ASTNode self, Variable targetVar) {
+    /**
+     * Disallow if:
+     *  TargetVar is not public AND
+     *  Self and targetVar are not in the same module
+     */
+    void checkMemberVariableAccess(ASTNode self, Variable targetVar) {
+        /// Target is public
         if(targetVar.access.isPublic) return;
+
+        auto inSameModule = self.getModule() == targetVar.getModule();
 
         Struct targetStruct   = targetVar.getStruct;
-        Struct thisStruct     = self.getAncestor!Struct;
-        bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
+        // Struct thisStruct     = self.getAncestor!Struct;
+        // bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
 
-        if(isExternalAccess) {
-            module_.addError(self, "Property %s.%s is private".format(targetStruct.name, targetVar.name), true);
+        if(!inSameModule) {
+
+            module_.addError(self, "%s property %s is private".format(targetStruct.name, targetVar.name), true);
         }
     }
-    void checkStaticVariablePrivateAccess(ASTNode self, Variable targetVar) {
+    /**
+     * Disallow if:
+     *  TargetVar is not public AND
+     *  Self and targetVar are not in the same module
+     */
+    void checkStaticVariableAccess(ASTNode self, Variable targetVar) {
+        /// Target is public
         if(targetVar.access.isPublic) return;
 
-        Struct targetStruct = targetVar.getStruct;
-        Struct thisStruct   = self.getAncestor!Struct;
-        if(!thisStruct) {
-            /// It might be in the module new function
-            auto ini = self.getAncestor!Initialiser;
-            if(ini) {
-                auto f = self.getAncestor!Function;
-                if(f && f.isModuleConstructor()) {
-                    thisStruct = targetStruct;
-                }
-            }
-        }
-        bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
+        auto inSameModule = self.getModule() == targetVar.getModule();
 
-        if(isExternalAccess) {
-            module_.addError(self, "Property %s.%s is private".format(targetStruct.name, targetVar.name), true);
+        Struct targetStruct = targetVar.getStruct;
+        // Struct thisStruct   = self.getAncestor!Struct;
+        // if(!thisStruct) {
+        //     /// It might be in the module new function
+        //     auto ini = self.getAncestor!Initialiser;
+        //     if(ini) {
+        //         auto f = self.getAncestor!Function;
+        //         if(f && f.isModuleConstructor()) {
+        //             thisStruct = targetStruct;
+        //         }
+        //     }
+        // }
+        // bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
+
+        if(!inSameModule) {
+            module_.addError(self, "%s static property %s is private".format(targetStruct.name, targetVar.name), true);
         }
     }
-    void checkMemberFunctionPrivateAccess(ASTNode self, Function targetFunc) {
+    /**
+     * Disallow if:
+     *  TargetFunc is not public AND
+     *  Self and targetVar are not in the same module
+     */
+    void checkMemberFunctionAccess(ASTNode self, Function targetFunc) {
+        /// Target is public
         if(targetFunc.access.isPublic) return;
 
-        Struct targetStruct   = targetFunc.getStruct;
-        Struct thisStruct     = self.getAncestor!Struct;
-        bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
+        auto inSameModule = self.getModule() == targetFunc.getModule();
 
-        if(isExternalAccess) {
+        Struct targetStruct   = targetFunc.getStruct;
+        // Struct thisStruct     = self.getAncestor!Struct;
+        // bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
+
+        if(!inSameModule) {
             module_.addError(self, "Function %s.%s is private".format(targetStruct.name, targetFunc.name), true);
         }
     }
+    /**
+     * Disallow if:
+     *  Self and targetVar are not in the same module AND
+     *  Self is a modification
+     */
+    void checkReadOnlyModification(ASTNode self, Variable targetVar) {
+            /// Tuple properties are always public and modifiable
+            if(targetVar.isTupleVar) return;
+
+            Struct targetStruct = targetVar.getStruct;
+
+            /// POD struct properties are always public and modifiable
+            if(targetStruct.isPOD) return;
+
+            auto inSameModule = self.getModule() == targetVar.getModule();
+
+            // auto access       = targetVar.access;
+            // Struct thisStruct = self.getAncestor!Struct;
+            // bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
+
+        //    // allow writing to indexed pointer value
+        //    auto idx = findAncestor!Index;
+        //    if(idx) return;N
+        //
+
+            if(!inSameModule) {
+
+                auto binary = self.getAncestor!Binary;
+                auto isModification = binary && binary.op.isAssign && self.isDescendentOf(binary.left);
+
+                if(isModification) {
+
+                    auto msg = targetVar.isStatic ?
+                        "%s static property %s can only be modified by code in the same module".format(targetStruct.name, targetVar.name) :
+                        "%s property %s can only be modified by code in the same module".format(targetStruct.name, targetVar.name);
+
+                    module_.addError(self, msg, true);
+                }
+            }
+        }
 }

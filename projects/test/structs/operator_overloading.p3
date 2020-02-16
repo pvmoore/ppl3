@@ -1,10 +1,10 @@
 
 struct Red(pub int a) {
     pub fn new(int a)       { this.a = a }
-    pub fn reset(int value) { a = value }
+    pub fn reset(int value) { this.a = value }
 
     pub fn test() {
-        a = 0
+        this.a = 0
 
 		assert operator!=(1)
 		assert operator!=(Red(1))
@@ -21,29 +21,29 @@ struct Red(pub int a) {
     }
     // set
     pub fn operator[](int index, int value) {
-        a = index*value
+        this.a = index*value
     }
 
     // scalar comparison
-    pub fn operator==(int s) { return a==s }
-    pub fn operator!=(int s) { return a!=s }
+    pub fn operator==(int s) { return this.a==s }
+    pub fn operator!=(int s) { return this.a!=s }
 
     // object comparison
-    pub fn operator==(Red s)  { return a==s.a }
-	pub fn operator==(Red* s) { return a==s.a }
-    pub fn operator!=(Red s)  { return a!=s.a }
-	pub fn operator!=(Red* s) { return a!=s.a }
+    pub fn operator==(Red s)  { return this.a==s.a }
+	pub fn operator==(Red* s) { return this.a==s.a }
+    pub fn operator!=(Red s)  { return this.a!=s.a }
+	pub fn operator!=(Red* s) { return this.a!=s.a }
 }
 
 pub fn testOperatorOverloading() {
 	const comparison = {
 		[[pod]] struct C(int a) {
-			pub fn operator==(C other)  { return a==other.a }
-			pub fn operator==(C* other) { return a==other.a }
-			pub fn operator==(int b)    { return a==b }
-			pub fn operator!=(C other)  { return a != other.a }
-			pub fn operator!=(C* other) { return a != other.a }
-			pub fn operator!=(int b)    { return a != b }
+			pub fn operator==(C other)  { return this.a==other.a }
+			pub fn operator==(C* other) { return this.a==other.a }
+			pub fn operator==(int b)    { return this.a==b }
+			pub fn operator!=(C other)  { return this.a != other.a }
+			pub fn operator!=(C* other) { return this.a != other.a }
+			pub fn operator!=(int b)    { return this.a != b }
 		}
 		var a = C(1)
 		var b = C(2)
@@ -72,9 +72,9 @@ pub fn testOperatorOverloading() {
 	const comparisonAlternative = {
 		// define operator== but not operator!=
 		[[pod]] struct C(int a) {
-			pub fn operator==(C other)  { return a==other.a }
-			pub fn operator==(C* other) { return a==other.a }
-			pub fn operator==(int b)    { return a==b }
+			pub fn operator==(C other)  { return this.a==other.a }
+			pub fn operator==(C* other) { return this.a==other.a }
+			pub fn operator==(int b)    { return this.a==b }
 		}
 		var a = C(22)
 		var b = C(40)
