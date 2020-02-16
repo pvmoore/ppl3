@@ -149,6 +149,7 @@ private:
 
         /// Remove Variable, Function, Call -> All targets must be known
         if(allTargetsResolved(scope_)) {
+
             scope_.recurse!Variable( (v) {
                 if(v.isLocalAlloc) {
                     tryToFold(v);
@@ -298,7 +299,14 @@ private:
         }
     }
     void tryToFold(Call call) {
-        assert(call.target.isResolved, "target not resolved: %s %s".format(module_.canonicalName, call));
+        //assert(call.target.isResolved, "target not resolved: %s %s".format(module_.canonicalName, call));
+
+        /// If we get here and the target is not resolved then it must have
+        /// been dereferenced in a previous folding
+        if(!call.target.isResolved) {
+            fold(call);
+            return;
+        }
 
         if(call.target.isFunction) {
             auto func  = call.target.getFunction;

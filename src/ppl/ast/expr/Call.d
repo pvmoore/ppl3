@@ -60,7 +60,7 @@ final class Call : Expression {
 
     override string toString() {
         if(target.isResolved){
-            return "Call %s".format(target);
+            return "Call %s %s".format(name, target);
         }
         return "Call %s".format(name);
     }

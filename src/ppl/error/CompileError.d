@@ -232,13 +232,16 @@ final class FunctionSuggestions : Suggestions {
             return "{%s -> %s}".format(a, retType);
         }
 
+        dd("a");
+
         auto buf = new StringBuffer;
         buf.add("Suggestions:\n\n");
         foreach(f; funcs) {
+
             string moduleName = f.moduleName;
             auto funcType     = f.getType().getFunctionType;
-            auto params       = funcType.paramTypes();
-            auto retType      = funcType.returnType();
+            auto params       = funcType ? funcType.paramTypes() : [];
+            //auto retType      = funcType.returnType();
 
             string s = "[%s L:%s] %s(%s)".format(moduleName, f.line+1, f.name, params.toString());
 

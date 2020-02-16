@@ -1,8 +1,12 @@
 
 import imports::imports
 
+struct Thing(int value) {
+    fn new(int value) { this.value = value }
+}
+
 struct M1() {
-    pub fn foo(int a) {
+    pub fn foo(Thing a) {
         return 10
     }
     pub fn foo<T>(T a) {
@@ -18,27 +22,31 @@ struct M1() {
         return 50
     }
     pub fn bar() {
-        // internal standard call
-        assert 10 == foo(1)
+        // calls foo(float)
+        assert 10 == this.foo(Thing(1))
 
-        // internal templated call
-        assert 20 == foo<double>(4.5)
-        assert 30 == foo<int, float>(1,2)
+        // calls this.foo<double>
+        assert 20 == this.foo<double>(4.5)
+        // calls this.foo<int,float>
+        assert 30 == this.foo<int, float>(1,2)
 
-        // internal implicit template call foo<T>(T)
-        assert 20 == foo(3.1)
-        assert 30 == foo(1,2)
+        // calls foo<double>(double)
+        assert 20 == this.foo(3.1d)
+        // calls foo<int,int>(int,int)
+        assert 30 == this.foo(1,2)
 
-        //foo()     // No 0 arg func or template
+        // foo()     // Not found
+        //this.foo()  // No 0 arg func or template
 
         assert 1 == func<byte>(1 as byte)   // calls func<byte>(byte)
         assert 2 == func(1 as byte)          // calls func(float)
 
         // implicit
-        assert 40 == foo0(1, 1, @structOf(1,1) )
-        assert 50 == foo0(1, |int a, int b| {return a+b} )
+        assert 40 == this.foo0(1, 1, @structOf(1,1) )
+        assert 50 == this.foo0(1, |int a, int b| {return a+b} )
     }
 }
+
 struct M2 <T>(pub T t) {
     pub fn foo<F>(F a) {
         return 100
@@ -70,11 +78,11 @@ pub fn testTemplateFunctions() {
     const structs = {
         M1 m = M1()
         // templated function
-        assert 20 == m.foo<float>(3.1)
+        assert 20 == m.foo<double>(3.1d)
         assert 20 == m.foo<byte>(4 as byte)
         assert 30 == m.foo<double,int>(2.1, 4)
-        // untemplated function
-        assert 10 == m.foo(1)
+        // m.foo(Thing)
+        assert 10 == m.foo(Thing(1))
 
         // can bar to test struct->struct funcs
         m.bar()

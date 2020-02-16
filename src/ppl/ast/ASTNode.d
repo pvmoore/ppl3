@@ -407,7 +407,8 @@ public:
         } else if(this.isCall) {
             targets ~= this.as!Call.target;
         }
-        foreach(ch; children[]) {
+
+        foreach(ch; children) {
             ch.collectTargets(targets);
         }
     }

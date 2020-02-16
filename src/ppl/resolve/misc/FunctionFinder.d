@@ -3,6 +3,8 @@ module ppl.resolve.misc.FunctionFinder;
 import ppl.internal;
 import common : contains;
 
+__gshared bool doChat = false;
+
 struct Callable {
     uint id;
     Function func;
@@ -74,6 +76,8 @@ public:
     Callable standardFind(Call call, ModuleAlias modAlias=null) {
         //dd("resolveCall", call.name);
 
+        doChat = call.name.startsWith("foo") && module_.canonicalName=="templates::template_functions";
+
         Struct ns = call.isStartOfChain() ? call.getAncestor!Struct : null;
 
         if(call.isTemplated && !call.name.contains("<")) {
@@ -84,9 +88,9 @@ public:
             string mangledName = call.name ~ "<" ~ module_.buildState.mangler.mangle(call.templateTypes) ~ ">";
 
             /// Possible implicit this.call<...>(...)
-            if(ns) {
-                extractTemplates(ns, call, mangledName, false);
-            }
+            // if(ns) {
+            //     extractTemplates(ns, call, mangledName, false);
+            // }
 
             if(extractTemplates(call, modAlias, mangledName)) {
                 call.name = mangledName;
@@ -99,13 +103,16 @@ public:
             return CALLABLE_NOT_READY;
         }
 
-        chat("looking for %s", call.name);
+        chat("looking for %s, from line %s", call.name, call.line+1);
 
         if(collector.collect(call, modAlias, overloads)) {
 
             int numRemoved = removeInvisible();
 
-            chat("overloads = %s (%s invisible)", overloads, numRemoved);
+            if(doChat) {
+                chat("overloads = %s, (%s invisible)", overloads.length, numRemoved);
+                foreach(o; overloads) chat("   %s", o);
+            }
 
             if(overloads.length==1 && overloads[0].isTemplateBlueprint) {
                 /// If we get here then we have a possible template match but
@@ -136,13 +143,21 @@ public:
 
             filterOverloads(call);
 
-            chat("after filtering, overloads = %s", overloads);
+            if(doChat) {
+                chat("after filtering overloads = %s", overloads.length);
+                foreach(o; overloads) chat("   %s", o);
+            }
+            //chat("after filtering, overloads = %s", overloads);
 
             if(overloads.length==0) {
 
                 if(funcTemplates.length > 0) {
+
+                    chat("Looking for an implicit template");
                     /// There is a template with the same name. Try that
                     if(implicitTemplates.find(ns, call, funcTemplates)) {
+
+                        chat("Found an implicit template match");
                         /// If we get here then we found a match.
                         /// call.templateTypes have been set
                         return CALLABLE_NOT_READY;
@@ -185,7 +200,7 @@ public:
     ///     call.argTypes may not yet be known
     ///
     Callable structFind(Call call, Struct ns, bool staticOnly) {
-        chat("structFind %s", call.name);
+        chat("structFind %s, from line %s", call.name, call.line+1);
 
         assert(ns);
 
@@ -331,7 +346,7 @@ public:
         return overloads[0];
     }
 private:
-    /// Filter out inaccessible module scope functions
+    /// Filter out private module scope functions which are not in the same module
     int removeInvisible() {
         int count = 0;
         foreach(callable; overloads[].dup) {
@@ -344,19 +359,22 @@ private:
         }
         return count;
     }
-    /// Filter out private struct member/static functions
+    /// Filter out private struct member/static functions which are not in the same module
     int removeInvisible(Struct ns, Call call) {
         int count = 0;
         foreach(callable; overloads[].dup) {
-            if(callable.isPrivate) {
-                assert(callable.isStructMember);
-                auto targetStruct = callable.getStruct;
-                assert(targetStruct);
 
-                auto callerStruct = call.getAncestor!Struct;
-                if(!callerStruct || callerStruct != targetStruct) {
-                    overloads.remove(callable);
-                    count++;
+            if(callable.getModule.nid != module_.nid) {
+                if(callable.isPrivate) {
+                    assert(callable.isStructMember);
+                    auto targetStruct = callable.getStruct;
+                    assert(targetStruct);
+
+                    auto callerStruct = call.getAncestor!Struct;
+                    if(!callerStruct || callerStruct != targetStruct) {
+                        overloads.remove(callable);
+                        count++;
+                    }
                 }
             }
         }
@@ -376,11 +394,11 @@ private:
 
         funcTemplates.clear();
 
-        bool isPossibleImplicitThisCall =
-            call.name!="new" &&
-            !call.implicitThisArgAdded &&
-            call.isStartOfChain &&
-            call.hasAncestor!Struct;
+        // bool isPossibleImplicitThisCall =
+        //     call.name!="new" &&
+        //     !call.implicitThisArgAdded &&
+        //     call.isStartOfChain &&
+        //     call.hasAncestor!Struct;
 
         lp:foreach(callable; overloads[].dup) {
 
@@ -396,18 +414,6 @@ private:
 
             Type[] params  = callable.paramTypes();
             Type[] args    = call.argTypes;
-
-            if(isPossibleImplicitThisCall) {
-                /// There may be an implied "this." in front of this call
-                if(callable.isStructMember && !callable.isStatic) {
-                    auto callerStruct = call.getAncestor!Struct;
-                    auto funcStruct   = callable.getNode.getAncestor!Struct;
-                    if(callerStruct.nid==funcStruct.nid) {
-                        /// This is a call within the same struct
-                        args = params[0] ~ args;
-                    }
-                }
-            }
 
             /// Check the number of params
             if(params.length != args.length) {
@@ -676,8 +682,10 @@ private:
         return CALLABLE_NOT_READY;
     }
     void chat(A...)(lazy string fmt, lazy A args) {
-        //if(module_.canonicalName=="test") {
-        //    dd(format(fmt, args));
-        //}
+
+        if(doChat) {
+        //if(module_.canonicalName=="templates::template_functions") {
+            dd(format(fmt, args));
+        }
     }
 }

@@ -76,6 +76,7 @@ pub fn tfunc<A,B>(A a, B b) {
 pub fn tfunc(float f) {
     return 201
 }
+
 pub struct M3 <T>(
     pub T t)
 {

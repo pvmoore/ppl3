@@ -60,6 +60,7 @@ void main(string[] argv) {
                 writefln("[%s] %s", i+1, err.toConciseString());
             }
         }
+
     } else {
         //dumpModuleReferences(builder);
         builder.dumpStats();

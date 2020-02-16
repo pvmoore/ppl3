@@ -38,6 +38,7 @@ private:
             check(f);
         }
     }
+
     void subCollect(ASTNode node) {
         auto nid = node.id();
         //dd("nid=", nid);
@@ -82,6 +83,7 @@ private:
         /// Recurse up the tree
         subCollect(node.parent);
     }
+
     void check(ASTNode n) {
         switch(n.id) with(NodeID) {
             case VARIABLE:
@@ -146,6 +148,7 @@ private:
                 break;
         }
     }
+    
     void addFunction(Function f) {
         if(f.isTemplateBlueprint) {
             results.add(Callable(f));

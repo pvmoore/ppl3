@@ -54,7 +54,7 @@ pub struct GC(
 
     }
     fn there() {
-        hello()
+        this.hello()
     }
     pub static fn start() {
         int local

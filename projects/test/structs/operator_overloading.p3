@@ -6,13 +6,13 @@ struct Red(pub int a) {
     pub fn test() {
         this.a = 0
 
-		assert operator!=(1)
-		assert operator!=(Red(1))
+		assert this.operator!=(1)
+		assert this.operator!=(Red(1))
 		assert this.operator!=(Red*(2))
 
 		assert this.operator==(0)
 		assert this.operator==(Red(0))
-		assert operator==(Red*(0))
+		assert this.operator==(Red*(0))
     }
 
     // get

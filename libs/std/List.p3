@@ -6,14 +6,14 @@ pub struct List <T>(
     pub int length)
 {
     pub fn new(int reserve) {
-        expand(reserve)
+        this.expand(reserve)
     }
     pub fn ptr() { return this.array }
     pub fn empty() {
         return this.length==0
     }
     pub fn add(T value) {
-        expand(1)
+        this.expand(1)
         this.array[this.length] = value
         this.length += 1
         return this

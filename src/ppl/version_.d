@@ -7,13 +7,12 @@ const string VERSION = "3.36.0";
 /*
 
 // todo - add @structPtrOf, @arrayPtrOf
-        - rename 'ret' back to 'return'
-        - change function ptr syntax to
-            fn(int a -> void)
-        - force 'this.' prefix when accessing functions or members from within a class function.
-        - restrict groovy-style functions slightly by forcing || {} syntax rather than just {}
+        - change function ptr syntax to fn(int a -> void)
+        - Done already? --> restrict groovy-style functions slightly by forcing || {} syntax rather than just {}
         - Add formatted string f"My name is ${name}, age ${04f:age}"
         - Ensure literal string concatenation is working eg. "hello " "there" --> "hello there"
+
+3.36.0 - Force 'this.' prefix when accessing functions or members from within a class function.
 
 3.35.0 - Rename 'ret' back to 'return'
 

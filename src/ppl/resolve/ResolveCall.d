@@ -140,7 +140,7 @@ public:
                             n.insertAt(0, prev);
                         }
 
-                        if(n.paramNames.length>0) n.paramNames ~= "this";
+                        if(n.paramNames.length>0) n.paramNames = "this" ~ n.paramNames;
 
                         n.implicitThisArgAdded = true;
                     }
@@ -170,19 +170,19 @@ public:
             /// We have a target and all args are known
 
             /// Check to see whether we need to add an implicit "this." prefix
-            if(n.isStartOfChain() &&
-               n.argTypes.length == n.target.paramTypes.length.toInt-1 &&
-              !n.implicitThisArgAdded)
-            {
-                auto ns = n.getAncestor!Struct;
-                if(ns) {
-                    auto r = resolver.identifierResolver.find("this", n);
-                    if(r.found) {
-                        n.addImplicitThisArg(r.var);
-                        resolver.setModified(n);
-                    }
-                }
-            }
+            // if(n.isStartOfChain() &&
+            //    n.argTypes.length == n.target.paramTypes.length.toInt-1 &&
+            //   !n.implicitThisArgAdded)
+            // {
+            //     auto ns = n.getAncestor!Struct;
+            //     if(ns) {
+            //         auto r = resolver.identifierResolver.find("this", n);
+            //         if(r.found) {
+            //             n.addImplicitThisArg(r.var);
+            //             resolver.setModified(n);
+            //         }
+            //     }
+            // }
 
             /// Rearrange the args to match the parameter order
             if(n.paramNames.length>0) {
