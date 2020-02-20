@@ -2,7 +2,7 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.36.0";
+const string VERSION = "3.37.0";
 
 /*
 
@@ -12,11 +12,15 @@ const string VERSION = "3.36.0";
         - Add formatted string f"My name is ${name}, age ${04f:age}"
         - Ensure literal string concatenation is working eg. "hello " "there" --> "hello there"
 
+        - Check for exposing private structs/enums as parameters to public structs at module scope
+
+3.37.0 - Add missing ppl.build src folder
+
 3.36.0 - Force 'this.' prefix when accessing functions or members from within a class function.
 
 3.35.0 - Rename 'ret' back to 'return'
 
-3.34.0 - Remove operator verloads other than ==, != and []
+3.34.0 - Remove operator overloads other than ==, != and []
 
 3.33.0 - Show first couple of errors in detail. Subsequent errors are shown one per line.
          Change <> operator to !=.

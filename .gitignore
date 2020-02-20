@@ -3,8 +3,6 @@ out/
 .out/
 target/
 .target/
-build/
-.build/
 .vs/
 bin/
 .bin/
