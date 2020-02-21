@@ -17,14 +17,12 @@ for(n in sequence {}
 or
 intRange(0,N).step(-1)
 
-# Remove implicit 'this' and add shortcut
 
-this.x
-.x
 
 # Language Server Protocol
 
 Look at lsp4j for example
+
 
 # Add UFCS
 

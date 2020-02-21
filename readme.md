@@ -54,15 +54,15 @@ struct Vector<T>(T x, T y, T z) {
     }
     [[inline]]
     pub fn dot(Vector<T> b) {
-        ret x*b.x + y*b.y + z*b.y
+        return x*b.x + y*b.y + z*b.y
     }
-    pub operator[](int index) {
+    pub fn operator[](int index) {
         return *((&x)+index)
     }
-    pub operator==(Vector<T>* o) {
-        return x==o.x and y==o.y and z==o.z
+    pub fn operator==(Vector<T>* o) {
+        return this is o or *this is *o
     }
-    pub operator==(Vector<T> o) {
+    pub fn operator==(Vector<T> o) {
         return *this is o
     }
 }
@@ -88,7 +88,7 @@ Flag f = Flag.B
 ```
 if(1 < 3) {
     // do this
-} else  {
+} else {
     // do this
 }
 const r = if(true) 3 else 5
