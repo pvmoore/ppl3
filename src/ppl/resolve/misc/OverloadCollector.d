@@ -51,12 +51,13 @@ private:
             return;
         }
 
-        if(nid==NodeID.TUPLE || nid==NodeID.STRUCT) {
-            /// Check all struct level variables
-            foreach(n; node.children) {
-                check(n);
-            }
+        if(nid==NodeID.TUPLE) {
+            /// Skip to module level scope
+            subCollect(node.getModule());
+            return;
+        }
 
+        if(nid==NodeID.STRUCT) {
             /// Skip to module level scope
             subCollect(node.getModule());
             return;
@@ -148,7 +149,7 @@ private:
                 break;
         }
     }
-    
+
     void addFunction(Function f) {
         if(f.isTemplateBlueprint) {
             results.add(Callable(f));

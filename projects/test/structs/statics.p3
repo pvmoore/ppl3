@@ -17,6 +17,13 @@ struct A(
     }
 	pub static fn foo() { return 99 }
     pub static fn bar() {
+
+        //foo() // require A.foo()
+        A.foo() // ok
+
+        //s     // require A.s
+        A.s     // ok
+
         return 2
     }
     pub static fn bar2(int v) {

@@ -251,12 +251,20 @@ private:
                 assert(bdy);
                 assert(bdy.first().isA!Parameters);
 
-                auto call = builder().call("new", null);
-                auto arg  = builder().identifier("this");
+                // Dot
+                //      "this"
+                //      Call "new"
+                //          "this"
 
-                call.add(arg);
+                auto b = builder();
+
+                auto call = b.call("new", null);
+                call.add(b.identifier("this"));
+
+                auto dot = b.dot(b.identifier("this"), call);
+
                 /// Add it after Arguments
-                bdy.insertAt(1, call);
+                bdy.insertAt(1, dot);
             }
         }
     }

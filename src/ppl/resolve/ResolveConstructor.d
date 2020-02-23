@@ -19,8 +19,6 @@ public:
     void resolve(Constructor n) {
         aliasResolver.resolve(n, n.type);
 
-
-
         if(n.isResolved) {
             assert(n.type.isStruct);
 

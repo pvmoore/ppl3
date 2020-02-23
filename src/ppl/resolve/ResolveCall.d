@@ -42,6 +42,7 @@ public:
             Expression prev  = n.prevLink();
 
             if(n.isStartOfChain()) {
+                
                 auto callable = functionFinder.standardFind(n);
                 if(callable.resultReady) {
                     /// If we get here then we have 1 good match
