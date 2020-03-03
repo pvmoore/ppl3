@@ -2,7 +2,7 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.37.0";
+const string VERSION = "3.38.0";
 
 /*
 
@@ -19,6 +19,8 @@ const string VERSION = "3.37.0";
         - Allow identifiers starting with a number? Needs a way to mark a literal as a long or a double.
 
         - Change attributes
+
+3.38.0 - Remove 'f' suffix for number literals since by default any float literals are float.
 
 3.37.0 - Add missing ppl.build src folder. Add multiline sttings. Disallow auto string concatenation eg. "a" "b".
 

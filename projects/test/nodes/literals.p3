@@ -46,9 +46,8 @@ fn halfs() {
 }
 fn floats() {
     float f                 ; assert f == 0.0
-    float f2 = 3.14f        ; assert f2 == 3.14
-    float f3 = 3.14         ; assert f3 == 3.14
-    float f4 = 3            ; assert f4 == 3.0
+    float f2 = 3.14         ; assert f2 == 3.14
+    float f3 = 3            ; assert f3 == 3.0
 }
 fn doubles() {
     double d                ; assert d == 0.0

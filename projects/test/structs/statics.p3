@@ -86,7 +86,7 @@ pub fn testStatics() {
         //assert A.pbar() == 8      // private
         //assert A.pbar2(10) == 9   // private
         assert A.foo() == 99
-        const a1 = A.s as float  ; assert @typeOf(a1) is float; assert a1 == 2.0f
+        const a1 = A.s as float  ; assert @typeOf(a1) is float; assert a1 == 2.0
 
         const b = B<int>()
         // member access

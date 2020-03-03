@@ -155,9 +155,9 @@ pub fn testInnerStructs() {
         assert TA<int>::TB<float>::Enum.ONE==3
 
         TA<int>::TB<float> t3 = TA<int>::TB<float>()
-        assert 4.0f == t3.b
+        assert 4.0 == t3.b
         assert 100 == t3.a
-        assert 5.0f == TA<int>::TB<float>.sb
+        assert 5.0 == TA<int>::TB<float>.sb
         assert 30 == t3.foo()
         assert 40 == TA<int>::TB<float>.sfoo()
 

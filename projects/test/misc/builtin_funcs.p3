@@ -62,7 +62,7 @@ pub fn testBuiltinFuncs() {
     }
     const initOf = {
         assert @initOf(int) is 0
-        assert @initOf(float) is 0.0f
+        assert @initOf(float) is 0.0
         assert @initOf(byte*) is null
     }
     const isRef = {

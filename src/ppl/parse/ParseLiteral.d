@@ -95,8 +95,9 @@ public:
         t.skip(TT.RCURLY);
     }
     ///
-    /// literal_string ::= prefix '"' { char } '"'
-    /// prefix ::= nothing | "r" | "u8"
+    /// literal_string ::= prefix quote { char } quote
+    /// quote          ::= '"' | '"""'
+    /// prefix         ::= nothing | "r" | "u8"
     ///
     void parseLiteralString(Tokens t, ASTNode parent) {
 
@@ -104,8 +105,6 @@ public:
         parent.add(composite);
 
         auto s = makeNode!LiteralString(t);
-
-        /// Note: Don't concatenate strings
 
         string text = t.value;
         t.next;
