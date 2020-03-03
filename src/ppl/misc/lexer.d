@@ -20,7 +20,9 @@ public:
         auto buf              = new StringBuffer;
         int index             = 0;
         int line              = 0;
-        int indexSOL          = 0;   /// char index at start of line
+        int indexSOL          = 0;      /// char index at start of line
+        int tempLine          = -1;     /// For multiline strings only
+        int tempColumn        = -1;     /// For multiline strings only
         auto stack            = new Stack!int;
 
         if(!forIDE) assert(buildState);
@@ -78,10 +80,24 @@ public:
 
                 auto value = buf.toString().idup;
                 int start  = index-cast(int)value.length;
-                int column = start-indexSOL;
-                assert(column>=0);
 
-                tokens.add(Token(type, value, index-start, line, column));
+                if(tempColumn!=-1) {
+                    // Must be a multiline string literal
+                    assert(type == TT.STRING);
+
+                    tokens.add(Token(type, value, index-start, tempLine, tempColumn));
+
+                    tempLine = -1;
+                    tempColumn = -1;
+
+                } else {
+                    int column = start-indexSOL;
+
+                    assert(column>=0, "line = %s, column = %s, start = %s, indexSOL = %s".format(line, column, start, indexSOL));
+
+                    tokens.add(Token(type, value, index-start, line, column));
+                }
+
                 buf.clear();
             }
             if(t!=TT.NONE && !t.isComment && !t.isString) {
@@ -186,14 +202,45 @@ public:
                 buf.add(peek());
                 index++;
 
-                while(index<text.length && peek()!='\"') {
-                    buf.add(peek());
-                    if(peek()=='\\') {
-                        buf.add(peek(1));
+                bool multiline = peek()=='\"' && peek(1)=='\"';
+
+                if(multiline) {
+                    tempLine = line;
+                    tempColumn = index-1-indexSOL;
+                    index+=2;
+
+                    while(index<text.length-2 && !(peek()=='\"' && peek(1)=='\"' && peek(2)=='\"') ) {
+
+                        if(peek()==13 && peek(1)==10) {
+                            buf.add(peek());
+                            line++;
+                            index++;
+                            indexSOL = index+1;
+                        } else if(peek()==10) {
+                            line++;
+                            indexSOL = index+1;
+                        }
+                        buf.add(peek());
+
+                        if(peek()=='\\') {
+                            buf.add(peek(1));
+                            index++;
+                        }
                         index++;
                     }
-                    index++;
+                    index+=2;
+
+                } else {
+                    while(index<text.length && peek()!='\"') {
+                        buf.add(peek());
+                        if(peek()=='\\') {
+                            buf.add(peek(1));
+                            index++;
+                        }
+                        index++;
+                    }
                 }
+
                 if(index>=text.length) {
                     ///  We ran out of text before the end quote
                     buildState.addError(new TokeniseError(module_, startLine, startColumn, "Missing end quote \""), false);
@@ -201,6 +248,7 @@ public:
                 assert(peek()=='\"');
                 buf.add(peek());
                 index++;
+
                 addToken();
                 index--;
             }
@@ -536,7 +584,9 @@ public:
     void dumpTokens(Token[] tokens) {
         if(!module_.config.logTokens) return;
 
-        auto f = new FileLogger(module_.config.targetPath~"tok/"~module_.canonicalName~".tok");
+        import std.array;
+
+        auto f = new FileLogger(module_.config.targetPath~"tok/"~module_.canonicalName.replace("::", "_")~".tok");
         foreach(i, t; tokens) {
             f.log("[%s] %s", i, t);
         }

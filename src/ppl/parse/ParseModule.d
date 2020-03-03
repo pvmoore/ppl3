@@ -121,6 +121,7 @@ private:
         watch.start();
         auto tokens = getImplicitImportsTokens() ~ lexer.tokenise(sourceText, module_.buildState);
         log("... found %s tokens", tokens.length);
+        
         lexer.dumpTokens(tokens);
 
         this.mainTokens = new Tokens(module_, tokens);

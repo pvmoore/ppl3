@@ -105,37 +105,24 @@ public:
 
         auto s = makeNode!LiteralString(t);
 
-        string combinedText;
-        auto enc = LiteralString.Encoding.UNKNOWN;
+        /// Note: Don't concatenate strings
 
-        /// Concatenate strings
-        while(t.type==TT.STRING) {
+        string text = t.value;
+        t.next;
 
-            string text = t.value;
-            t.next;
+        if(text[0]=='\"') {
+            s.enc  = LiteralString.Encoding.UTF8;
+            text = parseStringLiteral(text[1..$-1]);
 
-            if(text[0]=='\"') {
-                if(enc==LiteralString.Encoding.RAW) {
-                    module_.addError(t, "Can't combine UTF8 and RAW strings", true);
-                }
-                enc  = LiteralString.Encoding.UTF8;
-                text = parseStringLiteral(text[1..$-1]);
+        } else if(text[0]=='r') {
+            s.enc  = LiteralString.Encoding.RAW;
+            text = text[2..$-1];
 
-            } else if(text[0]=='r') {
-                if(enc==LiteralString.Encoding.UTF8) {
-                    module_.addError(t, "Can't combine UTF8 and RAW strings", true);
-                }
-                enc  = LiteralString.Encoding.RAW;
-                text = text[2..$-1];
-
-            } else {
-                module_.addError(t, "Unknown string encoding", false);
-            }
-            combinedText ~= text;
+        } else {
+            module_.addError(t, "Unknown string encoding", false);
         }
 
-        s.value = combinedText;
-        s.enc   = enc;
+        s.value = text;
 
         module_.addLiteralString(s);
 
@@ -160,6 +147,10 @@ public:
 
         auto valueof = b.valueOf(dot);
         composite.add(valueof);
+
+        if(t.type==TT.STRING && t.onSameLine) {
+            errorBadSyntax(module_, t, "These strings need to be concatenated");
+        }
     }
     ///
     /// literal_number |

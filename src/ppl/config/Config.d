@@ -41,7 +41,7 @@ public:
 
     /// Compiler meta options
     bool logDebug     = true;
-    bool logTokens    = false;
+    bool logTokens    = true;
     bool logParser    = false;
     bool logResolver  = false;
     bool writeASM     = true;

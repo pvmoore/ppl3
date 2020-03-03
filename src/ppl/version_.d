@@ -14,7 +14,13 @@ const string VERSION = "3.37.0";
 
         - Check for exposing private structs/enums as parameters to public structs at module scope
 
-3.37.0 - Add missing ppl.build src folder
+        - Change lambda syntax to || int a || ?
+
+        - Allow identifiers starting with a number? Needs a way to mark a literal as a long or a double.
+
+        - Change attributes
+
+3.37.0 - Add missing ppl.build src folder. Add multiline sttings. Disallow auto string concatenation eg. "a" "b".
 
 3.36.0 - Force 'this.' prefix when accessing functions or members from within a class function.
 
