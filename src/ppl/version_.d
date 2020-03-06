@@ -7,20 +7,27 @@ const string VERSION = "3.38.0";
 /*
 
 // todo - add @structPtrOf, @arrayPtrOf
+
         - change function ptr syntax to fn(int a -> void)
-        - Done already? --> restrict groovy-style functions slightly by forcing || {} syntax rather than just {}
+
         - Add formatted string f"My name is ${name}, age ${04f:age}"
-        - Ensure literal string concatenation is working eg. "hello " "there" --> "hello there"
 
         - Check for exposing private structs/enums as parameters to public structs at module scope
 
         - Change lambda syntax to || int a || ?
 
-        - Allow identifiers starting with a number? Needs a way to mark a literal as a long or a double.
+        - Change attributes -- maybe use ! or !! or --
 
-        - Change attributes
+        - Check for exposing private structs/enums in public function/struct parameters
+
+        - Rename loop to for?
+
+        !! check if this already works:
+        - Add fast math option
+
 
 3.38.0 - Remove 'f' suffix for number literals since by default any float literals are float.
+         Force lambda literals to begin with '|' even if there are no parameters.
 
 3.37.0 - Add missing ppl.build src folder. Add multiline sttings. Disallow auto string concatenation eg. "a" "b".
 
@@ -119,8 +126,6 @@ const string VERSION = "3.38.0";
 
 TODO Compiler:
 
-    - Look at projects/dev/test2.p3 for examples of the new syntax
-
     - Add integration tests folder and create a script to run through all tests in the folder,
       asserting compiler errors.
 
@@ -135,7 +140,7 @@ TODO Compiler:
 
     - Ensure only basic optimisations get done if we are in DEBUG mode
     - Panic - Null references
-    - Add fast math option
+
     - Cache debug ir, optimised ir and bc for modules. Store keyed by a sha1 of the
       program args and the update timestamp.
     - Think about const. If a struct value is const we should not allow any modifying

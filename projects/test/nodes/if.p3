@@ -1,6 +1,6 @@
 
 pub fn testIf() {
-    const ifStatements = {
+    const ifStatements = || {
         var i = 0
 
         if(true) {
@@ -19,13 +19,13 @@ pub fn testIf() {
         }
         assert i == 4
     }
-    const ifExpressions = {
+    const ifExpressions = || {
         var r = if(true) 3 else 4
         assert r == 3
         assert @typeOf(r) is int
 
-        const t = { return true }
-        const f = { return false }
+        const t = || { return true }
+        const f = || { return false }
 
         r = if(2>=3) 5 else if(4<3) 6 else 8
         assert r == 8
@@ -36,7 +36,7 @@ pub fn testIf() {
         r = if(t()) if(t()) 1 else 0 else 2
         assert r == 1
     }
-    const initExpression = {
+    const initExpression = || {
         int r
 
         if(var a = 1; a > 2) {
@@ -60,7 +60,7 @@ pub fn testIf() {
             } else 3
         assert x == 2
     }
-    const multipleInitExpr = {
+    const multipleInitExpr = || {
         int a = 0
         var r = false
         if(var b = 0, a = 1; a==1) {
@@ -71,7 +71,7 @@ pub fn testIf() {
         const c = if(const b=0, float f = 3; b==0 and f==3) 1 else 2
         assert c == 1
     }
-    const shadowing = {
+    const shadowing = || {
         if(true) {
             var a = 1
         } else {

@@ -27,7 +27,7 @@ struct Fruit(
     }
     pub fn baz(/* Fruit* this, */ bool sing) {
         int loc
-        const localFunc = /* Fruit* this, */ {
+        const localFunc = | /* Fruit* this, */ | {
             // inner func
         }
 

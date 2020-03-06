@@ -44,7 +44,6 @@ private:
                 parseBuiltinFunc(t, parent);
                 return;
             case PIPE:
-            case LCURLY:
                 literalParser().parseLambda(t, parent);
                 return;
             case NUMBER:
@@ -54,6 +53,9 @@ private:
             case STRING:
                 literalParser().parseLiteralString(t, parent);
                 return;
+            case LCURLY:
+                errorBadSyntax(module_, t, "Expecting lambda parameters here eg. |int a|");
+                break;
             default:
                 break;
         }
@@ -117,27 +119,31 @@ private:
         /// name |          // call with lambda arg
         /// name<...> (     // call
         /// name<...> |     // call with lambda arg
-        /// name<...> {     // call with lambda arg
+        /// name<...> {     // call with lambda arg         !! nope
         /// name <
         /// name::
         /// name
         if(t.type==TT.IDENTIFIER) {
 
+            // name (
             if(t.peek(1).type==TT.LBRACKET && t.onSameLine(1)) {
                 parseCall(t, parent);
                 return;
             }
+            // name {
             if(t.peek(1).type==TT.LCURLY) {
-                errorBadSyntax(module_, t, "Function call should be eg. %s() or %s || {}".format(t.value, t.value));
+                errorBadSyntax(module_, t, "Function call with lambda arg should be eg. %s() || or %s || {}".format(t.value, t.value));
             }
+            // name |
             if(t.peek(1).type==TT.PIPE) {
                 /// Call with lambda arg
-                /// func |...| {
+                /// name |...| {
                 if(ParseHelper.isLambdaParams(t, parent, 1)) {
                     parseCall(t, parent);
                     return;
                 }
             }
+            // name <
             if(t.peek(1).type==TT.LANGLE) {
                 /// Could be a call or identifier < expr
                 int end;
@@ -146,6 +152,7 @@ private:
                     return;
                 }
             }
+            // name .
             if(t.peek(1).type==TT.DOT) {
                 auto node = parent.hasChildren ? parent.last : parent;
                 auto imp  = findImportByAlias(t.value, node);
@@ -154,6 +161,7 @@ private:
                     return;
                 }
             }
+            // name ::
             if(t.peek(1).type==TT.DBL_COLON) {
                 auto node = parent.hasChildren ? parent.last : parent;
                 auto imp  = findImportByAlias(t.value, node);
@@ -541,11 +549,16 @@ private:
             parens.detach();
         }
 
-        if(t.type==TT.LCURLY || t.type==TT.PIPE) {
-            /// Groovy-style with closure arg at end
-            /// func {}
-            /// func() {}
+        if(t.type==TT.LCURLY) {
+            // name() {
+            // name {
+            module_.addError(c, "Missing lambda parameters eg. ||", true);
+        }
+
+        if(t.type==TT.PIPE) {
+            /// Groovy-style with closure arg at end:
             /// func |int a| {}
+            /// func<..> |int a| {}
             /// func() |int a| {}
 
             parse(t, c);

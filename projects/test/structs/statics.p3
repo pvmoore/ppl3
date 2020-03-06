@@ -66,7 +66,7 @@ struct B <T>(
 //globalFoo { static int a -> } // not allowed
 
 pub fn testStatics() {
-	const testLocal = {
+	const testLocal = || {
         const a = A()
         // member access
         assert a.m == 1
@@ -105,7 +105,7 @@ pub fn testStatics() {
         //static int nope   // not allowed
         //globalFoo(1)
     }
-    const testExternal = {
+    const testExternal = || {
         const a = Static()
         // member access
         assert a.m == 10
@@ -135,16 +135,16 @@ pub fn testStatics() {
         assert Statics2<int>.foo(7) == 4
         assert Statics2<int>.yellow<float>(3.14) == 5
     }
-	const testNameClashes = {
-		const a = {
+	const testNameClashes = || {
+		const a = || {
 			struct J1(static int a)
 			J1 j1
 		}
-		const b = {
+		const b = || {
 			struct J1(static int a)
 			J1 j1
 		}
-		const c = {
+		const c = || {
 			struct J1(static int a)
 			J1 j1
 		}

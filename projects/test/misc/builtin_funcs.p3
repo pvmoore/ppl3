@@ -1,6 +1,6 @@
 
 pub fn testBuiltinFuncs() {
-    const sizeOf = {
+    const sizeOf = || {
         byte a = 0 as byte;     assert 1 == @sizeOf(a)
         int b = 0;              assert 4 == @sizeOf(b)
         double c = 0;           assert 8 == @sizeOf(c)
@@ -22,7 +22,7 @@ pub fn testBuiltinFuncs() {
         assert 12 == @sizeOf(@arrayOf(int, 1,2,3))
         assert 16 == @sizeOf(@structOf(1,2,3,4) as struct(int,int,int,int))
     }
-    const alignOf = {
+    const alignOf = || {
         assert @alignOf(byte) == 1
         assert @alignOf(short) == 2
         assert @alignOf(int) == 4
@@ -45,7 +45,7 @@ pub fn testBuiltinFuncs() {
         assert @alignOf(D) == 4
         assert @alignOf(E) == 8
     }
-    const typeOf = {
+    const typeOf = || {
         assert @typeOf(0)      is int
         //assert @typeOf(double) is double   // @typeOf(type) invalid
 
@@ -60,12 +60,12 @@ pub fn testBuiltinFuncs() {
         }
         assert 7 == func(6)
     }
-    const initOf = {
+    const initOf = || {
         assert @initOf(int) is 0
         assert @initOf(float) is 0.0
         assert @initOf(byte*) is null
     }
-    const isRef = {
+    const isRef = || {
         assert @isRef(int*)
         assert @isRef(int**)
         assert not @isRef(int)
@@ -75,7 +75,7 @@ pub fn testBuiltinFuncs() {
         assert not @isRef(a)
         assert @isRef(b)
     }
-    const isValue = {
+    const isValue = || {
         assert @isValue(int)
         assert not @isValue(int*)
         assert not @isValue(int**)
@@ -85,17 +85,17 @@ pub fn testBuiltinFuncs() {
         assert @isValue(a)
         assert not @isValue(b)
     }
-    const isInteger = {
+    const isInteger = || {
         assert @isInteger(10)
         assert @isInteger(int)
         assert not @isInteger(3.1)
     }
-    const isReal = {
+    const isReal = || {
         assert @isReal(3.1)
         assert @isReal(float)
         assert not @isReal(3)
     }
-    const isStruct = {
+    const isStruct = || {
         struct A()
         A a
         assert @isStruct(A)
@@ -103,9 +103,9 @@ pub fn testBuiltinFuncs() {
         assert not @isStruct(3)
         assert not @isStruct(3.1)
     }
-    const isFunction = {
+    const isFunction = || {
         struct A()
-        const f = {}
+        const f = || {}
 
         assert @isFunction(testBuiltinFuncs)
         assert @isFunction(@typeOf(testBuiltinFuncs))
@@ -115,9 +115,9 @@ pub fn testBuiltinFuncs() {
         assert not @isFunction(1.1)
         assert not @isFunction(A)
     }
-    const isFunctionPtr = {
+    const isFunctionPtr = || {
         struct A()
-        const f = {}
+        const f = || {}
         assert @isFunctionPtr(f)
         assert @isFunctionPtr(@typeOf(f))
         assert not @isFunctionPtr(testBuiltinFuncs)
@@ -126,7 +126,7 @@ pub fn testBuiltinFuncs() {
         assert not @isFunctionPtr(1.1)
         assert not @isFunctionPtr(A)
     }
-    const expect = {
+    const expect = || {
         var v = 1
         if(@expect(v==2, false)) {
 

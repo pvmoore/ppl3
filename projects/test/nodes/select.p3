@@ -1,6 +1,6 @@
 
 pub fn testSelect() {
-    const switchSelectStmt = {
+    const switchSelectStmt = || {
         const x = 5
         var n = 0
         select(x) {
@@ -10,7 +10,7 @@ pub fn testSelect() {
         }
         assert n == 10
 
-        const val = { return 2 }
+        const val = || { return 2 }
 
         select(int y = 2; y) {
             1    : n = 1
@@ -21,7 +21,7 @@ pub fn testSelect() {
         assert n == 2
     }
 
-    const switchSelectExpr = {
+    const switchSelectExpr = || {
         const x = 1
         const r1 = select(x) {
             0 : 0
@@ -42,7 +42,7 @@ pub fn testSelect() {
          }
          assert r2 == 1
     }
-    const boolSelectStmt = {
+    const boolSelectStmt = || {
         var n = 0
         const FALSE = false
         select {
@@ -53,7 +53,7 @@ pub fn testSelect() {
         }
         assert n == 3
     }
-    const boolSelectExpr = {
+    const boolSelectExpr = || {
         const r2 = select {
             false : 0
             false : 1

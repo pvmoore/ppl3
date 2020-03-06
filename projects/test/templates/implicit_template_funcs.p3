@@ -18,7 +18,7 @@ fn func<A>(int a, int b, A[2] c) { return 30 }
 fn func<A>(int a, int b, struct(A a, A b ,A c) c) { return 40 }
 
 pub fn testImplicitTemplateFunctions() {
-    const singleArg = {
+    const singleArg = || {
         fn(int)bool arg0
         assert 0 == func(arg0)
 
@@ -43,7 +43,7 @@ pub fn testImplicitTemplateFunctions() {
         Gee<Gaa<int>> arg7
         assert 7 == func(arg7)
     }
-    const multipleArgs = {
+    const multipleArgs = || {
         assert 10 == func(5,6)
         assert 20 == func(2,3, @structOf(4,5) )
         assert 30 == func(2,3, @arrayOf(int,4,5) )

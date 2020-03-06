@@ -39,7 +39,7 @@ struct A(pub int member = 1) {
             // member   // nope
             return 1
         }
-        fn()int closure2 = {
+        fn()int closure2 = || {
             return 2
         }
         assert 1 == closure1(1)

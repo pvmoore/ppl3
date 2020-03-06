@@ -35,7 +35,7 @@ enum D : long {
 //enum Nope3 {}                  // Cannot be empty
 
 pub fn testEnum() {
-    const initialisation = {
+    const initialisation = || {
         const a = A.SIX;    assert @typeOf(a) is A
                             assert a.value == 3
         const b = a;        assert @typeOf(b) is A
@@ -50,7 +50,7 @@ pub fn testEnum() {
 
         C f = C.THREE          ; assert @typeOf(f.value) is float;  assert f.value == 11.0
     }
-    const comparison = {
+    const comparison = || {
         // is
         // Must be exact enum type and value
         const a = A.ONE is A.ONE        ; assert a
@@ -68,7 +68,7 @@ pub fn testEnum() {
         assert h == A.SIX
         assert h >= i
     }
-    const conversion = {
+    const conversion = || {
         // rewritten --> A.THREE.value as int
         const a = A.THREE as int; assert a == 5
 
@@ -80,7 +80,7 @@ pub fn testEnum() {
         // cast to different enum not allowed
         //const c = A.FOUR as B
     }
-    const manipulation = {
+    const manipulation = || {
         const a = A.TWO + A.TWO     ; assert @typeOf(a) is A;    assert a.value == 2
         var b   = D.ONE | D.TWO     ; assert @typeOf(b) is D;    assert b.value == 3
         A c = A.TWO + 1             ; assert c.value == 2
@@ -95,7 +95,7 @@ pub fn testEnum() {
             assert @typeOf(d) is D
             assert d.value == 7
     }
-    const misc = {
+    const misc = || {
         assert @sizeOf(A) == 4
         assert @sizeOf(A.ONE) == 4
 
@@ -104,7 +104,7 @@ pub fn testEnum() {
 
         const a = A.TWO; assert @typeOf(a) is A; assert a == 1
     }
-    const functionParams = {
+    const functionParams = || {
         const foo  = |int a| { return 0 }
         const foo1 = |A a| { return 1 }
         const foo2 = |B b| { return 2 }
@@ -116,20 +116,20 @@ pub fn testEnum() {
         foo1(A.ONE | A.TWO)
         assert 3+5+0 == foo3(A.THREE, B.ONE)
     }
-    const properties = {
+    const properties = || {
         assert A.length == 6
         assert B.length == 3
         assert C.length == 3
         assert D.length == 4
     }
-    const constValues = {
+    const constValues = || {
         const VALUE = 3
         enum Enum {
             A = VALUE
         }
         assert Enum.A == 3
     }
-    const imported = {
+    const imported = || {
         import imports::imports2
         Colour col = Colour.GREEN;     assert col == 1
     }

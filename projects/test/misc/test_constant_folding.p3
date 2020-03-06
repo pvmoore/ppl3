@@ -110,7 +110,7 @@ fn ifStatements() {
     var a = 3
 }
 fn ifExpressions() {
-    const nonExprs = {
+    const nonExprs = || {
         const VAL = 1
         var i = 0
         if(true) {
@@ -130,7 +130,7 @@ fn ifExpressions() {
         if(false) { i+=1 } else { i+=2 }
         assert i==5
     }
-    const exprs = {
+    const exprs = || {
         const a = if(true) 1 else 2;                    @ctAssert(a==1)
         const b = if(false) 3 else 4;                   @ctAssert(b==4)
         const c = if(true) 1 else if(true) 2 else 3;    @ctAssert(c==1)

@@ -61,7 +61,7 @@ struct M2 <T>(pub T t) {
 //struct BadTemplate <int> {}
 
 pub fn testTemplateFunctions() {
-    const globals = {
+    const globals = || {
         // templated function
         assert 1 == func<int>(3)
         assert 1 == func<float>(3.1)
@@ -75,7 +75,7 @@ pub fn testTemplateFunctions() {
         // imported untemplated function
         assert 201 == tfunc(3.1)
     }
-    const structs = {
+    const structs = || {
         M1 m = M1()
         // templated function
         assert 20 == m.foo<double>(3.1d)
@@ -99,7 +99,7 @@ pub fn testTemplateFunctions() {
         assert 271 == m3.foo<float>(3.1, 3)
         assert 272 == m3.foo<int,bool>(6,true)
     }
-    const implicitStandard = {
+    const implicitStandard = || {
         // there is no func(double)
         // but there is a func<T>(T)
         assert 1 == func(40.0d)
@@ -121,7 +121,7 @@ pub fn testTemplateFunctions() {
         assert 7 == func3(@arrayOf(int, 1,2), 3d) // func3<int,double>(int[2])
         assert 7 == func3<float,bool>(@arrayOf(float, 1.1,2.2), true)
     }
-    const implicitStruct = {
+    const implicitStruct = || {
         M1 m1
 
         // there is no foo(float)

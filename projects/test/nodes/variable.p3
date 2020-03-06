@@ -1,6 +1,6 @@
 
 pub fn testVariables() {
-    const basicTypes = {
+    const basicTypes = || {
         bool a
         bool a1  = true
         bool* a2 = &a1      ; assert *a2 == true
@@ -40,7 +40,7 @@ pub fn testVariables() {
 
         //var var X = 1  // var specified twice
     }
-    const anonStructs = {
+    const anonStructs = || {
         struct(int) a
         struct(int a) a1
 
@@ -56,14 +56,14 @@ pub fn testVariables() {
         const c2 = &c1     ; assert @typeOf(c2) is struct(float)**
 
     }
-    const namedStructs = {
+    const namedStructs = || {
         struct A(pub float a = 9)
         A a
         A a1   = A()
         A* a2  = &a1    ; assert @typeOf(a2) is A*   ; assert (*a2).a == 9
         A** a3 = &a2    ; assert @typeOf(a3) is A**  ; assert (**a3).a == 9
     }
-    const arrays = {
+    const arrays = || {
         int[1] a
         double[2] b
 

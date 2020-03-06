@@ -69,7 +69,7 @@ fn unreferencedFunc() {
 }
 
 struct Thingy(pub int a) {
-    pub fn()int b = { return 1 }
+    pub fn()int b = ||{ return 1 }
     //new = { Thingy* this }    // implicit
 }
 
@@ -97,13 +97,43 @@ fn tempfoo<T>(T a, int b) void {
 
 struct wagahagahgahg(int a) { fn sdasdasdasd() {} }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+fn lammy(fn(int)void functor) { functor(3) }
+fn lammy2(fn()void functor) { functor() }
+fn testing() {
+
+    const closure = |int a| {}
+    const closure2 = || {}
+
+
+
+    const closure3 = ||{}
+
+
+
+    lammy( |int a| { print(a) } )   // ok
+    lammy() |int a| { print(a) }    // ok
+
+    //lammy |int a| { print(a) }    // THIS SHOULD WORK
+
+    //lammy2() {} // disallow this
+    //lammy2 {} // disallow this
+
+    lammy2 || {}        // ok
+    lammy2() || {}      // ok
+
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 //pub WinMain {
 pub fn main() {
 
-    fn()int fptr      = { return 1 }
+    testing()
+
+    fn()int fptr      = || { return 1 }
     fn(int)void fptr2 = |int a| {}
 
-    const noobar = {
+    const noobar = ||{
         return 1
     }
 
@@ -135,11 +165,11 @@ pub fn main() {
     testConstantFolding()
     testArrays()
 
-    const testGlobals = {
+    const testGlobals = || {
         assert @typeOf(dd) is int**
         assert @typeOf(ee) is int***
     }
-    const test0 = {
+    const test0 = || {
         int a1 = 3
         int b1 = a1 - 2
 
@@ -161,11 +191,11 @@ pub fn main() {
 
         someArrays()
     }
-    const test1 = {
-        fn()int b = { return 1 }
+    const test1 = ||{
+        fn()int b = ||{ return 1 }
     }
-    const test2 = {
-        fn()struct(int a,int b) f = {
+    const test2 = ||{
+        fn()struct(int a,int b) f = ||{
             return @structOf(1,2)
         }
 
@@ -182,7 +212,7 @@ pub fn main() {
         // reinterpret cast int to float won't be 2
         //assert r2.b==2
     }
-    const test3 = {
+    const test3 = || {
         struct Listy <T>(T length)
 
         Listy<int> list = Listy<int>()
@@ -192,13 +222,13 @@ pub fn main() {
         Listy<BlueRose> blueList
         Listy<Listy<int>> listoflist
     }
-    const test4 = {
+    const test4 = || {
         //float2 v2
         //float3 v3
         //float4 v4
         //float8 v8
     }
-    const testInnerImport = {
+    const testInnerImport = || {
         import imports::imports3
 
         assert 77 == i3func()

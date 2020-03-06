@@ -4,7 +4,7 @@ import imp = imports::imports4
 
 pub fn testImports() {
 	println("testImports()")
-	const func = { return -1 }
+	const func = || { return -1 }
 	assert -1 == func()
 
 	assert 1 == imp.func()

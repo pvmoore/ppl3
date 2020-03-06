@@ -113,7 +113,7 @@ pub struct TA <T1>(
 }
 //====================================================================================
 pub fn testInnerStructs() {
-    const groundLevel = {
+    const groundLevel = || {
         A aa
         //B b   // not visible
         //C c   // not visible
@@ -135,7 +135,7 @@ pub fn testInnerStructs() {
 
         TA<int>::Enum e2 = TA<int>::Enum.ONE; assert e2.value==2
     }
-    const level1 = {
+    const level1 = || {
         //A.B ab2   // identifier B not found
 
         A::B aa
@@ -173,7 +173,7 @@ pub fn testInnerStructs() {
         //assert af.a == 102    // private
         //assert A::F.b == 103  // private
     }
-    const level2 = {
+    const level2 = || {
         A::B::C abc
         alias ABC = A::B::C
         ABC abc3
@@ -197,7 +197,7 @@ pub fn testInnerStructs() {
         assert 50 == ttt.foo()
         assert 60 == TA<int>::TB<float>::TC<byte>.sfoo()
     }
-    const level3 = {
+    const level3 = || {
         A::B::C::D a
         const t = A::B::C::D()
         assert 7 == t.d

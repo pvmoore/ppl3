@@ -36,7 +36,7 @@ struct Red(pub int a) {
 }
 
 pub fn testOperatorOverloading() {
-	const comparison = {
+	const comparison = || {
 		[[pod]] struct C(int a) {
 			pub fn operator==(C other)  { return this.a==other.a }
 			pub fn operator==(C* other) { return this.a==other.a }
@@ -69,7 +69,7 @@ pub fn testOperatorOverloading() {
 		assert C*(10) == e
 		assert C*(75) != e
 	}
-	const comparisonAlternative = {
+	const comparisonAlternative = || {
 		// define operator== but not operator!=
 		[[pod]] struct C(int a) {
 			pub fn operator==(C other)  { return this.a==other.a }
@@ -88,7 +88,7 @@ pub fn testOperatorOverloading() {
 		assert a != e		// call not (a==e)
 		assert e != a		// call not (e==a)
 	}
-	const index = {
+	const index = || {
 		Red a = Red(100)
         Red b
 
@@ -96,11 +96,11 @@ pub fn testOperatorOverloading() {
         a[10] = 3;  assert a.a == 30    // index*value
 
 	}
-	const internal = {
+	const internal = || {
         Red r
         r.test()
     }
-	const objectPtr = {
+	const objectPtr = || {
         var v  = Red*(0);    		assert v.a==0
         var v2 = v.operator==(1);   assert v2==false
 

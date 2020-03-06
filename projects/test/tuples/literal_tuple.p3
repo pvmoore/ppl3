@@ -1,7 +1,7 @@
 
 pub fn testLiteralTuple() {
 
-    const test1 = {
+    const test1 = || {
         // zero initialised
         struct(bool a, int b, float c) s
 
@@ -17,7 +17,7 @@ pub fn testLiteralTuple() {
         assert s[1]==0
         assert s[2]==0.0
     }
-    const test2 = {
+    const test2 = || {
         // user initialised
         struct(int a, double b) s = @structOf(1,2 as double)
 
@@ -30,7 +30,7 @@ pub fn testLiteralTuple() {
         assert s[0]==1
         assert s[1]==2d
     }
-    const test3 = {
+    const test3 = || {
         struct(int a, float b, bool c) s = @structOf(1, 3.1, true)
 
         assert s.a==1
@@ -41,7 +41,7 @@ pub fn testLiteralTuple() {
         assert s[1]==3.1
         assert s[2]==true
     }
-    const test6 = {
+    const test6 = || {
         // implicit [int,int]
         const s = @structOf(7,8)   ; assert @typeOf(s) is struct(int,int)
         assert @typeOf(s[0]) is int
@@ -52,7 +52,7 @@ pub fn testLiteralTuple() {
         assert @typeOf(s2[0]) is byte
         assert @typeOf(s2[1]) is int
     }
-    const test7 = {
+    const test7 = || {
         // [bool, float, long]
 
         const s = @structOf(true, 2.0, 3 as long)    ; assert @typeOf(s) is struct(bool,float,long)
@@ -61,7 +61,7 @@ pub fn testLiteralTuple() {
         assert s[1] == 2
         assert s[2] == 3
     }
-    const test8 = {
+    const test8 = || {
         // standalone
         @structOf(7,8)
 
@@ -73,7 +73,7 @@ pub fn testLiteralTuple() {
     const test9 = |struct(int) a| {
         assert(a[0]==66)
     }
-    const shouldNotCompile = {
+    const shouldNotCompile = || {
         // too few values
         //[double a, int b, bool c] s = @structOf(3.1d)
 

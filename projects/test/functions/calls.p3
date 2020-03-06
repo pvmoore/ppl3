@@ -1,6 +1,6 @@
 
 pub fn testCalls() {
-    const a = {
+    const a = || {
         return 0
     }
     const c = |int a, int b| {
@@ -20,7 +20,7 @@ pub fn testCalls() {
     assert 5 == c(a:7, b:8)
     assert 5 == c(b:7, a:9)
 
-    const testGroovyStyleCall = {
+    const testGroovyStyleCall = || {
         println("Test ... Groovy type function calls")
 
         // declarations
@@ -32,12 +32,15 @@ pub fn testCalls() {
         }
 
 
-        blah()   { println("hello") }
-        blah2(1) { println("hello2") }
-        blah3<int> |int a| {}
-        //blah3 |int a| {}      // should be inferred but isn't
+        //blah()   { println("hello") }     // missing ||
+        //blah2(1) { println("hello2") }    // missing ||
+        //blah { println("hello halh") }    // missing ||
 
-        // blah { println("hello halh") }  not valid syntax
+        blah3<int> |int a| {}
+
+
+        //blah3 |int a| {}      // BUG!! should be inferred but isn't
+
 
         blah || { println("hello halh") }
         blah() || { println("hello halh") }

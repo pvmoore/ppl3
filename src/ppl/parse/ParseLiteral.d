@@ -40,19 +40,18 @@ public:
             name ~= "_" ~ var.name;
         }
 
-        /// Params
-        if(t.type==TT.PIPE) {
-            t.skip(TT.PIPE);
 
-            while(t.type!=TT.PIPE) {
+        // Params |
+        t.skip(TT.PIPE);
 
-                varParser().parseParameter(t, params);
+        while(t.type!=TT.PIPE) {
 
-                t.expect(TT.PIPE, TT.COMMA);
-                if(t.type==TT.COMMA) t.next;
-            }
-            t.skip(TT.PIPE);
+            varParser().parseParameter(t, params);
+
+            t.expect(TT.PIPE, TT.COMMA);
+            if(t.type==TT.COMMA) t.next;
         }
+        t.skip(TT.PIPE);
 
         /// {
         t.skip(TT.LCURLY);

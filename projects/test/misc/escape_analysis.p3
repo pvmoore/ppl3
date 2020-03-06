@@ -5,37 +5,37 @@ pub fn testEscapees() {
 }
 
 fn rets() {
-    const variables ={
+    const variables = || {
         // simple local values
-        const bad1a = {
+        const bad1a = || {
             int a
             return &a   // bad
         }
-        const bad1b = {
+        const bad1b = || {
             int[1] b
             return &b   // bad
         }
-        const bad1c = {
+        const bad1c = || {
             struct(int,int) c
             return &c   // bad
         }
-        const bad1d ={
+        const bad1d = || {
             struct D(int a)
             D d
             return &d   // bad
         }
         // nested local
-        const bad2 = {
+        const bad2 = || {
             if(int a=0; true) return &a // bad
             return null as int*
         }
         // local ref to local alloca
-        const bad3 = {
+        const bad3 = || {
             int a
             int* ptr = &a
             return ptr    // bad
         }
-        const bad4 = {
+        const bad4 = || {
             int a
             int* b = &a
             var c = b
@@ -44,11 +44,11 @@ fn rets() {
             return c    // ok
         }
         // no local alloca
-        const ok1 = {
+        const ok1 = || {
             int* a
             return a    // ok
         }
-        const ok2 = {
+        const ok2 = || {
             return null as int* // ok
         }
         bad1a()
@@ -61,31 +61,31 @@ fn rets() {
         ok1()
         ok2()
     }
-    const structMembers = {
+    const structMembers = || {
         struct A(int a, int b)
         struct B(int a, int* b)
-        const bad1 = {
+        const bad1 = || {
             A a
             return &a.b // bad
         }
-        const bad2 = {
+        const bad2 = || {
             A a
             int* ptr = &a.a
             return ptr  // bad
         }
-        const bad3 = {
+        const bad3 = || {
             B b
             return &b.b // bad - address of int*
         }
-        const ok1 = {
+        const ok1 = || {
             B b
             return b // ok is value
         }
-        const ok2 = {
+        const ok2 = || {
             B b
             return b.b  // ok - b.b is an int* value
         }
-        const ok3 = {
+        const ok3 = || {
             B* b
             return b    // ok
         }
@@ -96,32 +96,32 @@ fn rets() {
         ok2()
         ok3()
     }
-    const tupleMembers = {
-        const bad1 = {
+    const tupleMembers = || {
+        const bad1 = || {
             struct(int a, int b) t
             return &t.a // bad
         }
-        const bad2 = {
+        const bad2 = || {
             struct(int a, int* b) t
             return &t.b     // bad
         }
-        const ok1 = {
+        const ok1 = || {
             struct(int a, int* b) t
             return t.b    // ok int* value
         }
-        const ok2 = {
+        const ok2 = || {
             struct(int a, int b) t
             return t.a   // ok
         }
-        const ok3 = {
+        const ok3 = || {
             struct(int a, int b) t
             return t[0]     // ok
         }
-        const ok4 = {
+        const ok4 = || {
             struct(int* a, int b) t
             return t[0]     // ok
         }
-        const bad3 = {
+        const bad3 = || {
             struct(int* a, int b) t
             return &t[0]     // bad
         }
@@ -133,24 +133,24 @@ fn rets() {
         ok3()
         ok4()
     }
-    const arrayMembers = {
-        const bad1 = {
+    const arrayMembers = || {
+        const bad1 = || {
             int[3] array
             return &array[0]    // bad
         }
-        const ok1 = {
+        const ok1 = || {
             int[3] array
             return array[0]    // ok
         }
-        const ok2 = {
+        const ok2 = || {
             int*[3] array
             return array[0] // ok - value
         }
-        const bad2 = {
+        const bad2 = || {
             int*[3] array
             return &array[0] // bad
         }
-        const ok3 = {
+        const ok3 = || {
             int* ptr = GC.alloc(3) as int*
             return ptr[1]   // ok
         }
@@ -160,18 +160,18 @@ fn rets() {
         ok2()
         ok3()
     }
-    const literalArrays = {
-        const bad1 = {
+    const literalArrays = || {
+        const bad1 = || {
             int[3] a = @arrayOf(int, 1,2,3)
             return &a           // bad
         }
-        const bad2 = {
+        const bad2 = || {
             return &@arrayOf(int, 1,2,3)     // bad
         }
-        const ok1 = {
+        const ok1 = || {
             return @arrayOf(int, 1,2,3)      // ok
         }
-        const bad3 = {
+        const bad3 = || {
             return &@arrayOf(int, 1,2,3)[1]    // bad
         }
         bad1()
@@ -179,11 +179,11 @@ fn rets() {
         bad3()
         ok1()
     }
-    const literalTuples = {
-        const bad1 = {
+    const literalTuples = || {
+        const bad1 = || {
             return &(@structOf(1,2) as struct(int,int))  // bad
         }
-        const ok1 = {
+        const ok1 = || {
             return @structOf(1,2) as struct(int,int)   // ok
         }
         bad1()
