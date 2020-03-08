@@ -547,7 +547,7 @@ public:
         }
         if(n.isStructVar) {
 
-            auto struct_ = n.getStruct;
+            auto struct_ = n.getStruct();
 
             if(struct_.isPOD && !n.access.isPublic) {
                 module_.addError(n, "POD struct member variables must be public", true);
@@ -555,6 +555,11 @@ public:
             if(struct_.isVisibleToOtherModules() && n.access.isPublic) {
                 checkForExposingPrivateType(n, n.getType(), "Public struct property");
             }
+        }
+        if(n.isTupleVar) {
+            auto tuple_ = n.getTuple();
+
+
         }
         if(n.isStatic) {
             if(!n.parent.id==NodeID.STRUCT) {
@@ -777,8 +782,9 @@ private:
      */
     void checkForExposingPrivateType(ASTNode node, Type t, string msgPrefix = null) {
         auto struct_ = t.getStruct();
-        auto enum_ = t.getEnum();
-        auto array = t.getArrayType();
+        auto enum_   = t.getEnum();
+        auto array   = t.getArrayType();
+        auto tuple_  = t.getTuple();
 
         Type errorType;
 
@@ -786,9 +792,13 @@ private:
             if(!struct_.access.isPublic) errorType = struct_;
 
         } else if(array) {
-            checkForExposingPrivateType(node, array.subtype);
+            checkForExposingPrivateType(node, array.subtype, msgPrefix);
         } else if(enum_) {
             if(!enum_.access.isPublic) errorType = enum_;
+        } else if(tuple_) {
+            foreach(v; tuple_.getMemberVariables()) {
+                checkForExposingPrivateType(v, v.getType(), msgPrefix);
+            }
         }
 
         if(errorType) {

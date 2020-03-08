@@ -177,7 +177,7 @@ private:
         } else {
             /// no explicit type
             if(typeRequired()) {
-                module_.addError(t, "Explicit type required (%s)".format(loc), true);
+                module_.addError(t, "Variable type required", false);
             }
 
             if(!seenVar && !seenConst) {
@@ -227,7 +227,7 @@ private:
             }
         } else {
             if(nameRequired()) {
-                module_.addError(t, "Variable name required", true);
+                module_.addError(t, "Variable name required", false);
             }
         }
 

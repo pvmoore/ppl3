@@ -14,6 +14,7 @@ public:
         t.markPosition();
         int startOffset = t.index;
         t.next(offset);
+        
         outer:while(!result) {
             /// <
             if(t.type!=TT.LANGLE) break;

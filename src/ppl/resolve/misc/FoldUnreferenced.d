@@ -170,6 +170,7 @@ private:
     }
     void processStruct(Struct struct_) {
         if(struct_.isTemplateBlueprint) return;
+        //if(struct_.isVisibleToOtherModules()) return;
 
         auto scope_ = findAccessScope(struct_);
 
@@ -210,7 +211,7 @@ private:
 
         /// Note: This is no longer true since private methods and vars are now
         ///       accessible from within the same module
-        
+
         //if(allTargetsResolved(struct_)) {
             // foreach(v; struct_.getMemberVariables()) {
             //     if(v.access.isPrivate) {

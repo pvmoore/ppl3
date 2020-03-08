@@ -2,7 +2,7 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.39.0";
+const string VERSION = "3.40.0";
 
 /*
 
@@ -20,7 +20,7 @@ const string VERSION = "3.39.0";
 
         - Use fast math option when generating code
 
-        - Check for exposing private structs/enums in public function/struct parameters
+3.40.0 - Record and display number of inactive modules. Fix bugs.
 
 3.39.0 - Check that parameters, properties and return types of public structs/functions and enums
          have types that are also public.

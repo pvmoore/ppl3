@@ -99,15 +99,9 @@ struct wagahagahgahg(int a) { fn sdasdasdasd() {} }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-pub struct Pooi() {
-    fn peter() {}
-
-}
 
 fn testing() {
 
-    var p1 = Pooi()
-    p1.peter()
 
 
 }

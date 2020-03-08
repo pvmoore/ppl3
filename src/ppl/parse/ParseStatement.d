@@ -2,7 +2,7 @@ module ppl.parse.ParseStatement;
 
 import ppl.internal;
 
-private const string VERBOSE_MODULE = null; //"test";
+private const string VERBOSE_MODULE = null; // "test";
 
 final class ParseStatement {
 private:
@@ -154,7 +154,7 @@ public:
             case SEMICOLON:
                 t.next;
                 return;
-            case TT.PIPE:
+            case PIPE:
                 /// Lambda
                 noExprAllowedAtModuleScope(t, parent);
                 exprParser.parse(t, parent);
@@ -171,6 +171,9 @@ public:
             //case LBRACKET:
             //    errorBadSyntax(module_, t, "Parenthesis not allowed here");
             //    break;
+            case LSQBRACKET:
+                errorBadSyntax(module_, t, "Unexpected character");
+                break;
             default:
                 break;
         }

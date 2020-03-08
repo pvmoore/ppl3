@@ -11,6 +11,8 @@ protected:
     Set!string requestedFunction;         /// moduleName|funcName
 
     Module[/*canonicalName*/string] modules;
+    Set!string removedModules;
+
     string[string] unoptimisedIr;
     string[string] optimisedIr;
     string linkedIr;
@@ -69,6 +71,7 @@ public:
         this.requestedAliasOrStruct = new Set!string;
         this.requestedFunction      = new Set!string;
         this.mangler                = new Mangler;
+        this.removedModules         = new Set!string;
         //this.refInfo                = new ReferenceInformation(this);
     }
     /// Tasks
@@ -79,7 +82,7 @@ public:
 
     void addError(CompileError e, bool canContinue) {
         string key = e.getKey();
-        if(key in errors) return;
+        if(canContinue && key in errors) return;
 
         errors[key] = e;
 
@@ -156,6 +159,10 @@ public:
         getModuleLock.lock();
         scope(exit) getModuleLock.unlock();
 
+        assert(!removedModules.contains(canonicalName));
+
+        removedModules.add(canonicalName);
+
         modules.remove(canonicalName);
     }
     Module[] allModules() {
@@ -226,6 +233,7 @@ public:
         receiver("\nOK");
         receiver("");
         receiver("Active modules ......... %s".format(allModules.length));
+        receiver("Inactive modules ....... %s".format(removedModules.length));
         receiver("Parser time ............ %.2f ms".format(allModules.map!(it=>it.parser.getElapsedNanos).sum() * 1e-6));
         receiver("Resolver time .......... %.2f ms".format(allModules.map!(it=>it.resolver.getElapsedNanos).sum() * 1e-6));
         receiver("DCE time ............... %.2f ms".format(dce.getElapsedNanos() * 1e-6));
