@@ -65,6 +65,10 @@
 					"match" : "\\[\\[.*\\]\\]"
 				},
 				{
+					"name" : "entity.name.tag.ppl3",
+					"match" : "!![_a-zA-Z][_a-zA-Z0-9]+(\\s*=)?"
+				},
+				{
 					"name": "constant.numeric",
 					"match": "\\b(true|false|null)(\\**|\\b)"
 				},

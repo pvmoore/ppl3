@@ -1,7 +1,7 @@
-[[module priority=-100000]]
+!!module_priority=-100000
 
 pub struct StringBuffer() {
-    
-}  
-  
-  
+
+}
+
+

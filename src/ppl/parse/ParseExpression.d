@@ -304,7 +304,7 @@ private:
         }
     }
     void consumeAttributes(Tokens t, ASTNode parent) {
-        while(t.type==TT.DBL_LSQBRACKET) {
+        while(t.type==TT.DBL_EXCLAMATION) {
             attrParser().parse(t, parent);
         }
     }

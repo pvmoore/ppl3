@@ -275,6 +275,7 @@ enum TT {
 
     DBL_LSQBRACKET, // [[
     DBL_RSQBRACKET, // ]]
+    DBL_EXCLAMATION, // !!
 
     LTE,            // <=
     GTE,            // >=

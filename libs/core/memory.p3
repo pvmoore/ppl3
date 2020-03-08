@@ -1,5 +1,5 @@
 // This module should be first
-[[module priority=-1_000_000]]
+!!module_priority=-1_000_000
 
 pub alias Destructor = fn(void*)void
 

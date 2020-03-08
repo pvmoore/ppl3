@@ -37,7 +37,7 @@ struct Red(pub int a) {
 
 pub fn testOperatorOverloading() {
 	const comparison = || {
-		[[pod]] struct C(int a) {
+		!!pod struct C(int a) {
 			pub fn operator==(C other)  { return this.a==other.a }
 			pub fn operator==(C* other) { return this.a==other.a }
 			pub fn operator==(int b)    { return this.a==b }
@@ -71,7 +71,7 @@ pub fn testOperatorOverloading() {
 	}
 	const comparisonAlternative = || {
 		// define operator== but not operator!=
-		[[pod]] struct C(int a) {
+		!!pod struct C(int a) {
 			pub fn operator==(C other)  { return this.a==other.a }
 			pub fn operator==(C* other) { return this.a==other.a }
 			pub fn operator==(int b)    { return this.a==b }

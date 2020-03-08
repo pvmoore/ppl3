@@ -491,6 +491,9 @@ public:
                     if(peek(1)=='=') {
                         addToken(TT.BOOL_NE, 2);
                         index++;
+                    } else if(peek(1)=='!') {
+                        addToken(TT.DBL_EXCLAMATION);
+                        index++;
                     } else {
                         addToken(TT.EXCLAMATION);
                     }

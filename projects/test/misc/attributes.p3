@@ -1,32 +1,32 @@
-[[module priority=10]]
+!!module_priority=10
 
-[[noinline]]
-[[noopt]]
+!!noinline
+!!noopt
 pub fn testAttributes() {
     func()
-    func2()   
+    func2()
     func3()
-    
-   
+
+
     int  v = 0
-        
+
     testPack()
     testPOD()
 }
 
-[[inline]]
+!!inline
 fn func() {
-    
+
 }
-[[noinline]]
+!!noinline
 fn func2() {
-    
+
 }
 fn func3() {
 
 }
 
-[[packed]]
+!!packed
 struct A(      // size = 9, align = 4
     byte a,     // 0
     short b,    // 1
@@ -40,17 +40,17 @@ struct B(      // size = 12, align = 4
     int c,      // 4
     byte d      // 8
 )
-struct C(     // size = 24, align = 8     
+struct C(     // size = 24, align = 8
     byte a,    // offset 0, size 1, align 1
     short b,   // offset 2, size 2, align 2
     long c,    // offset 8, size 8, align 8
     byte d     // offset 16, size 1, align 1
 )
-struct D(     // size = 1, align = 1 
+struct D(     // size = 1, align = 1
     byte a     // offset 0, size 1, align 1
 )
-struct E()    // size = 0, align = 1   
-struct F(  // size = 40, align = 8   
+struct E()    // size = 0, align = 1
+struct F(  // size = 40, align = 8
     short a,// offset 0, size 2, align 2
     C b,    // offset 8, size 24, align 8
     byte c  // offset 32, size 1, align 1
@@ -58,10 +58,10 @@ struct F(  // size = 40, align = 8
 struct G(  // size = 16, align 4
     byte a, // offset 0, size 1, align 1
     A b,    // offset 4, size 9, align 4
-    byte c  // offset 13, size 1, align 1 
+    byte c  // offset 13, size 1, align 1
 )
 
-[[noinline]]
+!!noinline
 fn testPack() {
     A a = A()
     B b = B()
@@ -69,15 +69,15 @@ fn testPack() {
     D d = D()
     E e = E()
     F f = F()
-    
+
     assert @sizeOf(A)==9
-    assert @sizeOf(B)==12  
-    assert @sizeOf(C)==24   
-    assert @sizeOf(D)==1   
-    assert @sizeOf(E)==0 
+    assert @sizeOf(B)==12
+    assert @sizeOf(C)==24
+    assert @sizeOf(D)==1
+    assert @sizeOf(E)==0
     assert @sizeOf(F)==40
     assert @sizeOf(G)==16
-    
+
     assert @alignOf(A) == 4
     assert @alignOf(B) == 4
     assert @alignOf(C) == 8
@@ -86,10 +86,10 @@ fn testPack() {
     assert @alignOf(F) == 8
     assert @alignOf(G) == 4
 }
-[[pod]] struct H(
+!!pod struct H(
     // default visibility of a POD is pub
     int a = 100,
-    int b = 101,  
+    int b = 101,
     int c = 102
 )
 fn testPOD() {
@@ -97,7 +97,7 @@ fn testPOD() {
     assert h0.a == 1
     assert h0.b == 2
     assert h0.c == 3
-    
+
     var h1 = H*(1,2,3)
     assert h1.a == 1
     assert h1.b == 2
@@ -107,39 +107,39 @@ fn testPOD() {
     assert h2.a == 1
     assert h2.b == 2
     assert h2.c == 3
-    
+
     // mix up the names
     var h3 = H(c:1, b:3, a:7)
     assert h3.a == 7
     assert h3.b == 3
     assert h3.c == 1
-    
+
     // partial initialisation
     var h4 = H(1,2)
     assert h4.a == 1
     assert h4.b == 2
     assert h4.c == 102
-    
+
     var h5 = H(1)
     assert h5.a == 1
     assert h5.b == 101
     assert h5.c == 102
-    
+
     var h6 = H()
     assert h6.a == 100
     assert h6.b == 101
     assert h6.c == 102
-    
+
     var h7 = H*()
     assert h7.a == 100
     assert h7.b == 101
     assert h7.c == 102
-    
+
     var h8 = H(c:50)
     assert h8.a == 100
     assert h8.b == 101
     assert h8.c == 50
-    
+
     //var h = H(1,2,3,4) // too many initialisers
     //var h = H(a:1, b:2, c:3, d:4) // d not found
     //var h = H(a:1, b:2, c:3, c:4) // dupliate name

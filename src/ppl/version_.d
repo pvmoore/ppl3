@@ -14,13 +14,13 @@ const string VERSION = "3.40.0";
 
         - Check for exposing private structs/enums as parameters to public structs at module scope
 
-        - Change attributes -- maybe use ! or !! or --
-
         - Rename loop to for?
 
         - Use fast math option when generating code
 
-3.40.0 - Record and display number of inactive modules. Fix bugs.
+3.40.0 - Record and display number of inactive modules.
+         Change attributes syntax to !!attrbute [=value]
+         Fix bugs.
 
 3.39.0 - Check that parameters, properties and return types of public structs/functions and enums
          have types that are also public.

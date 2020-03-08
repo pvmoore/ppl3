@@ -11,27 +11,27 @@ public:
     }
     void parse(Tokens t, ASTNode parent) {
 
-        /// [[
-        t.skip(TT.DBL_LSQBRACKET);
+        /// !!
+        t.skip(TT.DBL_EXCLAMATION);
 
         string name = t.value;
         t.next;
 
-        switch(name) {
+            switch(name) {
             case "inline":
-                parseInlineAttribute(t);
+                parseInline(t);
                 break;
             case "noinline":
-                parseNoInlineAttribute(t);
+                parseNoInline(t);
                 break;
-            case "module":
-                parseModuleAttribute(t, parent);
+            case "module_priority":
+                parseModulePriority(t, parent);
                 break;
             case "packed":
-                parsePackedAttribute(t);
+                parsePacked(t);
                 break;
             case "pod":
-                parsePodAttribute(t);
+                parsePod(t);
                 break;
             case "noopt":
                 parseNoOpt(t);
@@ -41,24 +41,18 @@ public:
                 errorBadSyntax(module_, t, "Unknown attribute '%s'".format(name));
                 break;
         }
-
-        t.skip(TT.DBL_RSQBRACKET);
     }
 private:
-    /// [[inline]]
-    void parseInlineAttribute(Tokens t) {
-        auto a = new InlineAttribute;
-
-        t.addAttribute(a);
+    /// !!inline
+    void parseInline(Tokens t) {
+        t.addAttribute(new InlineAttribute);
     }
-    /// [[noinline]]
-    void parseNoInlineAttribute(Tokens t) {
-        auto a = new NoInlineAttribute;
-
-        t.addAttribute(a);
+    /// !!noinline
+    void parseNoInline(Tokens t) {
+        t.addAttribute(new NoInlineAttribute);
     }
-    void parseModuleAttribute(Tokens t, ASTNode parent) {
-        import std.array : replace;
+    /// !!module_priority
+    void parseModulePriority(Tokens t, ASTNode parent) {
 
         auto a = new ModuleAttribute;
 
@@ -67,69 +61,34 @@ private:
 
         if(!parent.isModule) {
             t.prev;
-            module_.addError(t, "[[module]] attribute must be at module scope", true);
+            module_.addError(t, "!!module_priority attribute must be at module scope", true);
             t.next;
         }
 
-        foreach(k,v; getNameValueProperties(t, "module", ["priority"])) {
-            if(k=="priority") {
-                a.priority = v.replace("_","").to!int;
-            }
-        }
+        a.priority = getIntProperty(t);
     }
-    void parsePackedAttribute(Tokens t) {
-        auto a = new PackedAttribute;
-
-        t.addAttribute(a);
+    /// !!packed
+    void parsePacked(Tokens t) {
+        t.addAttribute(new PackedAttribute);
     }
-    void parsePodAttribute(Tokens t) {
-        auto a = new PodAttribute;
-
-        t.addAttribute(a);
+    /// !!pod
+    void parsePod(Tokens t) {
+        t.addAttribute(new PodAttribute);
     }
+    /// !!noopt
     void parseNoOpt(Tokens t) {
-        auto a = new NoOptAttribute;
-
-        t.addAttribute(a);
+        t.addAttribute(new NoOptAttribute);
     }
-    //string getValueProperty(Tokens t) {
-    //    /// (
-    //    t.skip(TT.LBRACKET);
-    //
-    //    string value = t.value;
-    //    t.next;
-    //
-    //    /// )
-    //    t.skip(TT.RBRACKET);
-    //
-    //    return value;
-    //}
-    string[string] getNameValueProperties(Tokens t, string name, string[] keys) {
-        string[string] props;
+    int getIntProperty(Tokens t) {
+        import std.array : replace;
 
-        import common : contains;
+        /// =
+        t.skip(TT.EQUALS);
 
-        ///
-        while(t.type!=TT.DBL_RSQBRACKET) {
+        /// value
+        int prop = t.value.replace("_","").to!int;
+        t.next;
 
-            /// name
-            string prop = t.value;
-            if(!keys.contains(prop)) {
-                module_.addError(t, "Unknown [[%s]] property '%s'".format(name, prop), true);
-            }
-            t.next;
-
-            /// =
-            t.skip(TT.EQUALS);
-
-            /// value
-            props[prop] = t.value;
-            t.next;
-
-            t.expect(TT.COMMA, TT.DBL_RSQBRACKET);
-            if(t.type==TT.COMMA) t.next;
-        }
-
-        return props;
+        return prop;
     }
 }

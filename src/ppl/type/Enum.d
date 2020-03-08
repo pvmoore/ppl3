@@ -56,6 +56,14 @@ public:
     }
 /// end of Type interface
 
+    bool isVisibleToOtherModules() {
+        if(access.isPrivate) return false;
+        auto lp = getLogicalParent;
+        if(lp.isModule) return true;
+        if(lp.isA!Struct) return lp.as!Struct.isVisibleToOtherModules();
+        return false;
+    }
+
     EnumMember[] members() {
         return children[].as!(EnumMember[]);
     }
