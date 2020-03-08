@@ -98,29 +98,17 @@ fn tempfoo<T>(T a, int b) void {
 struct wagahagahgahg(int a) { fn sdasdasdasd() {} }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-fn lammy(fn(int)void functor) { functor(3) }
-fn lammy2(fn()void functor) { functor() }
+
+pub struct Pooi() {
+    fn peter() {}
+
+}
+
 fn testing() {
 
-    const closure = |int a| {}
-    const closure2 = || {}
+    var p1 = Pooi()
+    p1.peter()
 
-
-
-    const closure3 = ||{}
-
-
-
-    lammy( |int a| { print(a) } )   // ok
-    lammy() |int a| { print(a) }    // ok
-
-    //lammy |int a| { print(a) }    // THIS SHOULD WORK
-
-    //lammy2() {} // disallow this
-    //lammy2 {} // disallow this
-
-    lammy2 || {}        // ok
-    lammy2() || {}      // ok
 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

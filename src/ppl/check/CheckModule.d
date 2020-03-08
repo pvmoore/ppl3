@@ -191,6 +191,10 @@ public:
 
         auto retType = n.getType.getFunctionType.returnType;
 
+        if(n.isVisibleToOtherModules()) {
+            checkForExposingPrivateType(n, retType, "Public function return type");
+        }
+
         switch(n.name) {
             case "operator==":
             case "operator!=":
@@ -543,10 +547,13 @@ public:
         }
         if(n.isStructVar) {
 
-            auto s = n.getStruct;
+            auto struct_ = n.getStruct;
 
-            if(s.isPOD && !n.access.isPublic) {
+            if(struct_.isPOD && !n.access.isPublic) {
                 module_.addError(n, "POD struct member variables must be public", true);
+            }
+            if(struct_.isVisibleToOtherModules() && n.access.isPublic) {
+                checkForExposingPrivateType(n, n.getType(), "Public struct property");
             }
         }
         if(n.isStatic) {
@@ -574,6 +581,16 @@ public:
             }
         }
         if(n.isParameter) {
+            Statement funcOrLambda = n.getFunctionOrLambda();
+            assert(funcOrLambda);
+
+            if(funcOrLambda.isFunction) {
+                auto func = funcOrLambda.as!Function;
+                if(func.isVisibleToOtherModules()) {
+                    checkForExposingPrivateType(n, n.getType(), "Public function parameter");
+                }
+
+            }
 
         }
         if(n.isLocalAlloc) {
@@ -721,38 +738,62 @@ private:
      *  Self is a modification
      */
     void checkReadOnlyModification(ASTNode self, Variable targetVar) {
-            /// Tuple properties are always public and modifiable
-            if(targetVar.isTupleVar) return;
+        /// Tuple properties are always public and modifiable
+        if(targetVar.isTupleVar) return;
 
-            Struct targetStruct = targetVar.getStruct;
+        Struct targetStruct = targetVar.getStruct;
 
-            /// POD struct properties are always public and modifiable
-            if(targetStruct.isPOD) return;
+        /// POD struct properties are always public and modifiable
+        if(targetStruct.isPOD) return;
 
-            auto inSameModule = self.getModule() == targetVar.getModule();
+        auto inSameModule = self.getModule() == targetVar.getModule();
 
-            // auto access       = targetVar.access;
-            // Struct thisStruct = self.getAncestor!Struct;
-            // bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
+        // auto access       = targetVar.access;
+        // Struct thisStruct = self.getAncestor!Struct;
+        // bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
 
-        //    // allow writing to indexed pointer value
-        //    auto idx = findAncestor!Index;
-        //    if(idx) return;N
-        //
+    //    // allow writing to indexed pointer value
+    //    auto idx = findAncestor!Index;
+    //    if(idx) return;N
+    //
 
-            if(!inSameModule) {
+        if(!inSameModule) {
 
-                auto binary = self.getAncestor!Binary;
-                auto isModification = binary && binary.op.isAssign && self.isDescendentOf(binary.left);
+            auto binary = self.getAncestor!Binary;
+            auto isModification = binary && binary.op.isAssign && self.isDescendentOf(binary.left);
 
-                if(isModification) {
+            if(isModification) {
 
-                    auto msg = targetVar.isStatic ?
-                        "%s static property %s can only be modified by code in the same module".format(targetStruct.name, targetVar.name) :
-                        "%s property %s can only be modified by code in the same module".format(targetStruct.name, targetVar.name);
+                auto msg = targetVar.isStatic ?
+                    "%s static property %s can only be modified by code in the same module".format(targetStruct.name, targetVar.name) :
+                    "%s property %s can only be modified by code in the same module".format(targetStruct.name, targetVar.name);
 
-                    module_.addError(self, msg, true);
-                }
+                module_.addError(self, msg, true);
             }
         }
+    }
+    /**
+     *
+     */
+    void checkForExposingPrivateType(ASTNode node, Type t, string msgPrefix = null) {
+        auto struct_ = t.getStruct();
+        auto enum_ = t.getEnum();
+        auto array = t.getArrayType();
+
+        Type errorType;
+
+        if(struct_) {
+            if(!struct_.access.isPublic) errorType = struct_;
+
+        } else if(array) {
+            checkForExposingPrivateType(node, array.subtype);
+        } else if(enum_) {
+            if(!enum_.access.isPublic) errorType = enum_;
+        }
+
+        if(errorType) {
+            msgPrefix = msgPrefix ? msgPrefix~" " : "";
+            module_.addError(node, msgPrefix ~ "type %s is not externally visible".format(errorType), true);
+        }
+    }
 }

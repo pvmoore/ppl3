@@ -15,7 +15,7 @@ final class Variable : Statement {
     string name;
     bool isConst;
     bool isStatic;
-    Access access = Access.PUBLIC;
+    Access access = Access.PRIVATE;
 
     int numRefs;
 
@@ -80,10 +80,11 @@ final class Variable : Statement {
         assert(parent.isA!Struct, "parent is not a struct %s %s %s".format(getModule(), line+1, name));
         return parent.as!Struct;
     }
-    Function getFunction() {
+    Statement getFunctionOrLambda() {
         assert(isParameter());
         auto bd = getAncestor!LiteralFunction();
         assert(bd);
+        if(bd.isLambda) return bd.getLambda();
         return bd.getFunction();
     }
 

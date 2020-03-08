@@ -2,7 +2,7 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.38.0";
+const string VERSION = "3.39.0";
 
 /*
 
@@ -14,17 +14,16 @@ const string VERSION = "3.38.0";
 
         - Check for exposing private structs/enums as parameters to public structs at module scope
 
-        - Change lambda syntax to || int a || ?
-
         - Change attributes -- maybe use ! or !! or --
-
-        - Check for exposing private structs/enums in public function/struct parameters
 
         - Rename loop to for?
 
-        !! check if this already works:
-        - Add fast math option
+        - Use fast math option when generating code
 
+        - Check for exposing private structs/enums in public function/struct parameters
+
+3.39.0 - Check that parameters, properties and return types of public structs/functions and enums
+         have types that are also public.
 
 3.38.0 - Remove 'f' suffix for number literals since by default any float literals are float.
          Force lambda literals to begin with '|' even if there are no parameters.

@@ -185,6 +185,7 @@ public:
         parent.add(f);
         f.moduleName = module_.canonicalName;
         f.isExtern   = true;
+        f.access     = t.access;
 
         /// "fn" id
         f.name = t.peek(1).value;

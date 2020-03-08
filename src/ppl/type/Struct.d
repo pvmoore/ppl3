@@ -11,14 +11,14 @@ protected:
 public:
     string name;
     string moduleName;
-    Access access = Access.PUBLIC;
+    Access access = Access.PRIVATE;
 
     /// Set to true if no body is specified.
     /// A full definition is expected later in the file.
     /// eg.
     /// struct Gold // this is declaration only
     /// // ...
-    /// struct Gold = [ ... ]
+    /// struct Gold() { ... }
     bool isDeclarationOnly;
 
 /// Template stuff

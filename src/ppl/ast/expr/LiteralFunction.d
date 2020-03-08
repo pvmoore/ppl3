@@ -3,10 +3,10 @@ module ppl.ast.expr.LiteralFunction;
 import ppl.internal;
 
 ///
-/// literal_function::= "{" [ { arg_list } "->" ] { statement } "}"    
-/// arg_list ::= type identifier { "," type identifier }               
-///                                                                    
-/// LiteralFunction                                                    
+/// literal_function::= "{" [ { arg_list } "->" ] { statement } "}"
+/// arg_list ::= type identifier { "," type identifier }
+///
+/// LiteralFunction
 ///     Parameters
 ///         Variable (0 - *)
 ///     Statement (0 - *)
@@ -49,7 +49,7 @@ class LiteralFunction : Expression, Container {
         return parent.as!Lambda;
     }
     Function getFunction() {
-        assert(parent.isA!Function);
+        assert(parent.isA!Function, "parent is a %s".format(parent.id));
         return parent.as!Function;
     }
     Return[] getReturns() {

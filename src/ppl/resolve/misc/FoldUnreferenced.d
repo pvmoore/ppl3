@@ -190,8 +190,7 @@ private:
 
         /// Try to fold public struct Variables and Functions
         /// (The access scope is the same as for the struct)
-        if((struct_.access.isPrivate || !scope_.isModule) &&
-           allTargetsResolved(scope_))
+        if((struct_.access.isPrivate || !scope_.isModule) && allTargetsResolved(scope_))
         {
             // foreach(v; struct_.getMemberVariables()) {
             //     tryToFold(v);
@@ -208,28 +207,32 @@ private:
         }
         /// Try to fold private Variables and Functions
         /// (The access scope is the struct itself)
-        if(allTargetsResolved(struct_)) {
+
+        /// Note: This is no longer true since private methods and vars are now
+        ///       accessible from within the same module
+        
+        //if(allTargetsResolved(struct_)) {
             // foreach(v; struct_.getMemberVariables()) {
             //     if(v.access.isPrivate) {
             //         tryToFold(v);
             //     }
             // }
-            foreach(f; struct_.getMemberFunctions()) {
-                if(f.access.isPrivate) {
-                    tryToFold(f);
-                }
-            }
-            foreach(v; struct_.getStaticVariables()) {
-                if(v.access.isPrivate) {
-                    tryToFold(v);
-                }
-            }
-            foreach(f; struct_.getStaticFunctions()) {
-                if(f.access.isPrivate) {
-                    tryToFold(f);
-                }
-            }
-        }
+        //     foreach(f; struct_.getMemberFunctions()) {
+        //         if(f.access.isPrivate) {
+        //             tryToFold(f);
+        //         }
+        //     }
+        //     foreach(v; struct_.getStaticVariables()) {
+        //         if(v.access.isPrivate) {
+        //             tryToFold(v);
+        //         }
+        //     }
+        //     foreach(f; struct_.getStaticFunctions()) {
+        //         if(f.access.isPrivate) {
+        //             tryToFold(f);
+        //         }
+        //     }
+        // }
 
         /// Recurse struct functions
         /// Recurse all function bodies

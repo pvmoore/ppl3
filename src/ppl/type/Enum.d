@@ -12,7 +12,7 @@ public:
     string name;
     string moduleName;
     Type elementType;
-    Access access = Access.PUBLIC;
+    Access access = Access.PRIVATE;
 
     this() {
         this.elementType = TYPE_INT;

@@ -11,7 +11,7 @@ private:
 public:
     string name;
     string moduleName;      /// canonical name of module (!=this.getModule.canonicalName if isImport)
-    Access access = Access.PUBLIC;
+    Access access = Access.PRIVATE;
     bool isStatic;
 
     Operator op = Operator.NOTHING; /// Set if this is an operator overload
@@ -65,6 +65,11 @@ public:
     }
     bool isOperatorOverload() {
         return op != Operator.NOTHING;
+    }
+    bool isVisibleToOtherModules() {
+        if(!access.isPublic) return false;
+        if(isGlobal()) return true;
+        return isStructFunc() && getStruct().isVisibleToOtherModules();
     }
 
     Parameters params() {
