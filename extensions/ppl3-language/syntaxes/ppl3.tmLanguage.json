@@ -66,7 +66,7 @@
 				},
 				{
 					"name" : "entity.name.tag.ppl3",
-					"match" : "!![_a-zA-Z][_a-zA-Z0-9]+(\\s*=)?"
+					"match" : "--[_a-zA-Z][_a-zA-Z0-9]+(\\s*=)?"
 				},
 				{
 					"name": "constant.numeric",
@@ -94,6 +94,14 @@
 			"patterns": [
 				{
 					"match": "\\b([_a-z][_a-zA-Z0-9]*)\\(",
+					"captures": {
+						"1" : {
+							"name" : "entity.name.function"
+						}
+					}
+				},
+				{
+					"match": "\\b(operator(\\[\\]|==|!=))\\(",
 					"captures": {
 						"1" : {
 							"name" : "entity.name.function"

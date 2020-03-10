@@ -645,7 +645,8 @@ private:
                 case PROFILE:
                     ok = node.isFunction;
                     break;
-                case RANGE:
+                case MIN:
+                case MAX:
                     ok = node.isVariable;
                     break;
                 case NOOPT:

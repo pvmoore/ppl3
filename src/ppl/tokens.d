@@ -276,6 +276,7 @@ enum TT {
     DBL_LSQBRACKET, // [[
     DBL_RSQBRACKET, // ]]
     DBL_EXCLAMATION, // !!
+    DBL_HYPHEN,     // --
 
     LTE,            // <=
     GTE,            // >=
@@ -343,6 +344,8 @@ string toString(TT t) {
 
         map[DBL_LSQBRACKET] = "[[";
         map[DBL_RSQBRACKET] = "]]";
+        map[DBL_EXCLAMATION] = "!!";
+        map[DBL_HYPHEN] = "--";
 
         map[LTE] = "<=",
         map[GTE] = ">=",

@@ -492,7 +492,7 @@ public:
                         addToken(TT.BOOL_NE, 2);
                         index++;
                     } else if(peek(1)=='!') {
-                        addToken(TT.DBL_EXCLAMATION);
+                        addToken(TT.DBL_EXCLAMATION, 2);
                         index++;
                     } else {
                         addToken(TT.EXCLAMATION);
@@ -552,6 +552,9 @@ public:
                         index++;
                     } else if(peek(1)=='>') {
                         addToken(TT.RT_ARROW, 2);
+                        index++;
+                    } else if(peek(1)=='-') {
+                        addToken(TT.DBL_HYPHEN, 2);
                         index++;
                     } else {
                         addToken(TT.MINUS);

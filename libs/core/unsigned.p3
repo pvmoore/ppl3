@@ -1,4 +1,4 @@
-!!module_priority=-900_000
+--module_priority=-900_000
 //
 //  Handle unsigned div, mod and comparisons.
 //

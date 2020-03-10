@@ -11,33 +11,33 @@ abstract class Attribute {
     enum Type {
         INLINE, NOINLINE,
         LAZY, MEMOIZE, MODULE, NOTNULL,
-        PACKED, POD, PROFILE, RANGE, NOOPT
+        PACKED, POD, PROFILE, MIN, MAX, NOOPT
     }
     string name;
     Type type;
 }
 
-/// [[inline]]
+/// --inline
 /// Applies to functions
 final class InlineAttribute : Attribute {
     this() {
-        name = "[[inline]]";
+        name = "--inline";
         type = Type.INLINE;
     }
 }
-/// [[noinline]]
+/// --noinline
 /// Applies to functions
 final class NoInlineAttribute : Attribute {
     this() {
-        name = "[[noinline]]";
+        name = "--noinline";
         type = Type.NOINLINE;
     }
 }
-/// [[lazy]]
+/// --lazy
 /// Applies to function parameters
 final class LazyAttribute : Attribute {
     this() {
-        name = "[[lazy]]";
+        name = "--lazy";
         type = Type.LAZY;
     }
 }
@@ -45,65 +45,74 @@ final class LazyAttribute : Attribute {
 /// Applies to functions
 final class MemoizeAttribute : Attribute {
     this() {
-        name = "[[memoize]]";
+        name = "--memoize";
         type = Type.MEMOIZE;
     }
 }
-/// [[module priority=1]]
+/// module_priority=1
 /// Applies to current module
 final class ModuleAttribute : Attribute {
     int priority;
     this() {
-        name = "[[module]]";
+        name = "--module_priority";
         type = Type.MODULE;
     }
 }
-/// [[notnull]]
+/// --notnull
 /// Applies to functionparameters
 final class NotNullAttribute : Attribute {
     this() {
-        name = "[[notnull]]";
+        name = "--notnull";
         type = Type.NOTNULL;
     }
 }
-/// [[packed]]
+/// --packed
 /// Applies to structs
 final class PackedAttribute : Attribute {
     this() {
-        name = "[[packed]]";
+        name = "--packed";
         type = Type.PACKED;
     }
 }
-/// [[pod]]
+/// --pod
 /// Applies to structs
 final class PodAttribute : Attribute {
     this() {
-        name = "[[pod]]";
+        name = "--pod";
         type = Type.POD;
     }
 }
-/// [[profile]]
+/// --profile
 /// Applies to functions
 final class ProfileAttribute : Attribute {
     this() {
-        name = "[[profile]]";
+        name = "--profile";
         type = Type.PROFILE;
     }
 }
-/// [[range min=0, max=200]]
+/// --min=0
 /// Applies to variables
-final class RangeAttribute : Attribute {
-    long min, max;
+final class MinAttribute : Attribute {
+    long min;
     this() {
-        name = "[[range]]";
-        type = Type.RANGE;
+        name = "--min";
+        type = Type.MIN;
     }
 }
-/// [[noopt]]
+/// --max=100
+/// Applies to variables
+final class MaxAttribute : Attribute {
+    long max;
+    this() {
+        name = "--max";
+        type = Type.MAX;
+    }
+}
+/// --noopt
 /// Applies to functions
 final class NoOptAttribute : Attribute {
     this() {
-        name = "[[noopt]]";
+        name = "--noopt";
         type = Type.NOOPT;
     }
 }

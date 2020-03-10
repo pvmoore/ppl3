@@ -1,7 +1,7 @@
-!!module_priority=10
+--module_priority=10
 
-!!noinline
-!!noopt
+--noinline
+--noopt
 pub fn testAttributes() {
     func()
     func2()
@@ -14,11 +14,11 @@ pub fn testAttributes() {
     testPOD()
 }
 
-!!inline
+--inline
 fn func() {
 
 }
-!!noinline
+--noinline
 fn func2() {
 
 }
@@ -26,7 +26,7 @@ fn func3() {
 
 }
 
-!!packed
+--packed
 struct A(      // size = 9, align = 4
     byte a,     // 0
     short b,    // 1
@@ -61,7 +61,7 @@ struct G(  // size = 16, align 4
     byte c  // offset 13, size 1, align 1
 )
 
-!!noinline
+--noinline
 fn testPack() {
     A a = A()
     B b = B()
@@ -86,7 +86,7 @@ fn testPack() {
     assert @alignOf(F) == 8
     assert @alignOf(G) == 4
 }
-!!pod struct H(
+--pod struct H(
     // default visibility of a POD is pub
     int a = 100,
     int b = 101,

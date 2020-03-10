@@ -11,8 +11,8 @@ public:
     }
     void parse(Tokens t, ASTNode parent) {
 
-        /// !!
-        t.skip(TT.DBL_EXCLAMATION);
+        /// --
+        t.skip(TT.DBL_HYPHEN);
 
         string name = t.value;
         t.next;
@@ -43,15 +43,15 @@ public:
         }
     }
 private:
-    /// !!inline
+    /// --inline
     void parseInline(Tokens t) {
         t.addAttribute(new InlineAttribute);
     }
-    /// !!noinline
+    /// --noinline
     void parseNoInline(Tokens t) {
         t.addAttribute(new NoInlineAttribute);
     }
-    /// !!module_priority
+    /// --module_priority
     void parseModulePriority(Tokens t, ASTNode parent) {
 
         auto a = new ModuleAttribute;
@@ -67,15 +67,15 @@ private:
 
         a.priority = getIntProperty(t);
     }
-    /// !!packed
+    /// --packed
     void parsePacked(Tokens t) {
         t.addAttribute(new PackedAttribute);
     }
-    /// !!pod
+    /// --pod
     void parsePod(Tokens t) {
         t.addAttribute(new PodAttribute);
     }
-    /// !!noopt
+    /// --noopt
     void parseNoOpt(Tokens t) {
         t.addAttribute(new NoOptAttribute);
     }

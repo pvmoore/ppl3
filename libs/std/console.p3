@@ -1,4 +1,4 @@
-!!module_priority=-100000
+--module_priority=-100000
 
 pub fn println(bool b) { print(b); putchar(10) }
 pub fn println(long n) { print(n); putchar(10) }

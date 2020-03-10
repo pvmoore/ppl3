@@ -2,7 +2,7 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.40.0";
+const string VERSION = "3.41.0";
 
 /*
 
@@ -12,11 +12,11 @@ const string VERSION = "3.40.0";
 
         - Add formatted string f"My name is ${name}, age ${04f:age}"
 
-        - Check for exposing private structs/enums as parameters to public structs at module scope
-
         - Rename loop to for?
 
         - Use fast math option when generating code
+
+3.41.0 - Change attributes syntax to --attribute.
 
 3.40.0 - Record and display number of inactive modules.
          Change attributes syntax to !!attrbute [=value]
@@ -131,7 +131,7 @@ TODO Compiler:
     - Implement ControlFlow to check that every route through a function returns
       correctly
 
-    - Implement [[range]] attribute and add checks if boundsChecks=true
+    - Implement --range attribute and add checks if boundsChecks=true
 
     - Replace pointers with ref / const ref
     - Change import syntax
@@ -142,6 +142,7 @@ TODO Compiler:
 
     - Cache debug ir, optimised ir and bc for modules. Store keyed by a sha1 of the
       program args and the update timestamp.
+
     - Think about const. If a struct value is const we should not allow any modifying
       member property updates or function calls.
 

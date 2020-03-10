@@ -238,7 +238,7 @@ public:
     }
 private: //=============================================================================== private
     void consumeAttributes(Tokens t, ASTNode parent) {
-        while(t.type==TT.DBL_EXCLAMATION) {
+        while(t.type==TT.DBL_HYPHEN) {
             attrParser().parse(t, parent);
         }
     }

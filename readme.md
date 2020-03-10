@@ -44,7 +44,7 @@ putchar('0')
 ```
 ### Structs
 ```
-[[pod]] struct Point(int x, iny y)
+!!pod struct Point(int x, iny y)
 
 const p = Point(10,20)
 
@@ -52,7 +52,7 @@ struct Vector<T>(T x, T y, T z) {
     pub fn new(T x, T y, T z) {
         this.x = x; this.y = y; this.z = z
     }
-    [[inline]]
+    !!inline
     pub fn dot(Vector<T> b) {
         return x*b.x + y*b.y + z*b.y
     }

@@ -1,4 +1,4 @@
-!!module_priority = -900_000
+--module_priority = -900_000
 
 // Externs are assumed to be C calling convention/mangling
 
