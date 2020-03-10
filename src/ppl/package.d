@@ -22,7 +22,7 @@ import ppl.error.CompileError;
 import ppl.misc.lexer;
 import ppl.misc.toml;
 
-import ppl.type.type;
+import ppl.type.IType;
 
 
 T min(T)(T a, T b) {

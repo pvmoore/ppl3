@@ -1,4 +1,4 @@
-module ppl.type.type_basic;
+module ppl.type.BasicType;
 
 import ppl.internal;
 

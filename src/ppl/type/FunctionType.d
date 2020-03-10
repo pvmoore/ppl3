@@ -1,4 +1,4 @@
-module ppl.type.type_function;
+module ppl.type.FunctionType;
 
 import ppl.internal;
 

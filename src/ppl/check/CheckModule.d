@@ -666,7 +666,7 @@ private:
                 check(n, a);
             }
             if(n.attributes.get!InlineAttribute && n.attributes.get!NoInlineAttribute) {
-                module_.addError(n, "[[inline]] and [[noinline]] attributes are mutually exclusive", true);
+                module_.addError(n, "--inline and --noinline attributes are mutually exclusive", true);
             }
         });
     }

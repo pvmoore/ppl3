@@ -167,14 +167,6 @@ From!"std.typecons".Tuple!(Type,string) parseNumberLiteral(string v) {
             t[0] = new BasicType(Type.DOUBLE);
             t[1] = s;
         }
-    // } else if(v.endsWith("f")) {
-    //     string s = v[0..$-1];
-    //     if(s.count('.')<2 &&
-    //        s.removeChars('.').isDigits)
-    //     {
-    //         t[0] = new BasicType(Type.FLOAT);
-    //         t[1] = s;
-    //     }
     } else if(v.count('.')==1) {        /// assume float if no type specified
         if(v.removeChars('.').isDigits) {
             t[0] = new BasicType(Type.FLOAT);
@@ -201,24 +193,4 @@ int getTypeOfLong(long l) {
 //}
 bool isInt(long l) {
     return l >= int.min && l <= int.max;
-}
-
-int calculateAggregateSize(Type[] types) {
-    int offset  = 0;
-    int largest = 1;
-
-    foreach(t; types) {
-        int align_    = t.alignment();
-        int and       = (align_-1);
-        int newOffset = (offset + and) & ~and;
-
-        offset = newOffset + t.size;
-
-        if(align_ > largest) largest = align_;
-    }
-
-    /// The final size must be a multiple of the largest alignment
-    offset = (offset + (largest-1)) & ~(largest-1);
-
-    return offset;
 }
