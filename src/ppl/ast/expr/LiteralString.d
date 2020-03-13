@@ -3,17 +3,19 @@ module ppl.ast.expr.LiteralString;
 import ppl.internal;
 ///
 /// string ::= prefix '"' text '"'
-/// prefix ::= nothing | "r" | "u8"
+/// prefix ::= nothing | "r" | "f" | "rf" | "fr"
 ///
-/// r  - raw string with no escapes eg. r"\bregex\w"
-/// u8 - utf8 string (logical length may be different to physical length)
+/// All string literals are utf8 (logical length may be different to physical length)
+///
+/// r - regex string with no escapes eg. r"\bregex\w"
+/// f - formatted string
 ///
 class LiteralString : Expression {
 protected:
     LLVMValueRef  _llvmValue;
     LiteralString _original;
 public:
-    enum Encoding { UNKNOWN, UTF8, RAW }
+    enum Encoding { UNKNOWN, UTF8, REGEX }
 
     Type type;
     string value;
@@ -66,12 +68,12 @@ public:
         final switch(enc) with(Encoding) {
             case UNKNOWN: assert(false);
             case UTF8: return value.length.toInt;
-            case RAW:  return value.length.toInt;
+            case REGEX:  return value.length.toInt;
         }
     }
 
     override string toString() {
-        string e = enc==Encoding.RAW ? "r" : "";
+        string e = enc==Encoding.REGEX ? "r" : "";
         return "String: %s\"%s\" (type=%s)".format(e, value, type);
     }
 }

@@ -6,15 +6,18 @@ const string VERSION = "3.41.0";
 
 /*
 
-// todo - add @structPtrOf, @arrayPtrOf
-
-        - change function ptr syntax to fn(int a -> void)
+// todo - Change function ptr syntax to fn(int a -> void)
 
         - Add formatted string f"My name is ${name}, age ${04f:age}"
+        - Implement regex strings
 
         - Rename loop to for?
 
         - Use fast math option when generating code
+
+        - Maybe never fold functions or structs. Remove them in DCE after CheckModule has run
+
+        - Add class - make structs implicitly packed pods.
 
 3.41.0 - Change attributes syntax to --attribute.
 
@@ -131,14 +134,15 @@ TODO Compiler:
     - Implement ControlFlow to check that every route through a function returns
       correctly
 
-    - Implement --range attribute and add checks if boundsChecks=true
+    - Add checks if boundsChecks=true
+
+    - Add null checks if nullChecks=true
 
     - Replace pointers with ref / const ref
-    - Change import syntax
+
     - Add coroutine intrinsics eg. @coroPrelude, @coroHandle, @coroSuspend, @coroResume
 
     - Ensure only basic optimisations get done if we are in DEBUG mode
-    - Panic - Null references
 
     - Cache debug ir, optimised ir and bc for modules. Store keyed by a sha1 of the
       program args and the update timestamp.
@@ -148,7 +152,7 @@ TODO Compiler:
 
     - Fold for/loop (wait for syntax change?)
 
-    ** Change 'loop' to 'for' eg. for(array) v, i {}
+    ** Change 'loop' to 'for' eg.
         - for(i in 0..10) {}
         - for(i in @range(0,10,1)) {}
             struct Range<T>(T start, T end, T step)
@@ -199,10 +203,8 @@ TODO Known bugs:
 
 -   config.enableOptimisation = false produces link errors
 
-
 -   indexOf { string s ->
         indexOf(s, 0)   // this.indexOf(s,0) works
     }
-
 
  */

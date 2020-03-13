@@ -113,7 +113,7 @@ public:
             text = parseStringLiteral(text[1..$-1]);
 
         } else if(text[0]=='r') {
-            s.enc  = LiteralString.Encoding.RAW;
+            s.enc  = LiteralString.Encoding.REGEX;
             text = text[2..$-1];
 
         } else {
