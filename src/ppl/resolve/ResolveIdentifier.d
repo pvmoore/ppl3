@@ -238,7 +238,7 @@ private:
 
             module_.buildState.functionRequired(func.moduleName, func.name);
 
-            if(func.isStructFunc) {
+            if(func.isMember()) {
                 auto ns = n.getAncestor!Struct();
                 assert(ns);
 
@@ -250,7 +250,7 @@ private:
         } else {
             Variable var = res.isVar ? res.var : null;
 
-            if(var.isStructVar/* && !var.isStatic*/) {
+            if(var.isStructVar() || var.isClassVar()/* && !var.isStatic*/) {
 
                 auto msg = var.isStatic ?
                     "Struct static access requires the struct class name eg. %s.%s".format(var.getStruct().name, n.name) :

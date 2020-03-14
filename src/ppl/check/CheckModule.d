@@ -536,7 +536,7 @@ public:
     void visit(Variable n) {
         if(n.isConst) {
 
-            if(!n.isGlobal && !n.isStructVar) {
+            if(!n.isGlobal && !n.isStructVar()) {
 
                 /// Initialiser must be const
                 //auto ini = n.initialiser();
@@ -545,7 +545,12 @@ public:
                 //}
             }
         }
-        if(n.isStructVar) {
+        if(n.isClassVar()) {
+            auto class_ = n.getClass();
+
+
+        }
+        if(n.isStructVar()) {
 
             auto struct_ = n.getStruct();
 

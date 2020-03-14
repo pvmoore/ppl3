@@ -2,7 +2,7 @@ module ppl.type.Struct;
 
 import ppl.internal;
 
-final class Struct : ASTNode, Type, Container {
+class Struct : ASTNode, Type, Container {
 protected:
     LLVMTypeRef _llvmType;
     int _size      = -1;
@@ -122,10 +122,21 @@ public:
             .array;
     }
     ///========================================================================================
+    Class getClass(string name) {
+        return children[]
+                .filter!(it=>it.id==NodeID.CLASS && it.as!Class.name==name)
+                .frontOrNull!Class;
+    }
     Struct getStruct(string name) {
         return children[]
                 .filter!(it=>it.id==NodeID.STRUCT && it.as!Struct.name==name)
                 .frontOrNull!Struct;
+    }
+    Class[] getClasses() {
+        return children[]
+            .filter!(it=>it.id==NodeID.CLASS)
+            .map!(it=>cast(Class)it)
+            .array;
     }
     Struct[] getStructs() {
         return children[]
@@ -201,6 +212,8 @@ public:
                 .array;
     }
     ///========================================================================================
+
+    // TODO - struct will not have a constructor
     bool hasDefaultConstructor() {
         return getDefaultConstructor() !is null;
     }
@@ -213,6 +226,8 @@ public:
     Function[] getConstructors() {
         return getMemberFunctions("new");
     }
+    //=========================================================================================
+
     ///
     /// Return true if there are Placeholders at root level which signifies
     /// that a template function has just been added

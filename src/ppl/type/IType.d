@@ -10,6 +10,7 @@ interface Type {
         VOID,
         /// All lower than STRUCT are BasicTypes
         STRUCT,
+        CLASS,
         TUPLE,
         ENUM,
         ARRAY,
@@ -36,6 +37,7 @@ interface Type {
     final bool isInteger() const  { int e = category(); return e==BYTE || e==SHORT || e==INT || e==LONG; }
     final bool isBasicType()      { return category() <= VOID && category()!=UNKNOWN; }
     final bool isStruct() const   { return category()==STRUCT; }
+    final bool isClass() const    { return category()==CLASS; }
     final bool isArray() const    { return category()==ARRAY; }
     final bool isEnum() const     { return category()==ENUM; }
     final bool isFunction() const { return category()==FUNCTION; }
@@ -75,6 +77,13 @@ interface Type {
         auto ns     = this.as!Struct;      if(ns) return ns;
         auto alias_ = this.as!Alias;       if(alias_) return alias_.type.getStruct;
         auto ptr    = this.as!Pointer;     if(ptr) return ptr.decoratedType.getStruct;
+        assert(false, "How did we get here?");
+    }
+    final Class getClass() {
+        if(!isClass) return null;
+        auto ns     = this.as!Class;       if(ns) return ns;
+        auto alias_ = this.as!Alias;       if(alias_) return alias_.type.getClass;
+        auto ptr    = this.as!Pointer;     if(ptr) return ptr.decoratedType.getClass;
         assert(false, "How did we get here?");
     }
     final Tuple getTuple() {

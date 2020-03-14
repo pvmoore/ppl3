@@ -33,17 +33,20 @@ final class Variable : Statement {
                cast(Type)parent is null &&
                getContainer().id()==NodeID.LITERAL_FUNCTION;
     }
+
     bool isStructVar() {
         return getLogicalParent().id==NodeID.STRUCT;
+    }
+    bool isClassVar() {
+        return getLogicalParent().id==NodeID.CLASS;
     }
     bool isTupleVar() {
         return getLogicalParent().id==NodeID.TUPLE;
     }
 
-    //bool isStructMember() {
-    //    // todo - should this ignore isStatic?
-    //    return !isStatic && parent.id==NodeID.STRUCT;
-    //}
+    bool isMember() {
+        return getLogicalParent().id.isOneOf(NodeID.TUPLE, NodeID.STRUCT, NodeID.CLASS);
+    }
     bool isGlobal() {
         return isAtModuleScope();
     }
@@ -54,6 +57,12 @@ final class Variable : Statement {
         return type.isKnown && type.isFunction;
     }
 
+
+    int getMemberIndex() {
+        if(isStructVar() || isClassVar()) return parent.as!Struct.getMemberIndex(this);
+        if(isTupleVar()) return parent.as!Tuple.getMemberIndex(this);
+        assert(false, "Not a member");
+    }
 
     bool hasInitialiser() {
         return children[].any!(it=>it.isInitialiser);
@@ -73,12 +82,16 @@ final class Variable : Statement {
     }
 
     Tuple getTuple() {
-        assert(isTupleVar);
+        assert(parent.isA!Tuple, "parent is not a tuple %s %s %s".format(getModule(), line+1, name));
         return parent.as!Tuple;
     }
     Struct getStruct() {
         assert(parent.isA!Struct, "parent is not a struct %s %s %s".format(getModule(), line+1, name));
         return parent.as!Struct;
+    }
+    Class getClass() {
+        assert(parent.isA!Class, "parent is not a class %s %s %s".format(getModule(), line+1, name));
+        return parent.as!Class;
     }
     Statement getFunctionOrLambda() {
         assert(isParameter());

@@ -274,7 +274,7 @@ private:
     }
     void tryToFold(Variable v) {
 
-        if(v.isStructVar) {
+        if(v.isMember()) {
             /// Don't remove struct properties
             return;
         }

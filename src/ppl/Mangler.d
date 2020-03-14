@@ -40,7 +40,7 @@ public:
 
         string name  = f.name;
 
-        if(f.isStructFunc) {
+        if(f.isMember()) {
             auto struct_ = f.getAncestor!Struct();
             assert(struct_);
 

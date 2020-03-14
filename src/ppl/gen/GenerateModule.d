@@ -127,7 +127,7 @@ public:
 
             /// Get the "this" variable
             auto v = n.target.getVariable;
-            if(v.isStructVar && !v.isStatic) {
+            if(v.isMember() && !v.isStatic) {
                 auto ns = v.getStruct;
                 assert(ns);
 
@@ -232,7 +232,7 @@ public:
         } else if(n.target.isMemberVariable) {
             /// Get the "this" variable
             auto v = n.target.getVariable;
-            if(!n.parent.isDot && v.isStructVar && !v.isStatic) {
+            if(!n.parent.isDot && v.isMember() && !v.isStatic) {
                 auto ns = n.target.getVariable.getStruct;
                 assert(ns);
 
@@ -391,9 +391,11 @@ public:
     void visit(Variable n) {
         if(n.isGlobal) {
 
-        } else if(n.isTupleVar) {
+        } else if(n.isTupleVar()) {
 
-        } else if(n.isStructVar) {
+        } else if(n.isStructVar()) {
+
+        } else if(n.isClassVar()) {
 
         } else {
             //// it must be a local/parameter

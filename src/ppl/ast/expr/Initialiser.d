@@ -100,9 +100,12 @@ private:
         Expression left  = b.identifier(var);
         auto right = last().as!Expression;
 
-        if(var.isStructVar) {
+        if(var.isMember()) {
             if(var.isStatic) {
-                left = b.dot(b.typeExpr(var.getStruct()), left);
+                assert(var.isStructVar() || var.isClassVar());
+
+                Type nn = var.isStructVar() ? var.getStruct() : var.getClass();
+                left = b.dot(b.typeExpr(nn), left);
             } else {
                 left = b.dot(b.identifier("this"), left);
             }

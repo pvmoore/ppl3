@@ -15,6 +15,7 @@ enum NodeID {
     CALL,
     CALLOC,
     CASE,
+    CLASS,
     COMPOSITE,
     CONSTRUCTOR,
     CONTINUE,

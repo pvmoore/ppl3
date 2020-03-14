@@ -25,8 +25,7 @@ public:
         if(isSet && v==var) return;
         if(isSet) removeRef();
         this.isSet        = true;
-        this.ttype        = (v.isStructVar || v.isTupleVar) && !v.isStatic ? TargetType.STRUCTVAR :
-                                                                             TargetType.VAR;
+        this.ttype        = v.isMember() && !v.isStatic ? TargetType.STRUCTVAR : TargetType.VAR;
         this.var          = v;
         this.targetModule = v.getModule;
         assert(targetModule);
@@ -37,7 +36,7 @@ public:
         if(isSet && f==func) return;
         if(isSet) removeRef();
         this.isSet        = true;
-        this.ttype        = f.isStructFunc && !f.isStatic ? TargetType.STRUCTFUNC : TargetType.FUNC;
+        this.ttype        = f.isMember() && !f.isStatic ? TargetType.STRUCTFUNC : TargetType.FUNC;
         this.func         = f;
         this.targetModule = f.getModule;
         assert(targetModule);
@@ -72,9 +71,8 @@ public:
         assert(ttype==TargetType.STRUCTVAR || ttype==TargetType.STRUCTFUNC);
 
         if(var) {
-            auto parent = var.getLogicalParent;
-            if(var.isStructVar) return parent.as!Struct.getMemberIndex(var);
-            return parent.as!Tuple.getMemberIndex(var);
+            assert(var.isMember());
+            return var.getMemberIndex();
         }
         auto parent = func.getLogicalParent;
         assert(parent.isA!Struct);

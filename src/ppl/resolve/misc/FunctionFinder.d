@@ -22,7 +22,7 @@ struct Callable {
     bool isVariable()          { return var !is null; }
     bool isFunction()          { return func !is null; }
     bool isStatic()            { return var ? var.isStatic : func.isStatic; }
-    bool isStructMember()      { return func ? func.isStructFunc : var.isStructVar; }
+    bool isStructMember()      { return func ? func.isMember() : var.isMember(); }
     bool isTemplateBlueprint() { return func ? func.isTemplateBlueprint : false; }
     bool isPrivate()           { return (func ? func.access : var.access).isPrivate; }
 

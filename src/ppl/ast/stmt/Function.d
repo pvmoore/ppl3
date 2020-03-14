@@ -46,11 +46,14 @@ public:
         return getBody().getType;
     }
 ///
-    bool isProgramEntry() {
-        return "main"==name || "WinMain"==name;
-    }
     bool isStructFunc() {
         return getLogicalParent().id==NodeID.STRUCT;
+    }
+    bool isClassFunc() {
+        return getLogicalParent().id==NodeID.CLASS;
+    }
+    bool isMember() {
+        return getLogicalParent().id.isOneOf(NodeID.STRUCT, NodeID.CLASS);
     }
     bool isGlobal() {
         return getLogicalParent().id==NodeID.MODULE;
@@ -66,10 +69,15 @@ public:
     bool isOperatorOverload() {
         return op != Operator.NOTHING;
     }
+    bool isProgramEntry() {
+        return "main"==name || "WinMain"==name;
+    }
     bool isVisibleToOtherModules() {
         if(!access.isPublic) return false;
         if(isGlobal()) return true;
-        return isStructFunc() && getStruct().isVisibleToOtherModules();
+        if(isStructFunc()) return getStruct().isVisibleToOtherModules();
+        if(isClassFunc()) return getClass().isVisibleToOtherModules();
+        assert(false);
     }
 
     Parameters params() {
@@ -79,6 +87,11 @@ public:
         assert(isStructFunc());
         return parent.as!Struct;
     }
+    Class getClass() {
+        assert(isClassFunc());
+        return parent.as!Class;
+    }
+
     bool hasBody() {
         return !isExtern && !isImport && !isTemplateBlueprint() && hasChildren();
     }
@@ -113,7 +126,7 @@ public:
 
         string loc = isExtern ? "EXTERN" :
                      isImport ? "IMPORT" :
-                     isGlobal ? "GLOBAL" : "STRUCT";
+                     isGlobal ? "GLOBAL" : "STRUCT/CLASS";
         string s;
         if(isTemplateBlueprint()) {
             s ~= "<" ~ blueprint.paramNames.join(",") ~ "> ";

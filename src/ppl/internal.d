@@ -158,6 +158,7 @@ import ppl.templates.templates;
 
 import ppl.type.Alias;
 import ppl.type.Array;
+import ppl.type.Class;
 import ppl.type.Enum;
 import ppl.type.IType;
 import ppl.type.Pointer;
