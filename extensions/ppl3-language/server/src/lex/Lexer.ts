@@ -21,7 +21,7 @@ export class Lexer {
         const peek = (offset: number): string => {
             return i + offset >= this.text.length ? "\0" : this.text[i + offset];
         };
-        const handleEol = (discard:boolean) : boolean => {
+        const handleEol = (discard: boolean): boolean => {
             if (peek(0) == "\r") {
                 if (peek(1) == "\n") i++;
                 i++;
@@ -183,6 +183,9 @@ export class Lexer {
                 case "}":
                 case "[":
                 case "]":
+                case "!":
+                case "%":
+                case "?":
                 case "<":
                 case ">":
                     add(TT.OP, ch);

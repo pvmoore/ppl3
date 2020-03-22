@@ -368,6 +368,7 @@ public:
     }
     //==========================================================================
     void writeAST() {
+        if(module_.config.writeJSON) writeJson();
         if(!module_.config.writeAST) return;
 
         //dd("DUMP MODULE", module_);
@@ -384,6 +385,15 @@ public:
             f.log("\t[%s] Line %s %s", i, n.line, n);
         }
         f.log("==============================================");
+    }
+    void writeJson() {
+        import std.stdio : File;
+
+        auto s = JsonWriter.toString(module_);
+
+        auto f = File(module_.config.targetPath~"json/" ~ module_.fileName~".json", "w");
+
+        f.write(s);
     }
     bool isAStaticTypeExpr(Expression expr) {
         auto exprType       = expr.getType;

@@ -18,14 +18,21 @@ buildType "release" {
 
 configuration "test" {
 	mainSourceFile "src/main.d"
-	excludedSourceFiles "src/bench.d"
+	excludedSourceFiles "src/bench.d" "src/server.d"
+
+	targetType "executable"
+	targetName "ppl3"
+}
+configuration "server" {
+	mainSourceFile "src/server.d"
+	excludedSourceFiles "src/main.d" "src/bench.d"
 
 	targetType "executable"
 	targetName "ppl3"
 }
 configuration "bench" {
 	mainSourceFile "src/bench.d"
-	excludedSourceFiles "src/main.d"
+	excludedSourceFiles "src/main.d" "src/server.d"
 
 	targetType "executable"
 	targetName "bench"

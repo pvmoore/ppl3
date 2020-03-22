@@ -18,8 +18,8 @@ export default class ModelBuilder {
 
         log(`tokens: ${this.module.tokens.length}`);
 
-        this.module.tokens.forEach(t => {
-            log(`\t${JSON.stringify(t)}`);
-        });
+        // this.module.tokens.forEach(t => {
+        //     log(`\t${JSON.stringify(t)}`);
+        // });
     }
 }

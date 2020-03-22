@@ -48,6 +48,7 @@ public:
     bool writeOBJ     = true;
     bool writeAST     = true;
     bool writeIR      = true;
+    bool writeJSON    = true;
 
     ///==================================================================================
 
@@ -179,6 +180,7 @@ private:
         createTargetDir("ir/");
         createTargetDir("ir_opt/");
         createTargetDir("bc/");
+        createTargetDir("json/");
     }
     void createTargetDir(string dir) {
         import std.file : exists, mkdir;

@@ -10,7 +10,8 @@ import {
 	LanguageClient,
 	LanguageClientOptions,
 	ServerOptions,
-	TransportKind
+	TransportKind,
+	ExecutableOptions
 } from 'vscode-languageclient';
 
 let client: LanguageClient;
@@ -55,6 +56,24 @@ export function activate(context: ExtensionContext) {
 		serverOptions,
 		clientOptions
 	);
+
+	// Create a language client that starts up an external server
+	// client = new LanguageClient(
+	// 	"ppl3-lsp-client",
+	// 	"PPL3 Language Server2",
+	// 	<ServerOptions>{
+	// 		command: "ppl3-server",
+	// 		args: [],
+	// 		options: <ExecutableOptions>{
+	// 			cwd: ".",
+	// 			env: "",
+	// 			detached: false
+	// 		}
+	// 	},
+	// 	<LanguageClientOptions>{
+
+	// 	}, true
+	// )
 
 	// Start the client. This will also launch the server
 	client.start();

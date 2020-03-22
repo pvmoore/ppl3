@@ -115,6 +115,6 @@ export default class State {
 
         this.modules.set(newMod.uri, newMod);
 
-        log(`Module ${newMod.name} (v ${newMod.version}) ready`);
+        log(`Module ${newMod.name} (v${newMod.version}) ready`);
     }
 }

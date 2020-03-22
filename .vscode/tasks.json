@@ -42,6 +42,18 @@
             "problemMatcher": []
         },
         {
+            "label": "**** Start server****",
+            "type": "shell",
+            "windows": {
+                "command": "chcp 65001 && dub run --build=debug --config=server --compiler=dmd --arch=x86_64 --parallel"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
             "label": "**** Compile extension ****",
             "type": "shell",
             "windows": {

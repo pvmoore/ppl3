@@ -39,8 +39,10 @@ export class Module extends Node {
         return null;
     }
 }
+
 export class Struct extends Node {
     name: string;
+    isPublic: boolean;
 
     constructor(name: string) {
         super();
@@ -50,15 +52,30 @@ export class Struct extends Node {
         return null;
     }
 }
+
 export class Property extends Node {
     name: string;
+    isPublic: boolean;
 
     constructor(name: string) {
         super();
         this.name = name;
     }
 }
-export class Enum extends Node {
+
+export class Function extends Node {
+    name: string;
+    isPublic: boolean;
+    returnType: Type = UNKNOWN;
+    parameters = new Array<Parameter>();
+
+    constructor(name: string) {
+        super();
+        this.name = name;
+    }
+}
+
+export class Parameter extends Node {
     name: string;
 
     constructor(name: string) {
@@ -66,3 +83,35 @@ export class Enum extends Node {
         this.name = name;
     }
 }
+
+export class Enum extends Node {
+    name: string;
+    isPublic: boolean;
+    elementType: Type = UNKNOWN;
+
+    constructor(name: string) {
+        super();
+        this.name = name;
+    }
+}
+
+export enum TypeKind {
+    UNKNOWN,
+    BOOL,
+    BYTE, SHORT, INT, LONG,
+    HALF, FLOAT, DOUBLE,
+    VOID,
+    STRUCT, CLASS, ARRAY, ENUM
+}
+
+export class Type {
+    kind: TypeKind;
+    ptrDepth: number = 0;
+    constructor(kind: TypeKind) {
+        this.kind = kind;
+    }
+}
+
+export const UNKNOWN = new Type(TypeKind.UNKNOWN);
+export const BOOL = new Type(TypeKind.BOOL);
+export const INT = new Type(TypeKind.INT);
