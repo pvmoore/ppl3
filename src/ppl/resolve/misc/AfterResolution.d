@@ -68,6 +68,7 @@ private:
         }
 
         assert(entry.getBody().first().isA!Parameters);
+
         assert(entry.getBody().children[1].isA!Dot &&
                entry.getBody().children[1].as!Dot.right().isA!Call &&
                entry.getBody().children[1].as!Dot.right().as!Call.name=="start");

@@ -47,7 +47,7 @@ public:
                 t.next;
                 found = true;
             }
-            /// Is it a Struct, Enum or Alias?
+            /// Is it a Struct, Class, Enum or Alias?
             if(!found) {
                 auto ty = module_.typeFinder.findType(t.value, node);
                 if(ty) {

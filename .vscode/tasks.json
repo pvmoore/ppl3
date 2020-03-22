@@ -40,6 +40,21 @@
                 "panel": "shared"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "**** Compile extension ****",
+            "type": "shell",
+            "windows": {
+                "command": "npm run compile && xcopy /E /Y /Q . C:\\Users\\pvm_2\\.vscode\\extensions\\ppl3-language"
+            },
+            "options": {
+                "cwd": "${workspaceFolder}/extensions/ppl3-language/"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
         }
     ]
 }

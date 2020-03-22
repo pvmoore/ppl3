@@ -6,9 +6,15 @@ final class Class : Struct {
 private:
 protected:
     //LLVMTypeRef _llvmType;
+    //int _size      = -1;
+    //int _alignment = -1;
+    //bool _isPacked = false;
 public:
     //string name;
-
+    //string moduleName;
+    //Access access = Access.PRIVATE;
+    //bool isDeclarationOnly;
+    //TemplateBlueprint blueprint;
 
 /// ASTNode interface
     override bool isResolved() { return true; }
@@ -50,7 +56,7 @@ public:
     override bool isPacked() { return false; }
     override bool isPOD() { return false; }
 
-    
+
 
     override string toString() const {
         return "%s".format(name);

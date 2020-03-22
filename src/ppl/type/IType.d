@@ -42,6 +42,7 @@ interface Type {
     final bool isEnum() const     { return category()==ENUM; }
     final bool isFunction() const { return category()==FUNCTION; }
     final bool isTuple() const    { return category()==TUPLE; }
+    final bool isStructOrClass() const { return isStruct() || isClass(); }
 
     final bool isAlias() const {
         if(this.as!Alias !is null) return true;
@@ -72,8 +73,9 @@ interface Type {
         auto ptr    = this.as!Pointer;      if(ptr) return ptr.decoratedType().getFunctionType;
         assert(false, "How did we get here?");
     }
+    /// Will also return Struct if type is a Class
     final Struct getStruct() {
-        if(!isStruct) return null;
+        if(!isStruct && !isClass) return null;
         auto ns     = this.as!Struct;      if(ns) return ns;
         auto alias_ = this.as!Alias;       if(alias_) return alias_.type.getStruct;
         auto ptr    = this.as!Pointer;     if(ptr) return ptr.decoratedType.getStruct;

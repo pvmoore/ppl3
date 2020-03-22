@@ -125,15 +125,16 @@ public:
                         }
                     }
                     return;
+                case "class":
                 case "struct":
                     /// Could be a struct/tuple decl
 
-                    if(t.peek(1).type==TT.LBRACKET) {
+                    if(t.value=="struct" && t.peek(1).type==TT.LBRACKET) {
                         /// "struct" "("
                         varParser().parseLocal(t, parent);
                     } else {
-                        /// "struct" id "{"
-                        /// "struct" id "<"
+                        /// "struct|class" id "{"
+                        /// "struct|class" id "<"
                         structParser().parse(t, parent);
                     }
                     return;
@@ -262,6 +263,7 @@ private: //=====================================================================
         if(n.value=="static" && t.peek(2).value=="fn") return;
         if(n.value=="extern" && t.peek(2).value=="fn") return;
         if(n.value=="struct") return;
+        if(n.value=="class") return;
         if(n.value=="enum") return;
         if(n.value=="alias") return;
 

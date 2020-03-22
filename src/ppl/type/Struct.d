@@ -23,7 +23,9 @@ public:
 
 /// Template stuff
     TemplateBlueprint blueprint;
-    bool isTemplateBlueprint() { return blueprint !is null; }
+    bool isTemplateBlueprint() {
+        return blueprint !is null;
+    }
     bool isTemplateInstance()  {
         import common : contains;
         return name.contains('<');
@@ -213,7 +215,6 @@ public:
     }
     ///========================================================================================
 
-    // TODO - struct will not have a constructor
     bool hasDefaultConstructor() {
         return getDefaultConstructor() !is null;
     }

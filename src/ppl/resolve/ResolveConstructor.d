@@ -20,13 +20,18 @@ public:
         aliasResolver.resolve(n, n.type);
 
         if(n.isResolved) {
-            assert(n.type.isStruct);
+            assert(n.type.isStructOrClass());
 
             auto struct_ = n.type.getStruct;
 
             /// If struct is a POD then rewrite call to individual property setters
             if(struct_.isPOD) {
-                rewriteToPOD(n, struct_);
+
+                if(n.type.isClass()) {
+                    module_.addError(n, "Classes cannot be POD", true);
+                } else {
+                    rewriteToPOD(n, struct_);
+                }
                 return;
             }
         }

@@ -1,0 +1,20 @@
+
+
+pub class C1(
+    pub int a,
+    pub static int b
+)
+{
+    pub fn print() {}
+    pub static fn foo() {}
+}
+
+
+pub fn testClasses() {
+
+    // C1 Needs to be a pointer by default
+    // C1() needs to return heap allocated pointer
+    C1 c1 = C1()
+
+
+}

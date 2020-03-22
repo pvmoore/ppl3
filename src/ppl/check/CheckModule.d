@@ -161,6 +161,9 @@ public:
     void visit(Case n) {
 
     }
+    void visit(Class n) {
+        visit(cast(Struct)n);
+    }
     void visit(Composite n) {
 
     }

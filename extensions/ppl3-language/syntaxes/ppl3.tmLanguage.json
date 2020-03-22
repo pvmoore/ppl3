@@ -46,7 +46,7 @@
 				},
 				{
 					"name": "storage.type.ppl3",
-					"match": "\\b(bool|byte|short|int|long|float|half|double|void|struct|enum|fn|alias)(\\*+|\\b)"
+					"match": "\\b(bool|byte|short|int|long|float|half|double|void|struct|class|enum|fn|alias)(\\*+|\\b)"
 				},
 				{
 					"name": "storage.modifier.public.ppl3",

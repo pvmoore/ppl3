@@ -38,7 +38,7 @@ final class Constructor : Expression {
 
 
     string getName() {
-        return type.isStruct ? type.getStruct.name : type.getAlias.name;
+        return (type.isStruct() || type.isClass()) ? type.getStruct.name : type.getAlias.name;
     }
     override string toString() {
         return "Constructor %s%s".format(getName(), type.isPtr ? "*":"");

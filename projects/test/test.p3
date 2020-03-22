@@ -101,7 +101,9 @@ struct wagahagahgahg(int a) { fn sdasdasdasd() {} }
 
 fn testing() {
 
+    import test_classes
 
+    testClasses()
 
 
 }

@@ -2,6 +2,9 @@ module ppl.check.AfterSemantic;
 
 import ppl.internal;
 
+/**
+ *
+ */
 final class AfterSemantic {
 private:
     BuildState state;

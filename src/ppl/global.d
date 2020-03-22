@@ -67,6 +67,7 @@ shared static this() {
     g_typeToString[Type.VOID]     = "void";
     g_typeToString[Type.TUPLE]    = "tuple";
     g_typeToString[Type.STRUCT]   = "named_struct";
+    g_typeToString[Type.CLASS]    = "class";
     g_typeToString[Type.ARRAY]    = "array";
     g_typeToString[Type.FUNCTION] = "function";
 
@@ -119,7 +120,7 @@ shared static this() {
         //"#alignof", "#isptr", "#isvalue", "#initof", "#sizeof", "#typeof",
         "alias", "and", "as", "assert",
         "bool", "break", "byte",
-        "const", "continue",
+        "class", "const", "continue",
         "double",
         "else", "enum", "extern",
         "false", "float",

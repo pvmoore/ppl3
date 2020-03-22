@@ -1,14 +1,14 @@
 module ppl.check.EscapeAnalysis;
 
 import ppl.internal;
-///
-/// Simple check for escaping reference to stack allocated memory.
-/// This needs much more improvement.
-///
-/// If the return is a ptr and it is a reference to a local variable then error
-///
+/*
+ *  Simple check for escaping reference to stack allocated memory.
+ *  This needs much more improvement.
+ *  If the return is a ptr and it is a reference to a local variable then error
+ *
+ */
 
-const string VERBOSE = null; //"misc::escape_analysis";
+enum VERBOSE = null; //"misc::escape_analysis";
 
 final class EscapeAnalysis {
 private:

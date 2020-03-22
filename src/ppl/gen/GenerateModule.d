@@ -167,6 +167,9 @@ public:
             builder.store(rhs, lhs);
         }
     }
+    void visit(Class n) {
+
+    }
     void visit(Composite n) {
         visitChildren(n);
     }

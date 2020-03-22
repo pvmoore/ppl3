@@ -137,7 +137,7 @@ private:
         auto t = mainTokens;
 
         bool isStruct() {
-            return t.isKeyword("struct");
+            return t.isKeyword("struct") || t.isKeyword("class");
         }
         bool isAlias() {
             return t.isKeyword("alias");
@@ -240,7 +240,7 @@ private:
     }
     ///
     ///  - Check that there is only 1 module init function.
-    ///  - Create one if there are none.
+    ///     - Create one if there are none.
     ///  - Check that we have a program entry point
     ///  - Request resolution of the module "new" method
     ///

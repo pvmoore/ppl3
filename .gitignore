@@ -6,6 +6,7 @@ target/
 .vs/
 bin/
 .bin/
+node_modules/
 
 .idea/
 *.iml

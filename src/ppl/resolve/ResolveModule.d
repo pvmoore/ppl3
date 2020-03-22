@@ -192,6 +192,9 @@ public:
     void visit(Case n) {
 
     }
+    void visit(Class n) {
+
+    }
     void visit(Composite n) {
         switch(n.usage) with(Composite.Usage) {
             case INNER_REMOVABLE:
@@ -315,9 +318,6 @@ public:
     void visit(ModuleAlias n) {
 
     }
-    void visit(Struct n) {
-
-    }
     void visit(Parameters n) {
 
     }
@@ -342,6 +342,9 @@ public:
     }
     void visit(Select n) {
         selectResolver.resolve(n);
+    }
+    void visit(Struct n) {
+
     }
     void visit(Tuple n) {
 

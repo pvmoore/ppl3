@@ -16,16 +16,22 @@ public:
         this.module_ = module_;
     }
     ///
-    /// "struct" name [ "<" tparams ">" ]                     "{" { statements } "}"
+    /// "struct|class" name [ "<" tparams ">" ]                     "{" { statements } "}"
     ///
-    /// "struct" name [ "<" tparams ">" ] "(" variables ")" [ "{" { statements } "}" ]
+    /// "struct|class" name [ "<" tparams ">" ] "(" variables ")" [ "{" { statements } "}" ]
     ///
     void parse(Tokens t, ASTNode parent) {
 
-        /// struct
-        t.skip("struct");
+        Struct n; // Class extends Struct
 
-        Struct n = makeNode!Struct(t);
+        if("class"==t.value) {
+            t.skip("class");
+            n = makeNode!Class(t);
+        } else {
+            t.skip("struct");
+            n = makeNode!Struct(t);
+        }
+
         parent.add(n);
 
         n.moduleName = module_.canonicalName;
@@ -200,13 +206,18 @@ private:
     void checkPOD(Tokens t, Struct s) {
         if(!s.isPOD) return;
 
+        if(s.isClass) {
+            // Classes are not allowed to be POD
+            return;
+        }
+
         foreach(i, c; s.getConstructors()) {
             if(c.params().numParams > 1) {
                 module_.addError(c, "POD structs can only have a default constructor", true);
             }
         }
 
-        /// Set all properties, functions, structs and enums to public
+        /// Set all properties, functions, structs, classes and enums to public
         foreach(n; s.getMemberFunctions) {
             n.access = Access.PUBLIC;
         }
@@ -223,6 +234,9 @@ private:
             n.access = Access.PUBLIC;
         }
         foreach(n; s.getStructs) {
+            n.access = Access.PUBLIC;
+        }
+        foreach(n; s.getClasses) {
             n.access = Access.PUBLIC;
         }
     }
