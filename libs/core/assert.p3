@@ -7,7 +7,7 @@ pub fn __assert(bool result, byte* moduleName, int line) {
         print("ASSERTION FAILED in ")
         print(moduleName)
         print(":")
-        println(line)
+        println(line) 
         exit(-1)/*
 
         */

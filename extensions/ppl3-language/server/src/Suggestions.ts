@@ -1,5 +1,5 @@
 
-import { Node, Module, Struct, Enum, Property } from "./model";
+import { Node, Module, Struct, Enum, Variable } from "./model";
 import { state } from "./server";
 import { log } from "./util";
 import {

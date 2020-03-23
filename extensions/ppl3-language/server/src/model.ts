@@ -1,5 +1,5 @@
 
-import { Position } from "vscode-languageserver";
+import { Position, LogTraceNotification } from "vscode-languageserver";
 import URI from 'vscode-uri';
 import Suggestions from "./Suggestions";
 import { log } from "./util";
@@ -7,31 +7,53 @@ import * as util from "./util";
 import { Token } from "./lex/Lexer";
 
 export abstract class Node {
+    line: number;
+    column: number;
+    nid: number;
+    parent: Node;
     children: Array<Node> = new Array<Node>();
+
+    add(n: Node): Node {
+        n.parent = this;
+        this.children.push(n);
+        return this;
+    }
 }
 
 export class Module extends Node {
     name: string;
     uri: string;
-    path: string;
+    filename: string;
     suggestions: Suggestions;
 
     text: string;
     version: number;
-    tokens: Array<Token>; // set by ModelBuilder
+    //tokens: Array<Token>; // set by ModelBuilder
 
-    constructor(name: string, uri: string) {
-        super();
-        this.name = name;
-        this.uri = uri;
-        this.suggestions = new Suggestions(this);
-        this.name = util.uriToModuleName(uri);
-        this.path = URI.parse(uri).fsPath;
-        //log("name = " + this.name);
-        //log("path = "+this.path);
+    static fromUri(uri: string): Module {
+        let m = new Module();
+        m.name = util.uriToModuleName(uri);
+        m.uri = uri;
+        m.filename = URI.parse(uri).fsPath;
+        m.suggestions = new Suggestions(m);
+        // log("name = " + m.name);
+        // log("uri =" + m.uri);
+        // log("filename = " + m.filename);
+        return m;
+    }
+    static fromName(name: string): Module {
+        let m = new Module();
+        m.name = name;
+        m.filename = util.moduleNameToFilename(name);
+        m.uri = util.moduleNameToUri(name);
+        m.suggestions = new Suggestions(m);
+        // log("name = " + m.name);
+        // log("uri =" + m.uri);
+        // log("filename = " + m.filename);
+        return m;
     }
     clone(): Module {
-        let m = new Module(this.name, this.uri);
+        let m = Module.fromUri(this.uri);
         return m;
     }
     find(pos: Position): Node | null {
@@ -48,12 +70,12 @@ export class Struct extends Node {
         super();
         this.name = name;
     }
-    getProperty(name: string): null | Property {
+    getVariable(name: string): null | Variable {
         return null;
     }
 }
 
-export class Property extends Node {
+export class Variable extends Node {
     name: string;
     isPublic: boolean;
 
@@ -67,16 +89,7 @@ export class Function extends Node {
     name: string;
     isPublic: boolean;
     returnType: Type = UNKNOWN;
-    parameters = new Array<Parameter>();
-
-    constructor(name: string) {
-        super();
-        this.name = name;
-    }
-}
-
-export class Parameter extends Node {
-    name: string;
+    parameters = new Array<Variable>();
 
     constructor(name: string) {
         super();

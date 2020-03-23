@@ -29,6 +29,22 @@
                     "type": "number",
                     "default": 7,
                     "description": "Select your favourite number"
+                },
+                "ppl3Language.projectRoot": {
+                    "scope":"resource",
+                    "type" :"string",
+                    "description": "Set the project root directory"
+                },
+                "ppl3Language.corelibs": {
+                    "scope":"resource",
+                    "type":"string",
+                    "default":"c:\\pvmoore\\d\\apps\\ppl3\\libs",
+                    "description": "Set the location of the PPL core libraries"
+                },
+                "ppl3Language.compiler": {
+                    "scope" :"resource",
+                    "type":"string",
+                    "description": "Set the location of the PPL compiler executable"
                 }
             }
         },

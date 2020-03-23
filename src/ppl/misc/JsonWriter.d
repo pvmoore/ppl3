@@ -17,6 +17,9 @@ final class JsonWriter {
     void visit(AddressOf n, ref JSONValue v) {
 
     }
+    void visit(Alias n, ref JSONValue v) {
+        // Should only exist if the buyild failed
+    }
     void visit(Array n, ref JSONValue v) {
 
     }
@@ -86,6 +89,9 @@ final class JsonWriter {
     }
     void visit(If n, ref JSONValue v) {
 
+    }
+    void visit(Import n, ref JSONValue v) {
+        // Should only exist if the buyild failed
     }
     void visit(Index n, ref JSONValue v) {
 
@@ -160,8 +166,12 @@ final class JsonWriter {
 private:
     void recurse(ASTNode n, ref JSONValue v) {
 
+        if(n.id==NodeID.IMPORT) return;
+
         v["id"] = "%s".format(n.id());
         v["nid"] = n.nid;
+        v["line"] = n.line;
+        v["col"] = n.column;
 
         dynamicDispatch!("visit",ASTNode)(n, this, (it) {
             writefln("visit function missing: visit(%s)".format(typeid(n)));

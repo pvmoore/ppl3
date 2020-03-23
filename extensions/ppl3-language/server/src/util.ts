@@ -8,7 +8,7 @@ export const log = (msg: string) => {
     state.connection.console.log(msg);
 };
 
-const findProjectRoot = (uri: string): string | null => {
+export const findProjectRoot = (uri: string): string | null => {
 
     let p = URI.parse(uri).fsPath;
     let d = path.dirname(p);
@@ -39,6 +39,9 @@ const findProjectRoot = (uri: string): string | null => {
     return recurse(path.dirname(p));
 };
 
+/**
+ * Converts "file:///<projectRoot>/name/name2.p3" to "name::name2"
+ */
 export const uriToModuleName = (uri: string): string => {
     const root = findProjectRoot(uri);
     const p = URI.parse(uri).fsPath;
@@ -48,10 +51,19 @@ export const uriToModuleName = (uri: string): string => {
 }
 
 /**
- * Converts eg. "core\assert.p3" to "core::assert"
+ * Converts eg. "core::assert" "<projectRoot>\core\assert.p3"
  */
-export const moduleNameToPath = (name: string): string => {
-    return name.replace("::", path.sep);
+export const moduleNameToFilename = (name: string): string => {
+    return state.projectRoot + path.sep + name.replace(/::/g, path.sep) + ".p3";
+}
+
+/**
+ * Converts "name::name2" to "file:///<projectRoot>/name/name2.p3"
+ */
+export const moduleNameToUri = (name: string): string => {
+    const p = moduleNameToFilename(name);
+    const uri = URI.file(moduleNameToFilename(name));
+    return uri.toString();
 }
 
 export const isDigit = (ch: string): boolean => {

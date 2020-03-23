@@ -5,6 +5,9 @@ import { log } from "./util";
 export interface PPL3Settings {
     maxNumberOfProblems: number;
     favouriteNumber: number;
+    projectRoot: string;
+    corelibs: string;
+    compiler: string;
 }
 
 // The global settings, used when the `workspace/configuration` request is not supported by the client.
@@ -12,7 +15,10 @@ export interface PPL3Settings {
 // but could happen with other clients.
 const defaultSettings: PPL3Settings = {
     maxNumberOfProblems: 1000,
-    favouriteNumber: 7
+    favouriteNumber: 7,
+    projectRoot: "",
+    corelibs: "",
+    compiler: ""
 };
 
 let globalSettings: PPL3Settings = defaultSettings;
@@ -27,7 +33,7 @@ export const configChanged = (change: DidChangeConfigurationParams) => {
         documentSettings.clear();
     } else {
         globalSettings = <PPL3Settings>(
-            (change.settings.languageServerExample || defaultSettings)
+            (change.settings.ppl3Language || defaultSettings)
         );
     }
 
