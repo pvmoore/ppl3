@@ -2,6 +2,7 @@
 	"fileVersion": 1,
 	"versions": {
 		"common": "~master",
+		"fswatch": "0.5.0",
 		"llvm": "~master",
 		"toml": "1.0.0-rc.3"
 	}

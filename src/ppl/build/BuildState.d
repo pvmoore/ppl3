@@ -430,4 +430,10 @@ protected:
             addError(new UnknownError(m, "There were unresolved symbols but no errors were added"), true);
         }
     }
+    void dumpAST() {
+        dd("[✓] dumpAST");
+        foreach(m; allModules) {
+            m.resolver.writeAST();
+        }
+    }
 }

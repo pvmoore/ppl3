@@ -17,4 +17,7 @@ public:
     ProjectBuilder createProjectBuilder(Config config) {
         return new ProjectBuilder(g_llvmWrapper, config);
     }
+    IncrementalBuilder createIncrementalBuilder(Config config) {
+        return new IncrementalBuilder(g_llvmWrapper, config);
+    }
 }

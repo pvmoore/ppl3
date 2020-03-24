@@ -76,12 +76,6 @@ public:
         }
     }
 private:
-    void dumpAST() {
-        dd("[✓] dumpAST");
-        foreach(m; allModules) {
-            m.resolver.writeAST();
-        }
-    }
     void optimiseModules() {
         if(!config.enableOptimisation) return;
         dd("[✓] optimise");

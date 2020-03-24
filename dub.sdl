@@ -41,3 +41,4 @@ configuration "bench" {
 dependency "common" version="~master"
 dependency "llvm" version="~master"
 dependency "toml" version="~>1.0.0-rc.3"
+dependency "fswatch" version="~>0.5.0"

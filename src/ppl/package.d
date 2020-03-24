@@ -10,8 +10,9 @@ import ppl.version_;
 import ppl.ast.ASTNode;
 import ppl.ast.Module;
 
-import ppl.build.ProjectBuilder;
 import ppl.build.BuildState;
+import ppl.build.IncrementalBuilder;
+import ppl.build.ProjectBuilder;
 
 import ppl.config.Config;
 import ppl.config.ConfigReader;

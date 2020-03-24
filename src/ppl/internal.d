@@ -83,6 +83,7 @@ import ppl.ast.stmt.Statement;
 import ppl.ast.stmt.Variable;
 
 import ppl.build.BuildState;
+import ppl.build.IncrementalBuilder;
 
 import ppl.check.AfterSemantic;
 import ppl.check.CheckModule;
