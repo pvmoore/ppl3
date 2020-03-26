@@ -18,6 +18,8 @@ private:
     Mutex mutex;
     bool running = true;
 
+    IQueue!string modifications;
+
 public:
     this(LLVMWrapper llvmWrapper, Config config) {
         if(!From!"std.file".exists(config.basePath)) throw new Error("%s is not a directory".format(config.basePath));
@@ -28,6 +30,7 @@ public:
         this.config = config;
         this.builderSemaphore = new Semaphore(1);
         this.mutex = new Mutex;
+        this.modifications = makeSPSCQueue!string(1024);
         this.watcher = FileWatch(config.basePath, true);
         this.watcherThread = new Thread(&watchFolder);
         this.watcherThread.isDaemon = true;
@@ -39,20 +42,32 @@ public:
     }
     void shutdown() {
         running = false;
+        builderSemaphore.notify();
     }
+private:
     /// Async (builderThread)
     void build() {
         while(running) {
-            writefln("Builder waiting for work");
+            writefln("Builder waiting...");
             builderSemaphore.wait();
             if(!running) return;
 
             writefln("Builder starting work");
+            watch.reset();
             watch.start();
-            bool astDumped;
+            bool astDumped = false;
 
             try{
-                buildAll();
+
+                // Build everything if this is the first run or there were errors the last time
+                if(allModules.length == 0 || hasErrors()) {
+                    writefln("allModules = %s errors = %s", allModules.length, errors);
+                    buildAll();
+                } else {
+                    rebuild();
+                }
+
+                writefln("%s modules are cached", allModules.length);
 
             }catch(InternalCompilerError e) {
                 writefln("\n=============================");
@@ -69,8 +84,9 @@ public:
             }finally{
                 if(!astDumped) dumpAST();
                 flushLogs();
-                watch.stop();
             }
+            watch.stop();
+            writefln("Elapsed time: %s ms", watch.peek().total!"msecs");
         }
     }
     /**
@@ -78,31 +94,125 @@ public:
      *
      *  Async (builderThread)
      */
-    private void buildAll() {
+    void buildAll() {
+        writefln("========================> buildall");
         startNewBuild();
 
         functionRequired(config.getMainModuleCanonicalName, config.getEntryFunctionName());
 
         parseAndResolve();
         if(hasErrors()) {
-
+            return;
         }
 
         afterResolution();
         if(hasErrors()) {
-
+            return;
         }
 
-        semanticCheck();
-        if(hasErrors()) {
+        // Do we want this here?
+        removeUnreferencedNodes();
 
+        semanticCheck();
+
+        if(hasErrors()) {
+            return;
+        }
+    }
+    /**
+     *  Rebuild only modified modules and those that reference modified modules (recursively).
+     *  Assumes there are no errors.
+     */
+    void rebuild() {
+        writefln("===============================> rebuild");
+        assert(hasErrors()==false);
+
+        string[1024] modulesModified;
+        auto num = modifications.drain(modulesModified);
+        if(num==0) return;
+
+        auto set = new Set!string;
+        set.add(modulesModified[0..num]);
+
+        writefln("Modified modules: %s", set.values);
+
+        // what do we need to clear here for a partial rebuild?
+
+        // Wipe all modules that depend on modified module
+
+        import std.array : replace;
+
+        auto changeSet = new Set!string;
+
+        void _check(string cn) {
+            if(changeSet.contains(cn)) return;
+            changeSet.add(cn);
+
+            auto m = getModule(cn);
+
+            auto refs = allModulesThatImport(m);
+            writefln("\trefs for %s = %s", cn, refs.map!(it=>it.canonicalName).join(","));
+
+            foreach(r; refs) {
+                _check(r.canonicalName);
+            }
+        }
+
+        foreach(name; set.values) {
+            auto canonicalName = config.getCanonicalName(name);
+            _check(canonicalName);
+        }
+
+        writefln("\tchange set = %s", changeSet.values.map!(it=>it).join(","));
+
+        foreach(change; changeSet.values) {
+            // TODO - remove templates in any module that were added by any of the removed modules
+            writefln("\tRemoving module %s from the cache", change);
+            modules.remove(change);
+        }
+
+        startRebuild();
+        functionRequired(config.getMainModuleCanonicalName, config.getEntryFunctionName());
+
+        parseAndResolve();
+        if(hasErrors()) {
+            dumpErrors();
+            return;
+        }
+
+        afterResolution();
+        if(hasErrors()) {
+            dumpErrors();
+            return;
+        }
+
+        // Do we want this here?
+        removeUnreferencedNodes();
+
+        semanticCheck();
+
+        if(hasErrors()) {
+            dumpErrors();
+        }
+    }
+    void dumpErrors() {
+        writefln("ERRORS:");
+        foreach(i, err; getErrors()) {
+            // if(i < NUM_DETAILED_ERRORS) {
+            //     writefln("[%s] %s\n", i+1, err.toPrettyString());
+            // } else {
+                writefln("\t[%s] %s", i+1, err.toConciseString());
+            //}
         }
     }
     /// Async (watcherThread)
     void watchFolder() {
         writefln("Watching directory %s", config.basePath);
+        auto set = new Set!FileChangeEvent;
         while(running) {
-            foreach (event; watcher.getEvents()) {
+            set.add(watcher.getEvents());
+
+            foreach (event; set.values) {
 
                 writefln("event: %s", event);
 
@@ -111,12 +221,14 @@ public:
                     case rename: break;
                     case remove: break;
                     case modify:
+                        modifications.push(event.path);
                         builderSemaphore.notify();
                         break;
                     case createSelf: break;
                     case removeSelf: break;
                 }
             }
+            set.clear();
             Thread.sleep(dur!"msecs"(500));
         }
     }

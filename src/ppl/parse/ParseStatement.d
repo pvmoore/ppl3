@@ -323,6 +323,7 @@ private: //=====================================================================
             }
 
             imp.moduleName = collectModuleName();
+            module_.addImport(imp);
 
             if(findImportByCanonicalName(imp.moduleName, imp)) {
                 module_.addError(imp, "Module %s already imported".format(imp.moduleName), true);

@@ -44,6 +44,7 @@ public:
     bool logTokens    = false;
     bool logParser    = false;
     bool logResolver  = false;
+
     bool writeASM     = true;
     bool writeOBJ     = true;
     bool writeAST     = true;
@@ -113,6 +114,13 @@ public:
         assert(path.endsWith("/"));
 
         return path ~ canonicalName.replace("::", "/") ~ ".p3";
+    }
+    /**
+     *  Convert "mod/mod2.p3" to "mod::mod2"
+     */
+    string getCanonicalName(string relpath) {
+        import std.array : replace;
+        return relpath[0..relpath.length-3].replace("\\", "::").replace("/", "::");
     }
     string[] getExternalLibs() {
         if(isDebug) {

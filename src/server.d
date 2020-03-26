@@ -12,13 +12,19 @@ import std.socket;
 import std.algorithm.iteration : filter;
 import std.range : array;
 import std.format : format;
+import common : From;
 
 void main(string[] argv) {
 
     ushort port  = 8080;
 
     auto server = new Server(port);
+
+    server.startIncrementalBuilder(["directory":""]);
+
     server.startListening();
+
+
 
 }
 
@@ -26,7 +32,7 @@ struct Request {
     string method;
     string path;
     string protocol;
-    string query;
+    string[string] query;
     string[string] headers;
     string content;
 
@@ -105,14 +111,12 @@ private:
                 shutdown();
                 break;
             case "/watch":
-                // ?directory=
                 startIncrementalBuilder(req.query);
                 break;
             case "/problems":
                 returnErrors();
                 break;
             case "/suggestions":
-                // ?module=&line=&column=
                 returnSuggestions(req.query);
                 break;
             default:
@@ -157,21 +161,22 @@ private:
 
         const q = r.path.indexOf('?');
         if(q!=-1) {
-            r.query = r.path[q+1..$];
+            auto query = r.path[q+1..$];
             r.path = r.path[0..q];
-        } else {
-            r.query = "";
+
+            foreach(p; query.split("&")) {
+                auto toks = p.split("=");
+                r.query[toks[0]] = toks[1];
+            }
         }
 
         foreach(i, l; lines[1..$]) {
-            //writefln("line = %s", l);
             if(l.strip().length==0) {
                 r.content = lines[i+2..$].join();
                 break;
             }
 
             const colon = l.indexOf(':');
-
             const key   = l[0..colon].strip();
             const value = l[colon+1..$].strip();
 
@@ -185,13 +190,49 @@ private:
 
         return r;
     }
-    void startIncrementalBuilder(string query) {
+    /**
+     *  ?directory=
+     */
+    void startIncrementalBuilder(string[string] query) {
+
+        // Stop any existing builder
+        if(this.builder) {
+            this.builder.shutdown();
+        }
+
+        string directory  = query["directory"];
+
+        directory = "\\pvmoore\\d\\apps\\ppl3\\projects\\test\\";
+
+        if(false==From!"std.file".exists(directory)) {
+            writefln("directory '%s' does not exist", directory);
+            return;
+        }
+
+        string configFile = directory ~ "config.toml";
+        writefln("Reading config from %s", configFile);
+
+        auto ppl = PPL3.instance();
+
+        auto config = new ConfigReader(configFile).read();
+        config.writeASM = false;
+        config.writeOBJ = false;
+        config.writeAST = false;
+        config.writeIR  = false;
+        config.writeJSON = false;
+
+        writefln("\n%s", config.toString());
+
+        this.builder = ppl.createIncrementalBuilder(config);
 
     }
     void returnErrors() {
 
     }
-    void returnSuggestions(string query) {
+    /**
+     *  ?prefix=&module=&line=&column=
+     */
+    void returnSuggestions(string[string] query) {
 
     }
 }

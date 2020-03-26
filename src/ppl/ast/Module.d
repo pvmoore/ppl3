@@ -7,6 +7,7 @@ private:
     int tempCounter;
     Lambda[] lambdas;
     LiteralString[][string] literalStrings;
+    Set!string imports;
 public:
     string canonicalName;
     string fileName;
@@ -53,6 +54,8 @@ public:
 
         log("Creating new Module(%s)", canonicalName);
 
+        this.imports = new Set!string;
+
         parser            = new ParseModule(this);
         resolver          = new ResolveModule(this);
         checker           = new CheckModule(this);
@@ -82,6 +85,7 @@ public:
         numRefs = 0;
         tempCounter = 0;
 
+        imports.clear();
         parser.clearState();
         resolver.clearState();
         checker.clearState();
@@ -110,6 +114,9 @@ public:
 
     auto getLiteralStrings()               { return literalStrings.values; }
     void addLiteralString(LiteralString s) { literalStrings[s.value] ~= s; }
+
+    void addImport(Import imp) { imports.add(imp.moduleName); }
+    string[] getImports() { return imports.values; }
 
     Lambda[] getLambdas()       { return lambdas; }
     void addLambda(Lambda c)    { lambdas ~= c; }

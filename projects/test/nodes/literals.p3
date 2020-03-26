@@ -6,10 +6,10 @@ pub fn testLiterals() {
     bytes()
     shorts()
     ints()
-    longs()
-    halfs()
+    longs() 
+    halfs() 
     floats()
-    doubles()
+    doubles()   
     chars()
     strings()
 }

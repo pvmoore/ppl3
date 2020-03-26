@@ -109,6 +109,13 @@ public:
             if(m.llvmValue) m.llvmValue.destroy();
         }
         modules.clear();
+        removedModules.clear();
+    }
+    void startRebuild() {
+        requestedAliasOrStruct.clear();
+        requestedFunction.clear();
+        taskQueue.clear();
+        removedModules.clear();
     }
 
     /// Modules
@@ -170,13 +177,26 @@ public:
     }
     Module[] allModulesThatReference(Module m) {
         Module[] refs;
-        refs.reserve(20);
 
         foreach(mod; allModules) {
             foreach(r; mod.getReferencedModules()) {
                 if(r==m) refs ~= r;
             }
         }
+        return refs;
+    }
+    /**
+     *  Return all modules that import module _m_ regardless of whether the import is actually used.
+     */
+    Module[] allModulesThatImport(Module m) {
+        Module[] refs;
+
+        foreach(mod; allModules) {
+            if(m.canonicalName.isOneOf(mod.getImports())) {
+                refs ~= mod;
+            }
+        }
+
         return refs;
     }
     ///
@@ -376,7 +396,7 @@ protected:
         dd("[✓] remove unreferenced");
 
         dce.removeUnreferencedModules()
-            .removeUnreferencedNodes();
+           .removeUnreferencedNodes();
     }
     ///
     /// - Move global variable initialisation code into the module constructor new() function.
@@ -390,6 +410,7 @@ protected:
         log("Running semantic checks...");
         dd("[✓] semantic");
         foreach(m; allModules) {
+            //dd(m.canonicalName);
             m.checker.check();
         }
     }
