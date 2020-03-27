@@ -41,29 +41,29 @@ public:
         log("Removing unreferenced nodes");
 
         foreach(m; state.allModules) {
-            removeAllAliases(m);
+            removePrivateAliases(m);
             removeAllImports(m);
             if(!state.config.enableAsserts) {
-                removeAsserts(m);
+                removeAllAsserts(m);
             }
             removeUnreferencedGlobalVariables(m);
-            removeStructBlueprints(m);
+            removePrivateStructBlueprints(m);
             removeUnreferencedFunctions(m);
         }
 
-        removeAllUnreferencedStructs();
-        removeAllUnreferencedEnums();
+        removeAllUnreferencedPrivateStructs();
+        removeAllUnreferencedPrivateEnums();
     }
 private:
-    void removeAllAliases(Module m) {
+    void removePrivateAliases(Module m) {
         auto aliases = new DynamicArray!Alias;
         m.selectDescendents!Alias(aliases);
         foreach(a; aliases) {
+            // NOTE: Leave public aliases so that they can still be accessed by the incremental builder
             if(a.access.isPrivate) {
-                //warn(a, "Unreferenced alias %s should have been removed during resolve phase".format(a));
+                log("\t alias %s", a.name);
+                remove(a, m);
             }
-            log("\t alias %s", a.name);
-            remove(a, m);
         }
     }
     void removeAllImports(Module m) {
@@ -74,7 +74,7 @@ private:
             remove(imp, m);
         }
     }
-    void removeAsserts(Module m) {
+    void removeAllAsserts(Module m) {
         auto asserts = new DynamicArray!Assert;
         m.selectDescendents!Assert(asserts);
         foreach(a; asserts) {
@@ -113,11 +113,13 @@ private:
             }
         }
     }
-    void removeStructBlueprints(Module m) {
+    void removePrivateStructBlueprints(Module m) {
         foreach(s; getAllDeclaredStructs(m)) {
             if(s.isTemplateBlueprint) {
-                log("\t  struct template blueprint %s", s.name);
-                remove(s, m);
+                if(s.access.isPrivate) {
+                    log("\t  struct template blueprint %s", s.name);
+                    remove(s, m);
+                }
             }
         }
     }
@@ -164,7 +166,7 @@ private:
         );
         return enums.values;
     }
-    void removeAllUnreferencedStructs() {
+    void removeAllUnreferencedPrivateStructs() {
         auto allDeclaredStructs = new Set!Struct;
         auto allReferencedStructs = new Set!Struct;
         foreach(m; state.allModules) {
@@ -174,19 +176,21 @@ private:
         foreach(s; allDeclaredStructs.values) {
             if(!allReferencedStructs.contains(s)) {
                 //dd("removing struct", s.getModule.canonicalName, s.name);
-                remove(s);
+                if(s.access.isPrivate) {
+                    remove(s);
+                }
             } else {
                 /// The struct is referenced but some of the functions may not be
                 foreach(f; s.getMemberFunctions()) {
                     if(f.numRefs==0) {
                         //dd("\t  ---> unreferenced func", s.name, f.name);
-                        remove(f);
+                        //remove(f);
                     }
                 }
             }
         }
     }
-    void removeAllUnreferencedEnums() {
+    void removeAllUnreferencedPrivateEnums() {
         auto allDeclaredEnums = new Set!Enum;
         auto allReferencedEnums = new Set!Enum;
         foreach(m; state.allModules) {
@@ -195,12 +199,15 @@ private:
         }
         foreach(e; allDeclaredEnums.values) {
             if(!allReferencedEnums.contains(e)) {
-                //dd("removing enum", e.getModule.canonicalName, e.name);
-                remove(e);
+                if(e.access.isPrivate) {
+                    //dd("removing enum", e.getModule.canonicalName, e.name);
+                    remove(e);
+                }
             }
         }
     }
     void remove(ASTNode n, Module m = null) {
+
         if(!n.isAttached) return;
         if(!m) m = n.getModule;
         n.detach();

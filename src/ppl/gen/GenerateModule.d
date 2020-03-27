@@ -80,6 +80,9 @@ public:
 
         rhs = lhs;
     }
+    void visit(Alias n) {
+        // Ignore this
+    }
     void visit(As n) {
         n.left.visit!GenerateModule(this);
 

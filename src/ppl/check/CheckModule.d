@@ -41,7 +41,7 @@ public:
 
     }
     void visit(Alias n) {
-
+        // Ignore
     }
     void visit(Array n) {
         if(!n.countExpr().isA!LiteralNumber) {

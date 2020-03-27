@@ -133,7 +133,7 @@ pub fn main() {
     import misc::misc;              testMisc()
     import misc::builtin_funcs;     testBuiltinFuncs()
     import nodes::select;           testSelect()
-    import functions::closures;     testClosures()
+    import functions::closures;     testClosures() 
     import test_enum;               testEnum()
     import misc::attributes;        testAttributes()
     import misc::ptr_arithmetic;    testPtrArithmetic()
@@ -141,7 +141,7 @@ pub fn main() {
 
     import texpr = test_expressions;    texpr.testExpressions()
 
-    import core_::sequences;    testSequences()
+    import core_::sequences;    testSequences()  
 
     import test_optional; testOptional()  
 
