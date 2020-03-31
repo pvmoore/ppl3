@@ -111,34 +111,9 @@ public:
 
         foldUnreferenced.processModule();
 
-        this.isResolved = unresolved.length==0 &&
-                          modified==false &&
-                          !tokensModified;
+        this.isResolved = unresolved.length==0 && modified==false && tokensModified==false;
 
         return isResolved;
-    }
-    void resolveFunction(string funcName) {
-        watch.start();
-        scope(exit) watch.stop();
-        log("Resolving %s func '%s'", module_, funcName);
-
-        isResolved = false;
-    }
-    void resolveAliasEnumOrStruct(string AliasName) {
-        watch.start();
-        scope(exit) watch.stop();
-        log("Resolving %s Alias|enum|struct '%s'", module_, AliasName);
-
-        isResolved = false;
-
-        module_.recurse!Alias((al) {
-            if(al.name==AliasName) {
-                /// Could be a chain of Aliases in different modules
-                if(al.isImport) {
-                    module_.buildState.aliasEnumOrStructRequired(al.moduleName, al.name);
-                }
-            }
-        });
     }
     //=====================================================================================
     void visit(AddressOf n) {
@@ -369,7 +344,7 @@ public:
     //==========================================================================
     void writeAST() {
         if(module_.config.writeJSON) writeJson();
-        if(!module_.config.writeAST) return;
+        if(module_.config.writeAST==false) return;
 
         //dd("DUMP MODULE", module_);
 

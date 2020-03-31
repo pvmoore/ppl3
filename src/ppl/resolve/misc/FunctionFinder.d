@@ -188,7 +188,7 @@ public:
 
             /// Add the function to the resolution set
             if(overloads[0].isFunction) {
-                module_.buildState.functionRequired(overloads[0].func.getModule.canonicalName, overloads[0].getName);
+                module_.buildState.moduleRequired(overloads[0].func.getModule.canonicalName);
             }
 
             return overloads[0];
@@ -340,7 +340,7 @@ public:
 
         /// Add the static function to the resolution set
         if(overloads[0].isStatic && overloads[0].isFunction) {
-            module_.buildState.functionRequired(overloads[0].func.getModule.canonicalName, overloads[0].getName);
+            module_.buildState.moduleRequired(overloads[0].func.getModule.canonicalName);
         }
 
         return overloads[0];

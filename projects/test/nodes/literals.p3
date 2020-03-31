@@ -12,15 +12,15 @@ pub fn testLiterals() {
     doubles()   
     chars()
     strings()
-}
-
+} 
+ 
 fn bools() {
     bool b                  ; assert b is false
     bool b2 = true          ; assert b2
     bool b3 = true or false ; assert b3
     bool b4 = false         ; assert not b4
     bool b5 = not true      ; assert b5 is false; assert b5 == false
-    //assert 1==0  // fails
+    //assert 1==0  // fails  
 
 }
 fn bytes() {

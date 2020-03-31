@@ -24,17 +24,19 @@ public:
             }
             foreach(f; module_.getFunctions()) {
                 /// Don't try to fold public global functions or the module constructor
-                if(f.access.isPrivate && f.name!="new") {
+                if(f.name!="new") {
                     tryToFold(f);
                 }
             }
         }
+
         /// Recurse all function bodies
         foreach(f; module_.getFunctions()) {
             if(f.hasBody()) {
                 processInnerScope(f.getBody());
             }
         }
+
         /// Try to fold structs
         foreach(s; module_.getStructs()) {
             processStruct(s);
@@ -44,7 +46,7 @@ public:
             if(e.access.isPrivate) {
                 processEnum(e);
             }
-         }
+        }
     }
     /// Called from ResolveXXX classes to fold a node
     void fold(ASTNode replaceMe, ASTNode withMe, bool dereference = true) {
@@ -62,6 +64,7 @@ public:
     }
     /// Called from ResolveXXX classes to fold a node
     void fold(ASTNode removeMe, bool dereference = true) {
+
         if(dereference) {
             recursiveDereference(removeMe, module_);
         }
@@ -99,8 +102,7 @@ public:
                     /// Assume it could be referenced
                    referenced = true;
                 } else {
-                    auto t = isStruct ? n.getType.getStruct :
-                                        n.getType.getEnum;
+                    auto t = isStruct ? n.getType.getStruct : n.getType.getEnum;
                     if(t && t.nid==node.nid) {
                         /// It's definitely referenced
                         referenced = true;
@@ -134,6 +136,7 @@ private:
     }
     /// Look at a scope with a view to folding nodes within it
     void processInnerScope(ASTNode scope_) {
+
         if(scope_.isA!Struct) {
             processStruct(scope_.as!Struct);
             return;
@@ -143,6 +146,7 @@ private:
         } else if(!scope_.isAScope) {
             return;
         }
+
         /// This is an inner scope
 
         assert(scope_.isLiteralFunction || (scope_.isComposite && scope_.as!Composite.isInner));
@@ -170,42 +174,61 @@ private:
     }
     void processStruct(Struct struct_) {
         if(struct_.isTemplateBlueprint) return;
-        //if(struct_.isVisibleToOtherModules()) return;
 
-        auto scope_ = findAccessScope(struct_);
+        auto externallyVisible = struct_.isVisibleToOtherModules();
+        auto scope_            = findAccessScope(struct_);
 
-        if(scope_.isModule && struct_.access.isPublic) {
-            /// We can't remove the struct because it could be referenced outside the module
-        } else {
-            /// If we find no references in the access scope, remove it
+        if(externallyVisible==false) {
+
+            /// If we find no references in this module, remove it
             if(!typeHasReferencesInScope(struct_, scope_)) {
                 fold(struct_);
                 return;
             }
+
+            /// NOTE: We can't remove any struct member variables because that
+            /// would affect indexing eg. str[1].var will be broken if the variable index changes.
+            /// Static member variables should be ok to remove if possible.
+
+            /// Try to fold public struct Variables and Functions
+            /// (The access scope is the same as for the struct)
+            if(allTargetsResolved(scope_)) {
+                // foreach(v; struct_.getMemberVariables()) {
+                //     tryToFold(v);
+                // }
+                foreach(f; struct_.getMemberFunctions()) {
+                    tryToFold(f);
+                }
+                foreach(v; struct_.getStaticVariables()) {
+                    tryToFold(v);
+                }
+                foreach(f; struct_.getStaticFunctions()) {
+                    tryToFold(f);
+                }
+            }
         }
 
-        /// NOTE: We can't remove any struct member variables because that
-        /// would affect indexing eg. str[1].var will be broken if the variable
-        /// index changes.
-        /// Static member variables should be ok to remove if possible.
-
-        /// Try to fold public struct Variables and Functions
-        /// (The access scope is the same as for the struct)
-        if((struct_.access.isPrivate || !scope_.isModule) && allTargetsResolved(scope_))
-        {
-            // foreach(v; struct_.getMemberVariables()) {
-            //     tryToFold(v);
-            // }
-            foreach(f; struct_.getMemberFunctions()) {
-                tryToFold(f);
-            }
-            foreach(v; struct_.getStaticVariables()) {
-                tryToFold(v);
-            }
-            foreach(f; struct_.getStaticFunctions()) {
-                tryToFold(f);
+        /// Recurse struct functions
+        /// Recurse all function bodies
+        foreach(f; struct_.getMemberFunctions()) {
+            if(f.hasBody()) {
+                processInnerScope(f.getBody());
             }
         }
+        foreach(f; struct_.getStaticFunctions()) {
+            if(f.hasBody()) {
+                processInnerScope(f.getBody());
+            }
+        }
+        /// Try to fold inner structs
+        foreach(s; struct_.getStructs()) {
+            processStruct(s);
+        }
+        /// Try to fold inner enums
+        foreach(e; struct_.getEnums()) {
+            processEnum(e);
+        }
+
         /// Try to fold private Variables and Functions
         /// (The access scope is the struct itself)
 
@@ -234,38 +257,24 @@ private:
         //         }
         //     }
         // }
-
-        /// Recurse struct functions
-        /// Recurse all function bodies
-        foreach(f; struct_.getMemberFunctions()) {
-            if(f.hasBody()) {
-                processInnerScope(f.getBody());
-            }
-        }
-        foreach(f; struct_.getStaticFunctions()) {
-            if(f.hasBody()) {
-                processInnerScope(f.getBody());
-            }
-        }
-        /// Try to fold inner structs
-        foreach(s; struct_.getStructs()) {
-            processStruct(s);
-        }
-        /// Try to fold inner enums
-        foreach(e; struct_.getEnums()) {
-            processEnum(e);
-        }
     }
     void processEnum(Enum enum_) {
-        auto scope_ = findAccessScope(enum_);
+        auto externallyVisible = enum_.isVisibleToOtherModules();
+        auto scope_            = findAccessScope(enum_);
 
-        /// If we find no references, remove it
-        if(!typeHasReferencesInScope(enum_, scope_)) {
-           fold(enum_);
-           return;
+        if(externallyVisible==false) {
+
+            /// If we find no references, remove it
+            if(!typeHasReferencesInScope(enum_, scope_)) {
+                fold(enum_);
+                return;
+            }
         }
     }
     void tryToFold(Function f) {
+        /// Only remove private functions
+        if(f.access.isPublic) return;
+
         if(f.numRefs==0) {
             fold(f);
         } else {
@@ -273,11 +282,11 @@ private:
         }
     }
     void tryToFold(Variable v) {
+        /// Only remove private variables
+        if(v.access.isPublic) return;
 
-        if(v.isMember()) {
-            /// Don't remove struct properties
-            return;
-        }
+        /// Don't remove struct properties
+        if(v.isMember()) return;
 
         if(v.numRefs==0) {
             /// If numRefs==0 then remove it
@@ -304,6 +313,9 @@ private:
     }
     void tryToFold(Call call) {
         //assert(call.target.isResolved, "target not resolved: %s %s".format(module_.canonicalName, call));
+
+        /// Don't get rid of this importand call even if it is empty
+        if(call.name=="__runModuleConstructors") return;
 
         /// If we get here and the target is not resolved then it must have
         /// been dereferenced in a previous folding

@@ -46,11 +46,22 @@ private:
     }
     void generateLocalStructMemberFunctionBodies(Module module_, GenerateLiteral literalGen) {
         foreach(ns; module_.getStructsRecurse()) {
+
+            /// Ignore struct template blueprints
+            if(ns.isTemplateBlueprint()) continue;
+
             foreach(f; ns.getMemberFunctions()) {
+
+                /// Ignore function template blueprints
+                if(f.isTemplateBlueprint()) continue;
+
                 auto litFunc = f.getBody();
                 literalGen.generate(litFunc, f.llvmValue);
             }
             foreach(f; ns.getStaticFunctions()) {
+                /// Ignore function template blueprints
+                if(f.isTemplateBlueprint()) continue;
+                
                 auto litFunc = f.getBody();
                 literalGen.generate(litFunc, f.llvmValue);
             }
@@ -87,6 +98,10 @@ private:
         func.setLinkage(LLVMLinkage.LLVMInternalLinkage);
     }
     void generateFunctionDeclaration(Module module_, Function f) {
+
+        /// Ignore function template blueprints
+        if(f.isTemplateBlueprint()) return;
+
         auto type = f.getType.getFunctionType;
         auto func = module_.llvmValue.addFunction(
             f.getMangledName(),

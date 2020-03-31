@@ -10,10 +10,10 @@ enum A {
 }
 // Element type is byte
 enum B : byte {
-    ONE,        // 0
+    ONE,        // 0 
     TWO,        // 1  
     THREE       // 2  
-} 
+}  
 enum C : float {
     ONE,        // 0.0
     TWO = 10,   // 10.0  

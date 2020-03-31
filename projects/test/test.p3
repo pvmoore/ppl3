@@ -206,20 +206,20 @@ pub fn main() {
         Listy<BlueRose> blueList
         Listy<Listy<int>> listoflist
     }
-    const test4 = || {
+    const test4 = || {  
         //float2 v2
-        //float3 v3
+        //float3 v3  
         //float4 v4
-        //float8 v8
+        //float8 v8   
     }
-    const testInnerImport = || {
-        import imports::imports3
+    const testInnerImport = || {     
+        import imports::imports3 
 
         assert 77 == i3func()
-        I3Object obj = I3Object()
-    }
+        I3Object obj = I3Object()    
+    }  
 
-    testGlobals()
+    testGlobals()   
     test0()
     test1()
     test2()

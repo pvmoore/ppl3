@@ -1,4 +1,4 @@
-module ppl.check.AfterSemantic;
+module ppl.build.AfterSemantic;
 
 import ppl.internal;
 

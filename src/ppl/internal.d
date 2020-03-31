@@ -83,10 +83,11 @@ import ppl.ast.stmt.Return;
 import ppl.ast.stmt.Statement;
 import ppl.ast.stmt.Variable;
 
+import ppl.build.AfterResolution;
+import ppl.build.AfterSemantic;
 import ppl.build.BuildState;
 import ppl.build.IncrementalBuilder;
 
-import ppl.check.AfterSemantic;
 import ppl.check.CheckModule;
 import ppl.check.ControlFlow;
 import ppl.check.EscapeAnalysis;
@@ -144,7 +145,6 @@ import ppl.resolve.ResolveSelect;
 import ppl.resolve.ResolveUnary;
 import ppl.resolve.ResolveVariable;
 
-import ppl.resolve.misc.AfterResolution;
 import ppl.resolve.misc.DeadCodeEliminator;
 import ppl.resolve.misc.FoldUnreferenced;
 import ppl.resolve.misc.FunctionFinder;

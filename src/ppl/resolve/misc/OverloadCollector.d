@@ -157,7 +157,7 @@ private:
             if(f.getType.isUnknown) {
                 ready = false;
             }
-            module_.buildState.functionRequired(f.moduleName, name);
+            module_.buildState.moduleRequired(f.moduleName);
             results.add(Callable(f));
         }
     }

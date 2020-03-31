@@ -12,6 +12,7 @@ import fswatch;
  */
 final class IncrementalBuilder : BuildState {
 private:
+    enum WATCH_SLEEP_INTERVAL = 1000;
     FileWatch watcher;
     Thread watcherThread, builderThread;
     Semaphore builderSemaphore;
@@ -60,14 +61,14 @@ private:
             try{
 
                 // Build everything if this is the first run or there were errors the last time
-                if(allModules.length == 0 || hasErrors()) {
-                    writefln("allModules = %s errors = %s", allModules.length, errors);
+                if(modules.length == 0 || hasErrors()) {
+                    writefln("allModules = %s errors = %s", modules.length, errors);
                     buildAll();
                 } else {
                     rebuild();
                 }
 
-                writefln("%s modules are cached", allModules.length);
+                writefln("%s modules are cached", modules.length);
 
             }catch(InternalCompilerError e) {
                 writefln("\n=============================");
@@ -87,6 +88,10 @@ private:
             }
             watch.stop();
             writefln("Elapsed time: %s ms", watch.peek().total!"msecs");
+
+            foreach(l; listeners) {
+                l.buildFinished(this);
+            }
         }
     }
     /**
@@ -98,20 +103,18 @@ private:
         writefln("========================> buildall");
         startNewBuild();
 
-        functionRequired(config.getMainModuleCanonicalName, config.getEntryFunctionName());
+        moduleRequired(config.getMainModuleCanonicalName);
 
         parseAndResolve();
         if(hasErrors()) {
             return;
         }
 
+        removeUnreferencedNodesAfterResolution();
         afterResolution();
         if(hasErrors()) {
             return;
         }
-
-        // Do we want this here?
-        removeUnreferencedNodes();
 
         semanticCheck();
 
@@ -151,7 +154,7 @@ private:
             auto m = getModule(cn);
 
             auto refs = allModulesThatImport(m);
-            writefln("\trefs for %s = %s", cn, refs.map!(it=>it.canonicalName).join(","));
+            writefln("\tImporters of %s = [%s]", cn, refs.map!(it=>it.canonicalName).join(","));
 
             foreach(r; refs) {
                 _check(r.canonicalName);
@@ -163,7 +166,7 @@ private:
             _check(canonicalName);
         }
 
-        writefln("\tchange set = %s", changeSet.values.map!(it=>it).join(","));
+        writefln("\tchange set = [%s]", changeSet.values.map!(it=>it).join(","));
 
         foreach(change; changeSet.values) {
             // TODO - remove templates in any module that were added by any of the removed modules
@@ -172,7 +175,7 @@ private:
         }
 
         startRebuild();
-        functionRequired(config.getMainModuleCanonicalName, config.getEntryFunctionName());
+        moduleRequired(config.getMainModuleCanonicalName);
 
         parseAndResolve();
         if(hasErrors()) {
@@ -180,20 +183,27 @@ private:
             return;
         }
 
+        removeUnreferencedNodesAfterResolution();
         afterResolution();
+
         if(hasErrors()) {
             dumpErrors();
             return;
         }
 
-        // Do we want this here?
-        removeUnreferencedNodes();
-
         semanticCheck();
-
         if(hasErrors()) {
             dumpErrors();
+            return;
         }
+
+        // TODO - if we are generating code at this point we need to check __runModuleConstructors
+        //        if the main module has not been regenerated because the modules may have changed
+
+        // TODO - I don't think numRefs matters but if it does we can probably adjust them using Target var/func
+
+        writefln("%s modules compiled - OK, no errors", modules.length);
+
     }
     void dumpErrors() {
         writefln("ERRORS:");
@@ -229,7 +239,7 @@ private:
                 }
             }
             set.clear();
-            Thread.sleep(dur!"msecs"(500));
+            Thread.sleep(dur!"msecs"(WATCH_SLEEP_INTERVAL));
         }
     }
 }

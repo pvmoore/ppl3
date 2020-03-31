@@ -16,6 +16,8 @@ public:
 
     int numRefs;
 
+    bool afterResolutionHasRun = false; // this could be true if this module is part of a rebuild
+                                        // and did was not modified
     Config config;
     BuildState buildState;
     ParseModule parser;
@@ -121,6 +123,11 @@ public:
     Lambda[] getLambdas()       { return lambdas; }
     void addLambda(Lambda c)    { lambdas ~= c; }
     void removeLambda(Lambda c) { import common : remove; lambdas.remove(c); }
+
+    void appendTokensFromTemplate(ASTNode afterNode, Token[] tokens) {
+        parser.appendTokensFromTemplate(afterNode, tokens);
+        resolver.setModified();
+    }
 
     NodeBuilder builder(ASTNode n) {
         return nodeBuilder.forNode(n);

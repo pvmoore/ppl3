@@ -35,10 +35,10 @@ public:
         }
         return this;
     }
-    void removeUnreferencedNodes() {
+    void removeUnreferencedNodesAfterResolution() {
         watch.start();
         scope(exit) watch.stop();
-        log("Removing unreferenced nodes");
+        log("Removing unreferenced nodes after resolution");
 
         foreach(m; state.allModules) {
             removePrivateAliases(m);
@@ -48,7 +48,7 @@ public:
             }
             removeUnreferencedGlobalVariables(m);
             removePrivateStructBlueprints(m);
-            removeUnreferencedFunctions(m);
+            removeUnreferencedPrivateFunctions(m);
         }
 
         removeAllUnreferencedPrivateStructs();
@@ -81,13 +81,16 @@ private:
             remove(a, m);
         }
     }
-    void removeUnreferencedFunctions(Module m) {
+    void removeUnreferencedPrivateFunctions(Module m) {
         auto functions = new DynamicArray!Function;
         m.selectDescendents!Function(functions);
+
         foreach(f; functions) {
             if(f.isImport) {
                 log("\t  proxy func %s", f.name);
                 remove(f, m);
+            } else if(f.access.isPublic) {
+                // keep these
             } else if(f.isTemplateBlueprint) {
                 log("\t  template func %s", f.name);
                 remove(f, m);
@@ -139,9 +142,9 @@ private:
             n => n.id!=NodeID.STRUCT,
             (n) {
                 auto type = n.getType;
-                assert(type.isKnown, "%s %s %s".format(m.canonicalName, n, n.line+1));
 
-                auto s = type.getStruct;
+                /// Type may not be known if this is a template function
+                auto s = type.isKnown ? type.getStruct : null;
                 if(s) {
                     structs.add(s);
                 }
@@ -156,9 +159,9 @@ private:
                  n.id!=NodeID.ENUM && n.parent.id!=NodeID.ENUM,
             (n) {
                 auto type = n.getType;
-                assert(type.isKnown, "%s %s %s".format(m.canonicalName, n, n.line+1));
 
-                auto e = type.getEnum;
+                /// Type may not be known if this is a template function
+                auto e = type.isKnown ? type.getEnum : null;
                 if(e) {
                     enums.add(e);
                 }

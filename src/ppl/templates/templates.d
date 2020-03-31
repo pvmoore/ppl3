@@ -28,9 +28,9 @@ public:
 
         auto tokens = ns.blueprint.extractStruct(mangledName, templateTypes);
 
-        module_.parser.appendTokensFromTemplate(ns, tokens);
+        module_.appendTokensFromTemplate(ns, tokens);
 
-        module_.buildState.aliasEnumOrStructRequired(module_.canonicalName, mangledName);
+        module_.buildState.moduleRequired(module_.canonicalName);
 
         //if(module_.canonicalName=="test_statics") {
         //    dd("Extracted struct template", ns.name, mangledName, module_.canonicalName);
@@ -58,7 +58,7 @@ public:
             if(f.isMember() || f.isStatic) {
                 ns = f.getStruct();
                 assert(ns);
-                
+
                 key = ns.name ~ "." ~ mangledName;
             }
 
@@ -72,9 +72,9 @@ public:
             auto tokens = f.blueprint.extractFunction(mangledName, call.templateTypes, f.isStatic);
             //dd("  tokens=", tokens.toString);
 
-            module_.parser.appendTokensFromTemplate(f, tokens);
+            module_.appendTokensFromTemplate(f, tokens);
 
-            module_.buildState.functionRequired(module_.canonicalName, mangledName);
+            module_.buildState.moduleRequired(module_.canonicalName);
         }
     }
 }

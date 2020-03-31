@@ -4,3 +4,4 @@ pub fn i3func() {
 }
 
 pub struct I3Object(int a)  
+ 

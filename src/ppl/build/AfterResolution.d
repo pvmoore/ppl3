@@ -1,4 +1,4 @@
-module ppl.resolve.misc.AfterResolution;
+module ppl.build.AfterResolution;
 
 import ppl.internal;
 ///
@@ -21,6 +21,11 @@ public:
         //auto calls = new DynamicArray!Call;
 
         foreach(mod; modules) {
+
+            if(mod.afterResolutionHasRun) {
+                continue;
+            }
+            mod.afterResolutionHasRun = true;
 
             auto initFunc = mod.getInitFunction();
             auto initBody = initFunc.getBody();
@@ -46,6 +51,17 @@ public:
         addModuleConstructorCalls();
     }
 private:
+    /**
+     *  main() {
+     *      GC.start()
+     *      call __runModuleConstructors()
+     *      ...
+     *  }
+     *  __runModuleConstructors() {
+     *      for each module:
+     *          module.new()
+     *  }
+     */
     void addModuleConstructorCalls() {
         if(buildState.mainModule is null) return;
 
@@ -53,18 +69,30 @@ private:
         Function entry    = mainModule.getFunctions(buildState.config.getEntryFunctionName())[0];
 
         alias comparator = (Module a, Module b) {
-            return a.getPriority < b.getPriority;
+            return a.getPriority > b.getPriority;
         };
 
         auto builder = mainModule.builder(entry);
 
-        foreach_reverse(mod; buildState.allModules.sort!(comparator)) {
+        /// Find __runModuleConstructors function
+        auto rmcFuncs = mainModule.getFunctions("__runModuleConstructors");
+        assert(rmcFuncs.length==1);
+        auto rmcFunc = rmcFuncs[0];
+
+        assert(rmcFunc.getBody().children[0].isA!Parameters);
+        assert(rmcFunc.getBody().children[1].isA!Return);
+
+        foreach(mod; buildState.allModules.sort!(comparator)) {
             //writefln("[%s] %s", mod.getPriority, mod.canonicalName);
 
             auto call = builder.call("new", mod.getInitFunction());
 
+            rmcFunc.getBody().insertAt(1, call);
+
             /// Add after Parameters and call to GC.start()
-            entry.getBody().insertAt(2, call);
+            //entry.getBody().insertAt(2, call);
+
+
         }
 
         assert(entry.getBody().first().isA!Parameters);

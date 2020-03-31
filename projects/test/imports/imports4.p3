@@ -5,7 +5,7 @@ pub fn func() {
 pub fn func2<T>(T a) { 
 	return 2
 }
-
+ 
 pub struct Rabbit(  
     pub int a,
 	pub static int b = 12, 

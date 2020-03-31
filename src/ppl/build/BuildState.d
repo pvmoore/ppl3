@@ -6,9 +6,7 @@ abstract class BuildState {
 protected:
     Mutex getModuleLock;
 
-    Queue!Task taskQueue;
-    Set!string requestedAliasOrStruct;    /// moduleName|defineName
-    Set!string requestedFunction;         /// moduleName|funcName
+    Queue!string taskQueue;
 
     Module[/*canonicalName*/string] modules;
     Set!string removedModules;
@@ -22,14 +20,12 @@ protected:
 
     CompileError[string] errors;
     DeadCodeEliminator dce;
+    IBuildStateListener[] listeners;
 public:
-    struct Task {
-        enum Enum { FUNC, TYPE }
-        Enum type;
-
-        string moduleName;
-        string elementName;
+    interface IBuildStateListener {
+        void buildFinished(BuildState);
     }
+
     LLVMWrapper llvmWrapper;
     Optimiser optimiser;
     Linker linker;
@@ -39,6 +35,10 @@ public:
 
     ulong getElapsedNanos() const { return watch.peek().total!"nsecs"; }
     bool hasErrors() const        { return errors.length>0; }
+
+    void addListener(IBuildStateListener listener) {
+        listeners ~= listener;
+    }
 
     CompileError[] getErrors() {
         import std.algorithm.comparison : cmp;
@@ -67,9 +67,7 @@ public:
         this.dce                    = new DeadCodeEliminator(this);
         this.config                 = config;
         this.getModuleLock          = new Mutex;
-        this.taskQueue              = new Queue!Task(1024);
-        this.requestedAliasOrStruct = new Set!string;
-        this.requestedFunction      = new Set!string;
+        this.taskQueue              = new Queue!string(1024);
         this.mangler                = new Mangler;
         this.removedModules         = new Set!string;
         //this.refInfo                = new ReferenceInformation(this);
@@ -77,8 +75,8 @@ public:
     /// Tasks
     bool tasksOutstanding()       { return !taskQueue.empty; }
     int tasksRemaining()          { return taskQueue.length; }
-    Task getNextTask()            { return taskQueue.pop; }
-    void addTask(Task t)          { taskQueue.push(t); }
+    string getNextTask()          { return taskQueue.pop; }
+    void addTask(string t)        { taskQueue.push(t); }
 
     void addError(CompileError e, bool canContinue) {
         string key = e.getKey();
@@ -94,8 +92,6 @@ public:
         }
     }
     void startNewBuild() {
-        requestedAliasOrStruct.clear();
-        requestedFunction.clear();
         taskQueue.clear();
         dce.clearState();
         optimiser.clearState();
@@ -112,10 +108,13 @@ public:
         removedModules.clear();
     }
     void startRebuild() {
-        requestedAliasOrStruct.clear();
-        requestedFunction.clear();
         taskQueue.clear();
         removedModules.clear();
+        errors.clear();
+
+        // TODO - reset all module, function, variable refs?
+
+
     }
 
     /// Modules
@@ -166,8 +165,6 @@ public:
         getModuleLock.lock();
         scope(exit) getModuleLock.unlock();
 
-        assert(!removedModules.contains(canonicalName));
-
         removedModules.add(canonicalName);
 
         modules.remove(canonicalName);
@@ -215,33 +212,9 @@ public:
             clearState(r, hasBeenReset);
         }
     }
-
-    /// Symbols
-    void aliasEnumOrStructRequired(string moduleName, string defineName) {
-        string key = "%s|%s".format(moduleName, defineName);
-
-        if(requestedAliasOrStruct.contains(key)) return;
-        requestedAliasOrStruct.add(key);
-
-        Task t = {
-            Task.Enum.TYPE,
-            moduleName,
-            defineName
-        };
-        taskQueue.push(t);
-    }
-    void functionRequired(string moduleName, string funcName) {
-        string key = "%s|%s".format(moduleName, funcName);
-
-        if(requestedFunction.contains(key)) return;
-        requestedFunction.add(key);
-
-        Task t = {
-            Task.Enum.FUNC,
-            moduleName,
-            funcName
-        };
-        taskQueue.push(t);
+    void moduleRequired(string moduleName) {
+        if(moduleName in modules) return;
+        taskQueue.push(moduleName);
     }
 
     /// Stats
@@ -297,25 +270,16 @@ protected:
 
             /// Process all pending tasks
             while(tasksOutstanding()) {
-                auto t = getNextTask();
+                auto moduleName = getNextTask();
 
                 //dd(t);
-                log("Executing %s (%s queued)", t, tasksRemaining());
+                log("Executing %s (%s queued)", moduleName, tasksRemaining());
 
-                Module mod = getOrCreateModule(t.moduleName);
+                Module mod = getOrCreateModule(moduleName);
 
                 /// Parse this module if we haven't done so already
                 if(!mod.isParsed) {
                     mod.parser.parse();
-                }
-
-                final switch(t.type) with(Task.Enum) {
-                    case FUNC:
-                        mod.resolver.resolveFunction(t.elementName);
-                        break;
-                    case TYPE:
-                        mod.resolver.resolveAliasEnumOrStruct(t.elementName);
-                        break;
                 }
             }
             log("All current tasks completed");
@@ -392,11 +356,11 @@ protected:
         }
         dd("  [%s] %s".format(largestM.canonicalName, largestM.resolver.getCurrentIteration));
     }
-    void removeUnreferencedNodes() {
-        dd("[✓] remove unreferenced");
+    void removeUnreferencedNodesAfterResolution() {
+        dd("[✓] remove unreferenced after resolution");
 
-        dce.removeUnreferencedModules()
-           .removeUnreferencedNodes();
+        dce.removeUnreferencedModules();
+        dce.removeUnreferencedNodesAfterResolution();
     }
     ///
     /// - Move global variable initialisation code into the module constructor new() function.

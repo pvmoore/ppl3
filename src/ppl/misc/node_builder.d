@@ -135,6 +135,9 @@ final class NodeBuilder {
         ret.add(expr);
         return ret;
     }
+    Return returnVoid() {
+        return makeNode!Return(node);
+    }
     TypeExpr typeExpr(Type t) {
         auto e = makeNode!TypeExpr(node);
         e.type = t;

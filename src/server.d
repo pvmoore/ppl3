@@ -41,7 +41,7 @@ struct Request {
     }
 }
 
-final class Server {
+final class Server : BuildState.IBuildStateListener {
 private:
     ushort port;
     TcpSocket listener;
@@ -49,6 +49,8 @@ private:
     Socket[] clients;
     bool isRunning = true;
     IncrementalBuilder builder;
+
+    Module[] modules;
 public:
     this(ushort port) {
         this.port = port;
@@ -88,6 +90,16 @@ public:
                     clients ~= socket;
                 }
             }
+        }
+    }
+    // IBuildStateListener
+    override void buildFinished(BuildState state) {
+        writefln("...buildFinished");
+
+        if(state.hasErrors()) {
+
+        } else {
+            
         }
     }
 private:
@@ -224,6 +236,7 @@ private:
         writefln("\n%s", config.toString());
 
         this.builder = ppl.createIncrementalBuilder(config);
+        this.builder.addListener(this);
 
     }
     void returnErrors() {

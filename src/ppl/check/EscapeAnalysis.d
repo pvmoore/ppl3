@@ -134,7 +134,11 @@ private:
             case LITERAL_TUPLE:
             case BINARY:
             case CALL:
+            case TYPE_EXPR:
                 break;
+            case DOT:
+                auto left = probeFor!T(e.as!Dot.left());
+                return left !is null ? left : probeFor!T(e.as!Dot.right());
             default:
                 assert(false, "implement %s".format(e.id));
         }

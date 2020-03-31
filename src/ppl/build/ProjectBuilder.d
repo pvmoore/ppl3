@@ -18,7 +18,7 @@ public:
         bool astDumped;
         try{
             /// We know we need the program entry point
-            functionRequired(config.getMainModuleCanonicalName, config.getEntryFunctionName());
+            moduleRequired(config.getMainModuleCanonicalName);
 
             ///============================ Start
             parseAndResolve();
@@ -26,14 +26,9 @@ public:
 
             //refInfo.process();
 
-            removeUnreferencedNodes();
-            if(hasErrors()) return;
-
+            removeUnreferencedNodesAfterResolution();
             afterResolution();
             if(hasErrors()) return;
-
-            //removeUnreferencedNodes();
-            //if(hasErrors()) return;
 
             semanticCheck();
             if(hasErrors()) return;

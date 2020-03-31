@@ -225,6 +225,7 @@ public:
     }
     void visit(Function n) {
         if(n.isExtern) return;
+        if(n.isTemplateBlueprint()) return;
 
         assert(n.llvmValue);
         n.getBody().visit!GenerateModule(this);

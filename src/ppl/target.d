@@ -123,6 +123,9 @@ private:
             func.numRefs++;
         }
         if(targetModule.nid != module_.nid) {
+
+            if(targetModule.canonicalName=="core::core") { dd("------> plus"); }
+
             targetModule.numRefs++;
             if(func) func.numExternalRefs++;
         }
@@ -134,6 +137,9 @@ private:
             func.numRefs--;
         }
         if(targetModule.nid != module_.nid) {
+
+            if(targetModule.canonicalName=="core::core") { dd("------> minus"); }
+
             targetModule.numRefs--;
             if(func) func.numExternalRefs--;
         }

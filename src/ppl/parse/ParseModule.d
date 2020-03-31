@@ -241,8 +241,9 @@ private:
     ///
     ///  - Check that there is only 1 module init function.
     ///     - Create one if there are none.
-    ///  - Check that we have a program entry point
-    ///  - Request resolution of the module "new" method
+    ///  - For main module:
+    ///     - Check that we have a program entry point
+    ///     - Add __runModuleConstructors function and call it
     ///
     void moduleFullyParsed() {
         /// Only do this once
@@ -294,16 +295,15 @@ private:
                 addRealProgramEntry(mainfns[0]);
             }
         }
-
-        /// Request init function resolution
-        module_.buildState.functionRequired(module_.canonicalName, "new");
     }
-    ///
-    /// Rename main function to __user_main
-    /// Add main {void->int} function that calls __user_main
-    ///
-    /// See https://docs.microsoft.com/en-us/cpp/build/reference/entry-entry-point-symbol?view=vs-2017
-    ///
+    /**
+     *  Rename main function to __user_main
+     *  Add main {void->int} function that calls __user_main
+     *  Add __runModuleConstructors function to module
+     *  Call __runModuleConstructors
+     *
+     *  See https://docs.microsoft.com/en-us/cpp/build/reference/entry-entry-point-symbol?view=vs-2017
+     */
     void addRealProgramEntry(Function main) {
         auto b = module_.builder(main);
 
@@ -317,30 +317,40 @@ private:
         auto func = b.function_(module_.config.getEntryFunctionName());
 
         /// Add GC.start()
-        auto start = b.dot(b.typeExpr(gc), b.call("start"));
+        auto callGCStart = b.dot(b.typeExpr(gc), b.call("start"));
+
+        /// Create __runModuleConstructors function
+        auto rmcFunc = b.function_("__runModuleConstructors");
+        rmcFunc.access = Access.PUBLIC;
+        rmcFunc.getBody().add(b.returnVoid());
+        module_.add(rmcFunc);
+
+        /// Call __runModuleConstructors
+        auto callRMC = b.call("__runModuleConstructors");
 
         /// Exit code
-        auto retVar = b.variable("__exitCode", TYPE_INT);
-        auto ret = b.return_(b.identifier("__exitCode"));
+        auto allocStatusCodeVar = b.variable("__exitCode", TYPE_INT);
+        auto returnStatusCode = b.return_(b.identifier("__exitCode"));
 
         /// Call main
-        Expression call = b.call("__user_main");
+        Expression callUserMain = b.call("__user_main");
 
         if(mainReturnsAnInt) {
-            call = b.assign(b.identifier("__exitCode"), call, TYPE_INT);
+            callUserMain = b.assign(b.identifier("__exitCode"), callUserMain, TYPE_INT);
         }
 
         /// Add GC.stop()
-        auto stop = b.dot(b.typeExpr(gc), b.call("stop"));
+        auto callGCStop = b.dot(b.typeExpr(gc), b.call("stop"));
 
-        func.getBody().add(start);
-        func.getBody().add(retVar);
-        func.getBody().add(call);
-        func.getBody().add(stop);
-        func.getBody().add(ret);
+        func.getBody().add(callGCStart);
+        func.getBody().add(callRMC);
+        func.getBody().add(allocStatusCodeVar);
+        func.getBody().add(callUserMain);
+        func.getBody().add(callGCStop);
+        func.getBody().add(returnStatusCode);
 
         func.numRefs++;
         module_.add(func);
-        module_.buildState.functionRequired(module_.canonicalName, "__user_main");
+        module_.buildState.moduleRequired(module_.canonicalName);
     }
 }

@@ -192,6 +192,8 @@ public:
     }
     void visit(Function n) {
 
+        if(n.isTemplateBlueprint) return;
+
         auto retType = n.getType.getFunctionType.returnType;
 
         if(n.isVisibleToOtherModules()) {

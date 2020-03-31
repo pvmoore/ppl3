@@ -286,31 +286,34 @@ private: //=====================================================================
         /// "import"
         t.next;
 
+        string _collectModuleName() {
+            string moduleName = t.value;
+            t.markPosition();
+            t.next;
+
+            while(t.type==TT.DBL_COLON) {
+                t.next;
+                moduleName ~= "::";
+                moduleName ~= t.value;
+                t.next;
+            }
+
+            /// Check that the import exists
+            import std.file : exists;
+            if(!exists(module_.config.getFullModulePath(moduleName))) {
+                t.resetToMark();
+                module_.addError(t, "Module %s does not exist".format(moduleName), false);
+            }
+            t.discardMark();
+
+            module_.buildState.moduleRequired(moduleName);
+
+            return moduleName;
+        }
+
         while(true) {
             auto imp = makeNode!Import(t);
             parent.add(imp);
-
-            string collectModuleName() {
-                string moduleName = t.value;
-                t.markPosition();
-                t.next;
-
-                while(t.type==TT.DBL_COLON) {
-                    t.next;
-                    moduleName ~= "::";
-                    moduleName ~= t.value;
-                    t.next;
-                }
-
-                /// Check that the import exists
-                import std.file : exists;
-                if(!exists(module_.config.getFullModulePath(moduleName))) {
-                    t.resetToMark();
-                    module_.addError(t, "Module %s does not exist".format(moduleName), false);
-                }
-                t.discardMark();
-                return moduleName;
-            }
 
             if(t.peek(1).type==TT.EQUALS) {
                 /// module_alias = canonicalName
@@ -322,7 +325,7 @@ private: //=====================================================================
                 }
             }
 
-            imp.moduleName = collectModuleName();
+            imp.moduleName = _collectModuleName();
             module_.addImport(imp);
 
             if(findImportByCanonicalName(imp.moduleName, imp)) {

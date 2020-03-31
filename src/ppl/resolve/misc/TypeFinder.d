@@ -139,12 +139,14 @@ private:
         auto en     = t.getEnum;
         assert(alias_ !is null || ns !is null || en !is null);
 
+
+
         if(alias_) {
-            module_.buildState.aliasEnumOrStructRequired(alias_.moduleName, alias_.name);
+            module_.buildState.moduleRequired(alias_.moduleName);
         } else if(en) {
-            module_.buildState.aliasEnumOrStructRequired(en.moduleName, en.name);
+            module_.buildState.moduleRequired(en.moduleName);
         } else {
-            module_.buildState.aliasEnumOrStructRequired(ns.moduleName, ns.name);
+            module_.buildState.moduleRequired(ns.moduleName);
         }
 
         return t;

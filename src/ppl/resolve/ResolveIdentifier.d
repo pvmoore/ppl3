@@ -236,7 +236,7 @@ private:
         if(res.isFunc) {
             auto func = res.func;
 
-            module_.buildState.functionRequired(func.moduleName, func.name);
+            module_.buildState.moduleRequired(func.moduleName);
 
             if(func.isMember()) {
                 auto ns = n.getAncestor!Struct();
