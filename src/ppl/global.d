@@ -20,7 +20,7 @@ __gshared string[int] g_typeToString;
 
 __gshared Operator[TT] g_ttToOperator;
 
-__gshared Token NO_TOKEN    = Token(TT.NONE, null, -1, -1, -1);
+__gshared Token NO_TOKEN = Token.make(TT.NONE, null, 0, INVALID_POSITION, INVALID_POSITION);
 
 enum INVALID_POSITION = Position(-1,-1);
 

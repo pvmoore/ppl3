@@ -11,15 +11,15 @@ var s = "hello"
 import imports::imports             // Bat, Cat, Dog, IntPtrPtr, Wolf, importedFunc()
 import nodes::literals
 import test_arrays
-import misc::test_constant_folding  
+import misc::test_constant_folding
 
 alias AA = int
 alias BB = AA*     // int*
 alias CC = BB      // int*
-alias DD = CC*     // int**  
-DD dd              // int** 
+alias DD = CC*     // int**
+DD dd              // int**
 alias EE = IntPtrPtr*
-EE ee              // int*** 
+EE ee              // int***
 
 // declare for later
 struct Gold
@@ -106,11 +106,15 @@ fn testing() {
     testClasses()
 
 	int a = 0
-	
+
 	loop(var i = 0; i<10; i+=1) {
-	
+
 		//
 	}
+
+    const multi = """
+hello
+"""
 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -139,7 +143,7 @@ pub fn main() {
     import misc::misc;              testMisc()
     import misc::builtin_funcs;     testBuiltinFuncs()
     import nodes::select;           testSelect()
-    import functions::closures;     testClosures() 
+    import functions::closures;     testClosures()
     import test_enum;               testEnum()
     import misc::attributes;        testAttributes()
     import misc::ptr_arithmetic;    testPtrArithmetic()
@@ -147,16 +151,16 @@ pub fn main() {
 
     import texpr = test_expressions;    texpr.testExpressions()
 
-    import core_::sequences;    testSequences()  
+    import core_::sequences;    testSequences()
 
-    import test_optional; testOptional()  
+    import test_optional; testOptional()
 
     testLiterals()
-    testConstantFolding() 
+    testConstantFolding()
     testArrays()
 
     const testGlobals = || {
-        assert @typeOf(dd) is int** 
+        assert @typeOf(dd) is int**
         assert @typeOf(ee) is int***
     }
     const test0 = || {
@@ -212,20 +216,20 @@ pub fn main() {
         Listy<BlueRose> blueList
         Listy<Listy<int>> listoflist
     }
-    const test4 = || {  
+    const test4 = || {
         //float2 v2
-        //float3 v3  
+        //float3 v3
         //float4 v4
-        //float8 v8   
+        //float8 v8
     }
-    const testInnerImport = || {      
-        import imports::imports3 
+    const testInnerImport = || {
+        import imports::imports3
 
         assert 77 == i3func()
-        I3Object obj = I3Object()    
-    }  
+        I3Object obj = I3Object()
+    }
 
-    testGlobals()    
+    testGlobals()
     test0()
     test1()
     test2()

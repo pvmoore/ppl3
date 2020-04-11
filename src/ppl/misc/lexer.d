@@ -16,14 +16,13 @@ public:
     /// text   - the text to tokenise
     ///
     Token[] tokenise(bool forIDE=false)(string text, BuildState buildState = null) {
-        auto tokens           = new DynamicArray!Token(256);
-        auto buf              = new StringBuffer;
-        int index             = 0;
-        int line              = 0;
-        int indexSOL          = 0;      /// char index at start of line
-        int tempLine          = -1;     /// For multiline strings only
-        int tempColumn        = -1;     /// For multiline strings only
-        auto stack            = new Stack!int;
+        auto tokens    = new DynamicArray!Token(256);
+        auto buf       = new StringBuffer;
+        int index      = 0;
+        int indexSOL   = 0;      /// char index at start of line
+        int line       = 0;
+        auto startPos  = INVALID_POSITION;
+        auto stack     = new Stack!int;
 
         if(!forIDE) assert(buildState);
 
@@ -81,27 +80,32 @@ public:
                 auto value = buf.toString().idup;
                 int start  = index-cast(int)value.length;
 
-                if(tempColumn!=-1) {
+                if(startPos!=INVALID_POSITION) {
                     // Must be a multiline string literal
                     assert(type == TT.STRING);
 
-                    tokens.add(Token(type, value, index-start, tempLine, tempColumn));
+                    int endColumn = index-indexSOL-1;
 
-                    tempLine = -1;
-                    tempColumn = -1;
+                    tokens.add(Token.make(type, value, index-start, startPos, Position(line, endColumn)));
+
+                    startPos = INVALID_POSITION;
 
                 } else {
-                    int column = start-indexSOL;
+                    int startColumn = start-indexSOL;
+                    int endColumn = index-indexSOL-1;
 
-                    assert(column>=0, "line = %s, column = %s, start = %s, indexSOL = %s".format(line, column, start, indexSOL));
+                    assert(startColumn>=0, "line = %s, column = %s, start = %s, indexSOL = %s".format(line, startColumn, start, indexSOL));
 
-                    tokens.add(Token(type, value, index-start, line, column));
+                    tokens.add(Token.make(type, value, index-start, Position(line, startColumn), Position(line, endColumn)));
                 }
 
                 buf.clear();
             }
             if(t!=TT.NONE && !t.isComment && !t.isString) {
-                tokens.add(Token(t, null, length, line, index-indexSOL));
+                int startColumn = index-indexSOL;
+                int endColumn = index-indexSOL+length-1;
+
+                tokens.add(Token.make(t, null, length, Position(line, startColumn), Position(line, endColumn)));
             }
         }
         void addCharLiteral() {
@@ -205,8 +209,7 @@ public:
                 bool multiline = peek()=='\"' && peek(1)=='\"';
 
                 if(multiline) {
-                    tempLine = line;
-                    tempColumn = index-1-indexSOL;
+                    startPos = Position(line, index-1-indexSOL);
                     index+=2;
 
                     while(index<text.length-2 && !(peek()=='\"' && peek(1)=='\"' && peek(2)=='\"') ) {

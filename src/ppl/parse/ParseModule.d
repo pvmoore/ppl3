@@ -212,12 +212,7 @@ private:
         auto tokens = appender!(Token[]);
 
         Token tok(string value) {
-            Token t;
-            t.type   = TT.IDENTIFIER;
-            t.line   = -1;
-            t.column = 1;
-            t.value  = value;
-            return t;
+            return Token.make(TT.IDENTIFIER, value, 0, INVALID_POSITION, INVALID_POSITION);
         }
 
         __gshared static string[] IMPORTS = [

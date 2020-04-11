@@ -208,14 +208,23 @@ struct Token {
     TT type;
     string value;
     int length;
-    int line;
-    int column;
+    Position start;
+    Position end;
     Type templateType;
 
+    int line()         { return start.line; }
+    int column()       { return start.column; }
+    bool isGenerated() { return start==INVALID_POSITION; }
+
+    static Token make(TT type, string value, int length, Position start, Position end) {
+        return Token(type, value, length, start, end, null);
+    }
+
     string toString() {
-        string t  = type==TT.IDENTIFIER ? "'"~value~"'" : "%s".format(type);
-        string tt = templateType ? " (%s)".format(templateType) : "";
-        return "%s Len:%s L:%s C:%s%s".format(t, length, line, column, tt);
+        string t   = type==TT.IDENTIFIER ? "'"~value~"'" : "%s".format(type);
+        string pos = !isGenerated() ? "(%s to %s  len %s)".format(start, end, length) : "(GENERATED)";
+        string tt  = templateType ? " (%s)".format(templateType) : "";
+        return "%s %s%s".format(t, pos, tt);
     }
 }
 Token copy(Token t, string value) {
