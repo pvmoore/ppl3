@@ -210,6 +210,11 @@ private:
             n.access = Access.PUBLIC;
         }
 
+        // Set endLine and endColumn
+        auto tok = t.peek(-1);
+        s.endLine = tok.line;
+        s.endColumn = tok.column;
+
         return s;
     }
     ///

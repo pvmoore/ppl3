@@ -22,20 +22,20 @@ private:
     ResolveUnary unaryResolver;
     ResolveVariable variableResolver;
 
+    BuildState state;
     StopWatch watch;
     DynamicArray!Callable overloadSet;
     bool modified;
     Set!ASTNode unresolved;
     bool stalemate      = false;
-    bool isResolved     = false;
     bool tokensModified = true;
     int iteration       = 0;
-
 public:
     Module module_;
     ResolveAlias aliasResolver;
     ResolveIdentifier identifierResolver;
     FoldUnreferenced foldUnreferenced;
+    bool isResolved = false;
 
     ulong getElapsedNanos()        { return watch.peek().total!"nsecs"; }
     ASTNode[] getUnresolvedNodes() { return unresolved.values; }
@@ -46,6 +46,7 @@ public:
 
     this(Module module_) {
         this.module_             = module_;
+        this.state               = module_.buildState;
         this.foldUnreferenced    = new FoldUnreferenced(module_, this);
 
         this.asResolver          = new ResolveAs(this);

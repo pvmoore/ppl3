@@ -48,13 +48,13 @@ public:
         import std.array : replace;
 
         this.nid               = g_nodeid++;
+        this.startPos          = Position(0,0);
+        this.endPos            = Position(0,0);
         this.canonicalName     = canonicalName;
         this.buildState        = buildState;
         this.config            = buildState.config;
         this.fileName          = canonicalName.replace("::", ".");
         this.fullPath          = config.getFullModulePath(canonicalName);
-
-        log("Creating new Module(%s)", canonicalName);
 
         this.imports = new Set!string;
 
@@ -302,6 +302,34 @@ public:
         }
         m.remove(this);
         return m.values;
+    }
+
+    Statement[] getStatementsOnLine(int line) {
+        Statement[] stmts;
+
+        foreach(ch; children) {
+            if(ch.line==line) stmts ~= ch.as!Statement;
+        }
+
+        return stmts;
+    }
+    /**
+     *  Return one of Module, LiteralFunction, Tuple, Class or Struct whichever is the innermost.
+     *  Always returns this module in the worst case.
+     */
+    Container getContainerAtPosition(Position pos) {
+
+        Container con = this;
+
+        recurse!Container((c) {
+            if(c.containsPosition(pos)) {
+                if(c.as!ASTNode.isDescendentOf(con.as!ASTNode)) {
+                    con = c;
+                }
+            }
+        });
+
+        return con;
     }
 
     override int opCmp(Object o) const {

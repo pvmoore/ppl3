@@ -10,16 +10,16 @@ private:
     Module module_;
     StopWatch watch;
     Set!string stringSet;
-    ResolveIdentifier identifierResolver;
+    IdentifierTargetFinder idTargetFinder;
     EscapeAnalysis escapeAnalysis;
     ControlFlow controlFlow;
 public:
     this(Module module_) {
         this.module_            = module_;
         this.stringSet          = new Set!string;
-        this.identifierResolver = new ResolveIdentifier(module_);
         this.escapeAnalysis     = new EscapeAnalysis(module_);
         this.controlFlow        = new ControlFlow(module_);
+        this.idTargetFinder     = new IdentifierTargetFinder(module_);
     }
     void clearState() {
         watch.reset();
@@ -376,8 +376,8 @@ public:
                     } else if(v.isLocalAlloc) {
 
                         /// Check for shadowing
-                        auto res = identifierResolver.find(v.name, v.previous());
-                        if(res.found) {
+                        auto res = idTargetFinder.find(v.name, v.previous());
+                        if(res) {
                             module_.addError(v, "Variable '%s' is shadowing variable declared on line %s".format(v.name, v2.line+1), true);
                         }
                     }

@@ -49,11 +49,10 @@ private:
     /// Async (builderThread)
     void build() {
         while(running) {
-            writefln("Builder waiting...");
+            writefln("Builder waiting for work");
             builderSemaphore.wait();
             if(!running) return;
 
-            writefln("Builder starting work");
             watch.reset();
             watch.start();
             bool astDumped = false;
@@ -62,13 +61,10 @@ private:
 
                 // Build everything if this is the first run or there were errors the last time
                 if(modules.length == 0 || hasErrors()) {
-                    writefln("allModules = %s errors = %s", modules.length, errors);
                     buildAll();
                 } else {
                     rebuild();
                 }
-
-                writefln("%s modules are cached", modules.length);
 
             }catch(InternalCompilerError e) {
                 writefln("\n=============================");
@@ -87,7 +83,8 @@ private:
                 flushLogs();
             }
             watch.stop();
-            writefln("Elapsed time: %s ms", watch.peek().total!"msecs");
+
+            writefln("%s modules are cached - %s errors (Elapsed time %s ms)", modules.length, errors.length, watch.peek().total!"msecs");
 
             foreach(l; listeners) {
                 l.buildFinished(this);
@@ -100,7 +97,7 @@ private:
      *  Async (builderThread)
      */
     void buildAll() {
-        writefln("========================> buildall");
+        writefln("Doing full build");
         startNewBuild();
 
         moduleRequired(config.getMainModuleCanonicalName);
@@ -127,7 +124,7 @@ private:
      *  Assumes there are no errors.
      */
     void rebuild() {
-        writefln("===============================> rebuild");
+        writefln("Doing partial build");
         assert(hasErrors()==false);
 
         string[1024] modulesModified;
@@ -201,8 +198,6 @@ private:
         //        if the main module has not been regenerated because the modules may have changed
 
         // TODO - I don't think numRefs matters but if it does we can probably adjust them using Target var/func
-
-        writefln("%s modules compiled - OK, no errors", modules.length);
 
     }
     void dumpErrors() {

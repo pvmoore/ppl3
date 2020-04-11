@@ -9,14 +9,14 @@ public:
 
 void flushLogs() {
     flushConsole();
-    if(g_logger) g_logger.flush();
+//    if(g_logger) g_logger.flush();
 }
-void log(A...)(lazy string fmt, lazy A args) {
-    if(g_logger) {
-        g_logger.log(fmt, args);
-        g_logger.flush();
-    }
-}
+// void log(A...)(lazy string fmt, lazy A args) {
+//     if(g_logger) {
+//         g_logger.log(fmt, args);
+//         g_logger.flush();
+//     }
+// }
 
 final class FileLogger {
     this(string filename) {

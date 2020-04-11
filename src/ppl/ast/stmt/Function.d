@@ -5,7 +5,7 @@ import common : contains;
 ///
 ///  function::= identifier "=" [template params] function_literal
 ///
-final class Function : Statement {
+final class Function : Statement, VariableOrFunction {
 private:
     string _mangledName;
 public:

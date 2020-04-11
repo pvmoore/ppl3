@@ -118,8 +118,14 @@ public:
     DynamicArray!ASTNode children;
     Attribute[] attributes;
     ASTNode parent;
+
+    Position startPos = INVALID_POSITION;
+    Position endPos  = INVALID_POSITION;
     int line   = -1;
     int column = -1;
+    int endLine = -1;
+    int endColumn = -1;
+
     int nid;
     int modIteration;   /// Set to the current resolver iteration when node is modified in some way
 
@@ -150,6 +156,13 @@ public:
     final int getDepth() {
         if(this.id==NodeID.MODULE) return 0;
         return parent.getDepth() + 1;
+    }
+    // TODO - this isn't quite accurate
+    final Position getEndPosition() {
+        //dd("getEndPosition", id, last());
+        if(endLine!=-1 && endColumn!=-1) return Position(endLine, endColumn);
+        auto last_ = last();
+        return last_ !is null ? last_.getEndPosition() : Position(line, column);
     }
     final ASTNode getLogicalParent() {
         if(parent.isA!Placeholder) return parent.getLogicalParent();
@@ -305,6 +318,29 @@ public:
         if(c) return c;
         if(parent) return parent.getContainer();
         throw new Exception("We are not inside a container!!");
+    }
+    final ASTNode findNearestTo(Position pos) {
+
+        ASTNode n = null;
+
+        //if(!this.isA!Container) {
+            auto start = Position(line, column);
+            auto end   = getEndPosition();
+            dd(this.id, "findNearestTo", pos, start, end);
+
+            if(start != INVALID_POSITION && end != INVALID_POSITION) {
+                if(start.isBefore(pos) && !end.isBefore(pos)) {
+                    n = this;
+                    dd("  %s %s %s".format(n.id, start, end));
+                }
+            }
+        //}
+
+        foreach(ch; children) {
+            auto n2 = ch.findNearestTo(pos);
+            if(n2) n = n2;
+        }
+        return n;
     }
     bool hasAncestor(T)() {
         if(parent is null) return false;

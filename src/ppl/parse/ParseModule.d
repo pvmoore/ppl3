@@ -10,6 +10,7 @@ import ppl.internal;
 final class ParseModule {
 private:
     Module module_;
+    BuildState state;
     StopWatch watch;
     Lexer lexer;
 
@@ -33,6 +34,7 @@ public:
 
     this(Module module_) {
         this.module_          = module_;
+        this.state            = module_.buildState;
         this.lexer            = new Lexer(module_);
         this.publicTypes      = new Set!string;
         //this.privateFunctions = new Set!string;
@@ -59,10 +61,16 @@ public:
 
         this.sourceTextHash = Hasher.sha1(src);
         this.sourceText     = src;
-        log("Parser: %s src -> %s bytes hash:%s", module_.fullPath, sourceText.length, sourceTextHash);
+        state.logParse("Parser: %s src -> %s bytes hash:%s", module_.fullPath, sourceText.length, sourceTextHash);
 
         tokenise();
         collectTypesAndFunctions();
+
+        // Set Module endLine and endColumn
+        Token last = mainTokens.peek(mainTokens.length()-1);
+        if(last != NO_TOKEN) {
+            module_.endPos = Position(last.line, last.column + last.length);
+        }
     }
     void readSourceFromDisk() {
         import std.file : read;
@@ -77,7 +85,7 @@ public:
         if(isParsed()) return;
         watch.start();
 
-        log("[%s] Parsing", module_.canonicalName);
+        state.logParse("[%s] Parsing", module_.canonicalName);
 
         /// Parse all module tokens
         while(mainTokens.hasNext) {
@@ -91,7 +99,7 @@ public:
             }
         }
 
-        log("[%s] Parsing finished", module_.canonicalName);
+        state.logParse("[%s] Parsing finished", module_.canonicalName);
         moduleFullyParsed();
 
         mainParseComplete     = true;
@@ -120,7 +128,7 @@ private:
     void tokenise() {
         watch.start();
         auto tokens = getImplicitImportsTokens() ~ lexer.tokenise(sourceText, module_.buildState);
-        log("... found %s tokens", tokens.length);
+        state.logParse("... found %s tokens", tokens.length);
 
         lexer.dumpTokens(tokens);
 
@@ -132,7 +140,7 @@ private:
     ///
     void collectTypesAndFunctions() {
         watch.start();
-        log("Parser: %s Extracting exports", module_.canonicalName);
+        state.logParse("Parser: %s Extracting exports", module_.canonicalName);
 
         auto t = mainTokens;
 

@@ -166,14 +166,24 @@ public:
             t.expect(TT.LCURLY);
             literalParser.parseFunctionBody(t, f, params);
 
+            auto body_ = f.getBody();
+            body_.type = Pointer.of(type, 1);
+
+            // Set LiteralFunction endLine and endColumn
+            auto tok = t.peek(-1);
+            body_.endLine = tok.line;
+            body_.endColumn = tok.column;
+
             /// Add implicit this* parameter if this is a non-static struct member function
             if(ns && !f.isStatic) {
                 params.addThisParameter(ns);
             }
-
-            auto body_ = f.getBody();
-            body_.type = Pointer.of(type, 1);
         }
+
+        // Set Function endLine and endColumn
+        auto tok = t.peek(-1);
+        f.endLine = tok.line;
+        f.endColumn = tok.column;
     }
     /// eg. extern fn putchar(int) int
     void parseExtern(Tokens t, ASTNode parent) {

@@ -21,12 +21,12 @@ public:
     auto removeUnreferencedModules() {
         watch.start();
         scope(exit) watch.stop();
-        log("Removing unreferenced modules");
+        state.logDCE("Removing unreferenced modules");
 
         auto removeMe = new DynamicArray!Module;
         foreach(m; state.allModules) {
             if(m.numRefs==0) {
-                log("\t  Removing unreferenced module %s", m.canonicalName);
+                state.logDCE("\t  Removing unreferenced module %s", m.canonicalName);
                 removeMe.add(m);
             }
         }
@@ -38,7 +38,7 @@ public:
     void removeUnreferencedNodesAfterResolution() {
         watch.start();
         scope(exit) watch.stop();
-        log("Removing unreferenced nodes after resolution");
+        state.logDCE("Removing unreferenced nodes after resolution");
 
         foreach(m; state.allModules) {
             removePrivateAliases(m);
@@ -61,7 +61,7 @@ private:
         foreach(a; aliases) {
             // NOTE: Leave public aliases so that they can still be accessed by the incremental builder
             if(a.access.isPrivate) {
-                log("\t alias %s", a.name);
+                state.logDCE("\t alias %s", a.name);
                 remove(a, m);
             }
         }
@@ -70,7 +70,7 @@ private:
         auto imports = new DynamicArray!Import;
         m.selectDescendents!Import(imports);
         foreach(imp; imports) {
-            log("\t import %s", imp.moduleName);
+            state.logDCE("\t import %s", imp.moduleName);
             remove(imp, m);
         }
     }
@@ -87,16 +87,16 @@ private:
 
         foreach(f; functions) {
             if(f.isImport) {
-                log("\t  proxy func %s", f.name);
+                state.logDCE("\t  proxy func %s", f.name);
                 remove(f, m);
             } else if(f.access.isPublic) {
                 // keep these
             } else if(f.isTemplateBlueprint) {
-                log("\t  template func %s", f.name);
+                state.logDCE("\t  template func %s", f.name);
                 remove(f, m);
             } else if(f.numRefs==0 && f.name!="new") {
             //} else if(f.numRefs==0 && (f.name!="new" || !f.isGlobal)) {
-                log("\t  unreferenced func %s", f);
+                state.logDCE("\t  unreferenced func %s", f);
 
                 if(f.isGlobal && f.access.isPrivate) {
                     warn(f, "Unreferenced function %s should have been removed during resolve phase".format(f));
@@ -120,7 +120,7 @@ private:
         foreach(s; getAllDeclaredStructs(m)) {
             if(s.isTemplateBlueprint) {
                 if(s.access.isPrivate) {
-                    log("\t  struct template blueprint %s", s.name);
+                    state.logDCE("\t  struct template blueprint %s", s.name);
                     remove(s, m);
                 }
             }

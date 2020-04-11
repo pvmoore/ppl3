@@ -14,7 +14,7 @@
             "group": "build"
         },
         {
-            "label": "**** Build then build projects/test ****",
+            "label": "**** Build projects/test ****",
             "type": "shell",
             "windows": {
                 "command": "chcp 65001 && dub run --build=debug --config=test --compiler=dmd --arch=x86_64 --parallel"
@@ -29,6 +29,18 @@
             },
             "problemMatcher": []
         },
+        {
+            "label": "**** RELEASE Build projects/test ****",
+            "type": "shell",
+            "windows": {
+                "command": "chcp 65001 && dub run --build=release --config=test --compiler=ldc2 --arch=x86_64 --parallel"
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        }
         {
             "label": "**** Run projects/test.exe ****",
             "type": "shell",

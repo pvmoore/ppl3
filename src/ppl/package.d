@@ -16,6 +16,7 @@ import ppl.build.ProjectBuilder;
 
 import ppl.config.Config;
 import ppl.config.ConfigReader;
+import ppl.config.Logging;
 
 import ppl.error.CompilationAborted;
 import ppl.error.CompileError;

@@ -13,9 +13,11 @@ private:
     Module module_;
     ResolveModule resolver;
     FoldUnreferenced foldUnreferenced;
+    IdentifierTargetFinder idTargetFinder;
 public:
     this(Module module_) {
-        this.module_ = module_;
+        this.module_        = module_;
+        this.idTargetFinder = new IdentifierTargetFinder(module_);
     }
     this(ResolveModule resolver) {
         this.resolver         = resolver;
@@ -23,49 +25,6 @@ public:
 
         this(resolver.module_);
     }
-    static struct Result {
-        union {
-            Variable var;
-            Function func;
-        }
-        bool isVar;
-        bool isFunc;
-
-        void set(Variable v) {
-            this.var   = v;
-            this.isVar = true;
-        }
-        void set(Function f) {
-            this.func   = f;
-            this.isFunc = true;
-        }
-        int line() {
-            return isVar ? var.line : isFunc ? func.line : -1;
-        }
-
-        bool found() { return isVar || isFunc; }
-    }
-    ///==================================================================================
-    Result find(string name, ASTNode node) {
-        Result res;
-
-        chat("  %s %s", name, node.id);
-
-        /// Check previous siblings at current level
-        foreach(n; node.prevSiblings()) {
-            isThisIt(name, n, res);
-            if(res.found) return res;
-        }
-
-        auto p = node.parent;
-        if(p.isComposite) p = p.previous();
-
-        /// Recurse up the tree
-        findRecurse(name, p, res);
-
-        return res;
-    }
-    ///==================================================================================
     void resolve(Identifier n) {
         assert(resolver);
 
@@ -141,100 +100,17 @@ public:
         }
     }
 private:
-    ///==================================================================================
-    void findRecurse(string name, ASTNode node, ref Result res) {
-
-        isThisIt(name, node, res);
-        if(res.found) return;
-
-        auto nid = node.id();
-
-        switch(nid) with(NodeID) {
-            case MODULE:
-            case TUPLE:
-            case STRUCT:
-                /// Check all variables at this level
-                foreach(n; node.children) {
-                    isThisIt(name, n, res);
-                    if(res.found) return;
-                }
-
-                if(nid==MODULE) return;
-
-                /// Go to module scope
-                findRecurse(name, node.getModule(), res);
-                return;
-            case LITERAL_FUNCTION:
-                if(!node.as!LiteralFunction.isLambda) {
-                    /// Go to containing struct if there is one
-                    auto ns = node.getAncestor!Struct();
-                    if(ns) {
-                        findRecurse(name, ns, res);
-                        return;
-                    }
-                }
-                /// Go to module scope
-                findRecurse(name, node.getModule(), res);
-                return;
-            default:
-                break;
-        }
-
-        /// Check variables that appear before this in the tree
-        foreach(n; node.prevSiblings()) {
-            isThisIt(name, n, res);
-            if(res.found) return;
-        }
-
-        findRecurse(name, node.parent, res);
-    }
-    void isThisIt(string name, ASTNode n, ref Result res) {
-
-        switch(n.id) with(NodeID) {
-            case COMPOSITE:
-                switch(n.as!Composite.usage) with(Composite.Usage) {
-                    case INNER_KEEP:
-                    case INNER_REMOVABLE:
-                        /// This scope is indented
-                        return;
-                    default:
-                        /// Treat children as if they were in the same scope
-                        foreach(n2; n.children) {
-                            isThisIt(name, n2, res);
-                            if(res.found) return;
-                        }
-                        break;
-                }
-                break;
-            case VARIABLE: {
-                auto v = n.as!Variable;
-                if(v.name==name) res.set(v);
-                break;
-            }
-            case PARAMETERS: {
-                auto v = n.as!Parameters.getParam(name);
-                if(v) res.set(v);
-                break;
-            }
-            case FUNCTION: {
-                auto f = n.as!Function;
-                if(f.name==name) res.set(f);
-                break;
-            }
-            default:
-                break;
-        }
-    }
     void findLocalOrGlobal(Identifier n) {
-        auto res = find(n.name, n);
-        if(!res.found) {
-            /// Ok to continue
+
+        auto res = idTargetFinder.find(n.name, n);
+
+        if(res is null) {
             module_.addError(n, "identifier '%s' not found".format(n.name), true);
             return;
         }
 
-        if(res.isFunc) {
-            auto func = res.func;
+        if(res.isA!Function) {
+            auto func = res.as!Function;
 
             module_.buildState.moduleRequired(func.moduleName);
 
@@ -248,7 +124,7 @@ private:
                 n.target.set(func);
             }
         } else {
-            Variable var = res.isVar ? res.var : null;
+            Variable var = res.as!Variable;
 
             if(var.isStructVar() || var.isClassVar()/* && !var.isStatic*/) {
 

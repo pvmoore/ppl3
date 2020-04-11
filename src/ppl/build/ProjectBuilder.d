@@ -73,8 +73,7 @@ public:
 private:
     void optimiseModules() {
         if(!config.enableOptimisation) return;
-        dd("[✓] optimise");
-        log("Optimising");
+        logState("[✓] optimise");
         foreach(m; modules.values) {
             optimiser.optimise(m);
             if(config.collectOutput) {
@@ -83,7 +82,7 @@ private:
         }
     }
     void combineModules() {
-        dd("[✓] combining");
+        logState("[✓] combining");
         auto otherModules = allModules
                                 .filter!(it=>it.nid != mainModule.nid)
                                 .map!(it=>it.llvmValue)
@@ -106,8 +105,7 @@ private:
         writeASM(llvmWrapper, mainModule);
     }
     bool link() {
-        dd("[✓] linking");
-        log("Linking");
+        logState("[✓] linking");
         return linker.link(mainModule);
     }
 }

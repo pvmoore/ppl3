@@ -7,6 +7,7 @@ const DEBUG = false;
 final class GenerateModule {
 private:
     Module module_;
+    BuildState state;
     StopWatch watch;
     GenerateBinary genBinary;
     GenerateLiteral genLiteral;
@@ -30,6 +31,7 @@ public:
 
     this(Module module_, LLVMWrapper llvm) {
         this.module_     = module_;
+        this.state       = module_.buildState;
         this.llvm        = llvm;
         this.builder     = llvm.builder;
         this.genBinary   = new GenerateBinary(this);
@@ -47,9 +49,7 @@ public:
     }
     bool generate() {
         watch.start();
-        log("Generating IR for module %s", module_.canonicalName);
-
-        static if(DEBUG) dd("Generating IR for module", module_.canonicalName);
+        state.logGen("Generating IR for module %s", module_.canonicalName);
 
         this.lhs = null;
         this.rhs = null;
@@ -438,7 +438,7 @@ public:
         foreach(LiteralString[] array; module_.getLiteralStrings()) {
             /// create a global string for only one of these
             auto s = array[0];
-            log("Generating string literal decl ... %s", s);
+            state.logGen("Generating string literal decl ... %s", s);
             auto str = constString(s.value);
             auto g   = module_.llvmValue.addGlobal(str.getType);
             g.setInitialiser(str);
@@ -548,16 +548,16 @@ public:
         return rhs;
     }
     bool verify() {
-        log("Verifying %s", module_.canonicalName);
+        state.logGen("Verifying %s", module_.canonicalName);
         if(!module_.llvmValue.verify()) {
-            log("=======================================");
+            state.logGen("=======================================");
             module_.llvmValue.dump();
-            log("=======================================");
-            log("module %s is invalid", module_.canonicalName);
+            state.logGen("=======================================");
+            state.logGen("module %s is invalid", module_.canonicalName);
             //llvmmod.verify();
             return false;
         }
-        log("finished verifying");
+        state.logGen("finished verifying");
         return true;
     }
 }

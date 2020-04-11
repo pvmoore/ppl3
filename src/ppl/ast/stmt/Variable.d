@@ -10,7 +10,7 @@ import ppl.internal;
 /// Variable
 ///     Initialiser
 ///
-final class Variable : Statement {
+final class Variable : Statement, VariableOrFunction {
     Type type;
     string name;
     bool isConst;

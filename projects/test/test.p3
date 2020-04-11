@@ -105,6 +105,12 @@ fn testing() {
 
     testClasses()
 
+	int a = 0
+	
+	loop(var i = 0; i<10; i+=1) {
+	
+		//
+	}
 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,14 +218,14 @@ pub fn main() {
         //float4 v4
         //float8 v8   
     }
-    const testInnerImport = || {     
+    const testInnerImport = || {      
         import imports::imports3 
 
         assert 77 == i3func()
         I3Object obj = I3Object()    
     }  
 
-    testGlobals()   
+    testGlobals()    
     test0()
     test1()
     test2()

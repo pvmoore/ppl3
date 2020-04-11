@@ -37,7 +37,9 @@ import ppl.Mangler;
 import ppl.ppl3;
 import ppl.global;
 import ppl.Operator;
+import ppl.Position;
 import ppl.Target;
+import ppl.VariableOrFunction;
 
 import ppl.ast.Parameters;
 import ppl.ast.Placeholder;
@@ -151,6 +153,7 @@ import ppl.resolve.misc.FunctionFinder;
 import ppl.resolve.misc.ImportFinder;
 import ppl.resolve.misc.OverloadCollector;
 import ppl.resolve.misc.TypeFinder;
+import ppl.resolve.misc.IdentifierTargetFinder;
 
 import ppl.templates.blueprint;
 import ppl.templates.ImplicitTemplates;

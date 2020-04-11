@@ -30,6 +30,9 @@ public:
     bool enableOptimisation = true;
     bool fastMaths          = true;
 
+    /// Logging options
+    ulong loggingFlags = Logging.HEADER | Logging.STATE | Logging.STATS;
+
     /// Link options
     bool enableLink  = true;
     string subsystem = "console";
@@ -57,6 +60,7 @@ public:
     bool isRelease() { return mode==Mode.RELEASE; }
     string getMainModuleCanonicalName() { return mainModuleCanonicalName; }
     Include[] getIncludes() { return includes.values; }
+    bool shouldLog(Logging flags) { return (loggingFlags & flags) != 0; }
 
     string getEntryFunctionName() {
         if(subsystem=="console") return "main";

@@ -2,7 +2,7 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.42.0";
+const string VERSION = "3.43.0";
 
 /*
 
@@ -15,11 +15,12 @@ const string VERSION = "3.42.0";
 
         - Use fast math option when generating code
 
-        - Maybe never fold functions or structs. Remove them in DCE after CheckModule has run
+        - Add class - make structs implicitly packed pods? Remove struct constructors?
 
-        - Add class - make structs implicitly packed pods. Remove struct constructors.
+3.43.0 - Refactor logging.
 
-3.42.0 - Add class.
+3.42.0 - Add class - needs more work.
+         Add server and incremental builder - needs more work.
 
 3.41.0 - Change attributes syntax to --attribute.
 

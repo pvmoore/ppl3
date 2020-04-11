@@ -6,12 +6,15 @@ module server;
  *  - Provide json errors
  *  - Provide suggestions
  */
-import ppl;
+import ppl.internal;
 import std.stdio : writefln;
 import std.socket;
 import std.algorithm.iteration : filter;
 import std.range : array;
 import std.format : format;
+import std.base64 : Base64URLNoPadding;
+import std.json : JSONValue;
+import std.conv : to;
 import common : From;
 
 void main(string[] argv) {
@@ -20,7 +23,14 @@ void main(string[] argv) {
 
     auto server = new Server(port);
 
-    server.startIncrementalBuilder(["directory":""]);
+
+    char[1024] buf;
+
+
+    writefln("value = %s", Base64URLNoPadding.encode(cast(ubyte[])"value", buf[]));
+
+    auto req = Request("GET", "/watch", "HTTP/1.1", ["directory":""]);
+    server.startIncrementalBuilder(req);
 
     server.startListening();
 
@@ -36,8 +46,21 @@ struct Request {
     string[string] headers;
     string content;
 
+    string getQueryValue(string key) {
+        auto ptr = key in query;
+        if(ptr) return *ptr;
+        return "";
+    }
+    string getDecodedQueryValue(string key) {
+        return cast(string)Base64URLNoPadding.decode(getQueryValue(key));
+    }
+    int getQueryIntValue(string key, int default_) {
+        string value = getQueryValue(key);
+        return value.length>0 ? value.to!int : default_;
+    }
+
     string toString() {
-        return "[Request %s %s %s ?%s (content = %s chars)]".format(method, protocol, path, query, content.length);
+        return "[Request %s %s %s query=%s (content = %s chars)]".format(method, protocol, path, query, content.length);
     }
 }
 
@@ -50,7 +73,8 @@ private:
     bool isRunning = true;
     IncrementalBuilder builder;
 
-    Module[] modules;
+    Module[string] parsedModules;
+    Module[string] resolvedModules;
 public:
     this(ushort port) {
         this.port = port;
@@ -94,12 +118,21 @@ public:
     }
     // IBuildStateListener
     override void buildFinished(BuildState state) {
-        writefln("...buildFinished");
+
+        foreach(m; state.allModules()) {
+            if(m.isParsed) {
+                parsedModules[m.canonicalName] = m;
+            }
+            if(m.resolver.isResolved) {
+                resolvedModules[m.canonicalName] = m;
+            }
+        }
+        writefln("%s resolved, %s parsed", resolvedModules.length, parsedModules.length);
 
         if(state.hasErrors()) {
 
         } else {
-            
+
         }
     }
 private:
@@ -123,17 +156,19 @@ private:
                 shutdown();
                 break;
             case "/watch":
-                startIncrementalBuilder(req.query);
+                startIncrementalBuilder(req);
                 break;
             case "/problems":
-                returnErrors();
+                returnErrors(req);
                 break;
             case "/suggestions":
-                returnSuggestions(req.query);
+                response = returnSuggestions(req);
                 break;
             default:
                 break;
         }
+
+        writefln("returning: %s", response);
 
         socket.send("HTTP/1.1 200 OK\r\n");
         socket.send("Connection: close\r\n");
@@ -205,14 +240,14 @@ private:
     /**
      *  ?directory=
      */
-    void startIncrementalBuilder(string[string] query) {
+    void startIncrementalBuilder(Request req) {
 
         // Stop any existing builder
         if(this.builder) {
             this.builder.shutdown();
         }
 
-        string directory  = query["directory"];
+        string directory  = req.getDecodedQueryValue("directory");
 
         directory = "\\pvmoore\\d\\apps\\ppl3\\projects\\test\\";
 
@@ -233,19 +268,108 @@ private:
         config.writeIR  = false;
         config.writeJSON = false;
 
+        config.loggingFlags &= ~Logging.STATE;
+
         writefln("\n%s", config.toString());
 
         this.builder = ppl.createIncrementalBuilder(config);
         this.builder.addListener(this);
 
     }
-    void returnErrors() {
+    void returnErrors(Request req) {
 
     }
     /**
      *  ?prefix=&module=&line=&column=
+     *
+     *  returns:
+     *  {
+     *      "suggestions" : [
+     *          {
+     *              "name" : "",        //
+     *              "type" : "",        // eg. int
+     *              "parent" : ""       // eg. StructName
+     *          }
+     *      ]
+     *  }
      */
-    void returnSuggestions(string[string] query) {
+    string returnSuggestions(Request req) {
 
+        string prefix  = req.getDecodedQueryValue("prefix");
+        string module_ = req.getDecodedQueryValue("module");
+        int line       = req.getQueryIntValue("line", -1);
+        int column     = req.getQueryIntValue("column", -1);
+
+        writefln("suggestions requested for module %s [%s:%s] prefix=%s", module_, line, column, prefix);
+
+        if(prefix.length > 0 && module_.length > 0) {
+
+            Module* ptr = module_ in resolvedModules;
+            if(!ptr) {
+                ptr = module_ in parsedModules;
+            }
+            if(ptr) {
+                Module m = *ptr;
+                writefln("Inspecting module %s%s", m, m.isResolved ? " (resolved)" : "");
+
+                auto position = Position(line, column);
+
+                Container con = m.getContainerAtPosition(position);
+                if(con is null) {
+                    writefln("\tNo container found");
+                } else {
+
+
+                    if(con.isFunction()) {
+                        auto func = con.as!LiteralFunction.getFunction;
+                        writefln("\tFunction %s", func.name);
+
+                        auto node = func.findNearestTo(position);
+                        writefln("\tNearest node = %s", node);
+
+                    } else if(con.isModule()) {
+                        writefln("\tModule");
+
+
+                    } else if(con.isTuple()) {
+                        writefln("\tTuple");
+
+
+                    } else {
+                        // Struct or Class
+                        auto struct_ = con.as!Struct;
+                        writefln("\tStruct or Class %s", struct_.name);
+
+
+                    }
+                }
+
+                // Find the nearest node
+                // auto stmts = m.getStatementsOnLine(line);
+                // writefln("Found %s statements on line %s", stmts.length, line);
+                // foreach(stmt; stmts) {
+                //     writefln("\t%s", stmt);
+                // }
+
+
+                // m.resolver.resolveIdentifier(prefix)
+
+
+                // TypeFinder
+
+                // FunctionFinder
+
+                // ImportFinder
+
+                // IdentifierTargetFinder  find(name, node)
+
+            }
+        }
+
+        JSONValue suggestions = [ "one" ];
+
+        JSONValue json = [ "suggestions" : suggestions ];
+
+        return json.toString();
     }
 }

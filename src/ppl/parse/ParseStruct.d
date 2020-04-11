@@ -59,7 +59,7 @@ public:
                     n.detach();
 
                     n = ns;
-                    log("Re-using redefined struct %s", n.name);
+                    module_.buildState.logParse("Re-using redefined struct %s", n.name);
 
                 } else {
                     module_.addError(n, "Struct %s already defined".format(t.value), true);
@@ -143,6 +143,11 @@ public:
             addCallToDefaultConstructor(n);
             moveInitCodeInsideDefaultConstructor(n);
         }
+
+        // Set endLine and endColumn
+        auto tok = t.peek(-1);
+        n.endLine = tok.line;
+        n.endColumn = tok.column;
     }
 private:
     /// "(" variables ")"

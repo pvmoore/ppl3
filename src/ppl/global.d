@@ -13,7 +13,7 @@ __gshared int g_nodeid      = 1;
 __gshared int g_callableID  = 1;
 __gshared int g_errorIDs    = 1;
 
-__gshared FileLogger g_logger;
+//__gshared FileLogger g_logger;
 
 __gshared int[string] g_builtinTypes;
 __gshared string[int] g_typeToString;
@@ -21,6 +21,8 @@ __gshared string[int] g_typeToString;
 __gshared Operator[TT] g_ttToOperator;
 
 __gshared Token NO_TOKEN    = Token(TT.NONE, null, -1, -1, -1);
+
+enum INVALID_POSITION = Position(-1,-1);
 
 __gshared Type TYPE_UNKNOWN = new BasicType(Type.UNKNOWN);
 __gshared Type TYPE_BOOL    = new BasicType(Type.BOOL);
@@ -42,7 +44,7 @@ shared static ~this() {
 
 shared static this() {
     g_llvmWrapper = new LLVMWrapper;
-    g_logger = new FileLogger(".logs/log.log");
+    //g_logger = new FileLogger(".logs/log.log");
 
     g_builtinTypes["var"]    = Type.UNKNOWN;
     g_builtinTypes["bool"]   = Type.BOOL;

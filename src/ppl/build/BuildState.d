@@ -202,12 +202,10 @@ public:
     void clearState(Module m, Set!string hasBeenReset) {
         if(hasBeenReset.contains(m.canonicalName)) return;
         hasBeenReset.add(m.canonicalName);
-        writefln("clearState(%s)", m.canonicalName);
 
         m.clearState();
 
         Module[] refs = allModulesThatReference(m);
-        writefln("\tModules referencing %s : %s", m.canonicalName, refs);
         foreach(r; refs) {
             clearState(r, hasBeenReset);
         }
@@ -237,6 +235,36 @@ public:
         receiver("Total time.............. %.2f ms".format(getElapsedNanos * 1e-6));
         receiver("Memory used ............ %.2f MB".format(GC.stats.usedSize / (1024*1024.0)));
     }
+    void logParse(A...)(string fmt, A args) {
+        if(config.shouldLog(Logging.PARSE)) {
+            writefln(format(fmt, args));
+        }
+    }
+    void logResolve(A...)(string fmt, A args) {
+        if(config.shouldLog(Logging.RESOLVE)) {
+            writefln(format(fmt, args));
+        }
+    }
+    void logState(A...)(string fmt, A args) {
+        if(config.shouldLog(Logging.STATE)) {
+            writefln(format(fmt, args));
+        }
+    }
+    void logDCE(A...)(string fmt, A args) {
+        if(config.shouldLog(Logging.DCE)) {
+            writefln(format(fmt, args));
+        }
+    }
+    void logGen(A...)(string fmt, A args) {
+        if(config.shouldLog(Logging.GENERATE)) {
+            writefln(format(fmt, args));
+        }
+    }
+    void log(A...)(Logging flags, string fmt, A args) {
+        if(config.shouldLog(flags)) {
+            writefln(format(fmt, args));
+        }
+    }
 private:
     Module createModule(string canonicalName, bool withSrc = false, string src = null) {
         auto m = new Module(canonicalName, llvmWrapper, this);
@@ -260,20 +288,16 @@ private:
     }
 protected:
     void parseAndResolve() {
-        dd("[✓] parseAndResolve");
+        logState("[✓] parseAndResolve");
 
         auto prevUnresolved = new Set!int;
         bool stalemate      = false;
 
         for(int loop=1; loop<100; loop++) {
-            log("===================================================== Loop %s", loop);
 
             /// Process all pending tasks
             while(tasksOutstanding()) {
                 auto moduleName = getNextTask();
-
-                //dd(t);
-                log("Executing %s (%s queued)", moduleName, tasksRemaining());
 
                 Module mod = getOrCreateModule(moduleName);
 
@@ -282,7 +306,6 @@ protected:
                     mod.parser.parse();
                 }
             }
-            log("All current tasks completed");
 
             bool nodesModified = false;
             auto unresolved    = new Set!int;
@@ -298,7 +321,7 @@ protected:
 
             if(!nodesModified && unresolved==prevUnresolved) {
                 if(stalemate) {
-                    log("Couldn't make any further progress");
+                    writefln("Couldn't make any further progress");
                     break;
                 }
                 stalemate = true;
@@ -314,7 +337,6 @@ protected:
         }
     }
     void parseModules() {
-        log("parseModules");
         foreach(m; allModules) {
             if(!m.isParsed) {
                 m.parser.parse();
@@ -322,7 +344,6 @@ protected:
         }
     }
     void runResolvePass(Set!int unresolved, ref bool nodesModified, bool resolveStalemate) {
-        log("Running resolvers...");
         assert(nodesModified==false);
         assert(unresolved.length==0);
 
@@ -337,16 +358,16 @@ protected:
             );
 
             if(resolved) {
-                log("\t.. %s is resolved", m.canonicalName);
+                //log("\t.. %s is resolved", m.canonicalName);
             } else {
-                log("\t.. %s is unresolved", m.canonicalName);
+                //log("\t.. %s is unresolved", m.canonicalName);
                 numUnresolvedModules++;
             }
         }
-        log("There are %s unresolved modules, %s unresolved nodes", numUnresolvedModules, unresolved.length);
+        //log("There are %s unresolved modules, %s unresolved nodes", numUnresolvedModules, unresolved.length);
     }
     void allModulesResolved() {
-        dd("[✓] All modules resolved");
+        logState("[✓] All modules resolved");
          Module largestM;
         foreach(m; modules.values) {
             if(largestM is null || m.resolver.getCurrentIteration > largestM.resolver.getCurrentIteration) {
@@ -354,10 +375,10 @@ protected:
             }
             //dd("  [%s] %s".format(m.canonicalName, m.resolver.getCurrentIteration));
         }
-        dd("  [%s] %s".format(largestM.canonicalName, largestM.resolver.getCurrentIteration));
+        //logState("  [%s] %s".format(largestM.canonicalName, largestM.resolver.getCurrentIteration));
     }
     void removeUnreferencedNodesAfterResolution() {
-        dd("[✓] remove unreferenced after resolution");
+        logState("[✓] remove unreferenced after resolution");
 
         dce.removeUnreferencedModules();
         dce.removeUnreferencedNodesAfterResolution();
@@ -367,24 +388,22 @@ protected:
     /// - Call module new() functions at start of program entry
     ///
     void afterResolution() {
-        dd("[✓] after resolution");
+        logState("[✓] after resolution");
         new AfterResolution(this).process(modules.values);
     }
     void semanticCheck() {
-        log("Running semantic checks...");
-        dd("[✓] semantic");
+        logState("[✓] semantic");
         foreach(m; allModules) {
             //dd(m.canonicalName);
             m.checker.check();
         }
     }
     void afterSemantic() {
-        dd("[✓] after semantic");
+        logState("[✓] after semantic");
         new AfterSemantic(this).process();
     }
     bool generateIR() {
-        dd("[✓] generating IR");
-        log("Generating IR");
+        logState("[✓] generating IR");
         bool allOk = true;
         foreach(m; allModules) {
             allOk &= m.gen.generate();
@@ -416,7 +435,7 @@ protected:
         }
     }
     void dumpAST() {
-        dd("[✓] dumpAST");
+        logState("[✓] dumpAST");
         foreach(m; allModules) {
             m.resolver.writeAST();
         }
