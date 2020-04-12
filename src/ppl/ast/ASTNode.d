@@ -73,14 +73,6 @@ T makeNode(T)(Tokens t) {
     assert(n.children);
     return n;
 }
-T makeNode(T)(ASTNode p) {
-    T n      = new T;
-    n.nid    = g_nodeid++;
-    n.line   = p ? p.line   : -1;
-    n.column = p ? p.column : -1;
-    assert(n.children);
-    return n;
-}
 bool isAs(inout ASTNode n)              { return n.id()==NodeID.AS; }
 bool isBinary(inout ASTNode n)          { return n.id()==NodeID.BINARY; }
 bool isCall(inout ASTNode n)            { return n.id()==NodeID.CALL; }
@@ -119,12 +111,13 @@ public:
     Attribute[] attributes;
     ASTNode parent;
 
-    Position startPos = INVALID_POSITION;
-    Position endPos  = INVALID_POSITION;
-    int line   = -1;
-    int column = -1;
-    int endLine = -1;
-    int endColumn = -1;
+    Position startPos = INVALID_POSITION;   // code start position
+    Position endPos   = INVALID_POSITION;   // code end position
+
+    final int line()              { return startPos.line; }
+    final void line(int line)     { this.startPos.line = line; }
+    final int column()            { return startPos.column; }
+    final void column(int column) { this.startPos.column = column; }
 
     int nid;
     int modIteration;   /// Set to the current resolver iteration when node is modified in some way
@@ -137,6 +130,22 @@ public:
     abstract NodeID id() const;
     abstract bool isResolved();
     abstract Type getType();
+
+    final bool isEthereal() {
+        return this.id.isOneOf(NodeID.COMPOSITE, NodeID.CONSTRUCTOR, NodeID.INITIALISER, NodeID.PARAMETERS);
+    }
+
+    final Position getEndPosition() {
+        if(endPos.isValid()) return endPos;
+
+        if(!isEthereal()) dd("endPos is not set", id);
+
+        auto last_ = last();
+
+        this.endPos = last_ !is null ? last_.getEndPosition() : this.endPos;
+
+        return endPos;
+    }
 
 
     final bool hasChildren() const { return children.length > 0; }
@@ -156,13 +165,6 @@ public:
     final int getDepth() {
         if(this.id==NodeID.MODULE) return 0;
         return parent.getDepth() + 1;
-    }
-    // TODO - this isn't quite accurate
-    final Position getEndPosition() {
-        //dd("getEndPosition", id, last());
-        if(endLine!=-1 && endColumn!=-1) return Position(endLine, endColumn);
-        auto last_ = last();
-        return last_ !is null ? last_.getEndPosition() : Position(line, column);
     }
     final ASTNode getLogicalParent() {
         if(parent.isA!Placeholder) return parent.getLogicalParent();
@@ -264,6 +266,11 @@ public:
         }
         return -1;
     }
+    /** Set endPos from the previous token */
+    final void setEndPos(Tokens t) {
+        auto p = t.peek(-1);
+        this.endPos = p.end;
+    }
     //=================================================================================
     final ASTNode previous() {
         int i = index();
@@ -300,14 +307,24 @@ public:
     //================================================================================= Dump
     final void dumpToConsole(string indent="") {
         //dd(this.id);
-        dd("[% 4s] %s".format(this.line+1, indent ~ this.toString()));
+        dd("[%·4s] %s".format(this.line+1, indent ~ this.toString()));
         foreach(ch; this.children) {
             ch.dumpToConsole(indent ~ "   ");
         }
     }
     final void dump(FileLogger l, string indent="") {
         //debug if(getModule.canonicalName=="test_classes") dd(this.id, "line", line);
-        l.log("[% 4s] %s", this.line+1, indent ~ this.toString());
+        string from;
+        string to;
+        if(line != -1) {
+            from = rightJustify("%s:%02s".format(line+1, column+1), 6, ' ');
+            to   = leftJustify("%s:%02s".format(endPos.line+1, endPos.column+1), 6, ' ');
+        } else {
+            from = "      ";
+            to   = "      ";
+        }
+
+        l.log("[%s .. %s] %s", from, to, indent ~ this.toString());
         foreach(ch; children) {
             ch.dump(l, indent ~ "   ");
         }
@@ -323,18 +340,16 @@ public:
 
         ASTNode n = null;
 
-        //if(!this.isA!Container) {
-            auto start = Position(line, column);
-            auto end   = getEndPosition();
-            dd(this.id, "findNearestTo", pos, start, end);
+        auto start = Position(line, column);
+        auto end   = getEndPosition();
+        dd(this.id, "findNearestTo", pos, start, end);
 
-            if(start != INVALID_POSITION && end != INVALID_POSITION) {
-                if(start.isBefore(pos) && !end.isBefore(pos)) {
-                    n = this;
-                    dd("  %s %s %s".format(n.id, start, end));
-                }
+        if(start != INVALID_POSITION && end != INVALID_POSITION) {
+            if(start.isBefore(pos) && !end.isBefore(pos)) {
+                n = this;
+                dd("  %s %s %s".format(n.id, start, end));
             }
-        //}
+        }
 
         foreach(ch; children) {
             auto n2 = ch.findNearestTo(pos);

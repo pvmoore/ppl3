@@ -76,7 +76,7 @@ public:
         typeFinder        = new TypeFinder(this);
         literalParser     = new ParseLiteral(this);
 
-        moduleNameLiteral = makeNode!LiteralString(this);
+        moduleNameLiteral = makeNode!LiteralString;
         moduleNameLiteral.value = canonicalName;
         addLiteralString(moduleNameLiteral);
     }
@@ -127,10 +127,6 @@ public:
     void appendTokensFromTemplate(ASTNode afterNode, Token[] tokens) {
         parser.appendTokensFromTemplate(afterNode, tokens);
         resolver.setModified();
-    }
-
-    NodeBuilder builder(ASTNode n) {
-        return nodeBuilder.forNode(n);
     }
 
     void addError(ASTNode node, string msg, bool canContinue) {

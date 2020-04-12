@@ -211,7 +211,7 @@ private:
             if(t.type == TT.EQUALS) {
                 t.next;
 
-                auto ini = makeNode!Initialiser(t);
+                auto ini = makeNode!Initialiser;
                 ini.var = v;
                 v.add(ini);
 
@@ -235,5 +235,7 @@ private:
             t.prev;
             module_.addError(v, "Type %s not found".format(t.value), false);
         }
+
+        v.setEndPos(t);
     }
 }

@@ -168,7 +168,7 @@ private:
         assert(n.leftType.isValue);
         assert(n.rightType.isValue);
 
-        auto builder = module_.builder(n);
+        auto builder = module_.nodeBuilder;
 
         auto call = builder.call("memcmp", null);
         call.add(builder.addressOf(n.left()));
@@ -181,7 +181,7 @@ private:
         foldUnreferenced.fold(n, ne);
     }
     void rewriteToBoolEquals(Is n) {
-        auto builder = module_.builder(n);
+        auto builder = module_.nodeBuilder;
 
         auto op = n.negate ? Operator.BOOL_NE : Operator.BOOL_EQ;
 
@@ -190,7 +190,7 @@ private:
         foldUnreferenced.fold(n, binary);
     }
     void rewriteToEnumMemberValues(Is n, Enum enum_) {
-        auto builder = module_.builder(n);
+        auto builder = module_.nodeBuilder;
         auto lemv    = builder.enumMemberValue(enum_, n.left());
         auto remv    = builder.enumMemberValue(enum_, n.right());
 

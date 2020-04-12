@@ -24,13 +24,16 @@ public:
     ///
     void parseLambda(Tokens t, ASTNode parent) {
 
-        LiteralFunction lit = makeNode!LiteralFunction(t);
-        parent.add(lit);
+        auto lambda = makeNode!Lambda(t);
+        parent.add(lambda);
 
-        auto params = makeNode!Parameters(t);
+        LiteralFunction lit = makeNode!LiteralFunction(t);
+        lambda.add(lit);
+
+        auto params = makeNode!Parameters;
         lit.add(params);
 
-        auto type   = makeNode!FunctionType(t);
+        auto type   = makeNode!FunctionType;
         type.params = params;
         lit.type = Pointer.of(type, 1);
 
@@ -39,6 +42,7 @@ public:
         if(var) {
             name ~= "_" ~ var.name;
         }
+        lambda.name = name;
 
 
         // Params |
@@ -53,6 +57,8 @@ public:
         }
         t.skip(TT.PIPE);
 
+        
+
         /// {
         t.skip(TT.LCURLY);
 
@@ -64,13 +70,11 @@ public:
         /// }
         t.skip(TT.RCURLY);
 
-        auto lambda = makeNode!Lambda(t);
-        lambda.name = name;
-        lambda.add(lit);
-
         module_.addLambda(lambda);
+        //parent.add(lambda);
 
-        parent.add(lambda);
+        lit.setEndPos(t);
+        lambda.setEndPos(t);
     }
     ///
     /// literal_function ::= "{" { statement } "}"
@@ -92,6 +96,8 @@ public:
 
         /// }
         t.skip(TT.RCURLY);
+
+        lit.setEndPos(t);
     }
     ///
     /// literal_string ::= prefix quote { char } quote
@@ -100,7 +106,7 @@ public:
     ///
     void parseLiteralString(Tokens t, ASTNode parent) {
 
-        auto composite = makeNode!Composite(t);
+        auto composite = makeNode!Composite;
         parent.add(composite);
 
         auto s = makeNode!LiteralString(t);
@@ -124,10 +130,10 @@ public:
 
         module_.addLiteralString(s);
 
-        auto b = module_.builder(parent);
+        auto b = module_.nodeBuilder;
 
         /// Create an alloca
-        auto var = makeNode!Variable(t);
+        auto var = makeNode!Variable;
         var.name = module_.makeTemporary("str");
         var.type = typeFinder.findType("string", parent);
         composite.add(var);
@@ -149,6 +155,8 @@ public:
         if(t.type==TT.STRING && t.onSameLine) {
             errorBadSyntax(module_, t, "These strings need to be concatenated");
         }
+
+        s.setEndPos(t);
     }
     ///
     /// literal_number |
@@ -172,5 +180,7 @@ public:
         } else {
             assert(false, "How did we get here?");
         }
+
+        e.setEndPos(t);
     }
 }

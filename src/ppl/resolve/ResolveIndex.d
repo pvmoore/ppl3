@@ -19,7 +19,7 @@ public:
 
             auto ns = n.exprType.getStruct;
 
-            auto b = module_.builder(n);
+            auto b = module_.nodeBuilder;
 
             if(n.parent.isBinary) {
                 auto bin = n.parent.as!Binary;

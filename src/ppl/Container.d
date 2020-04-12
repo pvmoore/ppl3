@@ -23,11 +23,10 @@ interface Container {
         assert(n.isA!LiteralFunction || n.isA!Module || n.isA!Struct || n.isA!Class || n.isA!Tuple);
 
         if(n.line==-1 || n.column==-1) return false;
-        if(n.endLine==-1 || n.endColumn==-1) return false;
+        if(n.endPos.isInvalid()) return false;
 
         auto start = Position(n.line, n.column);
-        auto end   = Position(n.endLine, n.endColumn);
 
-        return !them.isBefore(start) && !them.isAfter(end);
+        return !them.isBefore(start) && !them.isAfter(n.endPos);
     }
 }

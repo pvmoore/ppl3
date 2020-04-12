@@ -12,5 +12,4 @@ final class Placeholder : ASTNode {
     override bool isResolved() { return false; }
     override NodeID id() const { return NodeID.PLACEHOLDER; }
     override Type getType()    { return hasChildren() ? first().getType() : TYPE_VOID; }
-
 }

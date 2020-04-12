@@ -47,7 +47,7 @@ final class Call : Expression {
         assert(this_);
         assert(!implicitThisArgAdded);
 
-        auto b = getModule().builder(this);
+        auto b = getModule().nodeBuilder;
         auto id = b.identifier(this_);
         this.insertAt(0, id);
 

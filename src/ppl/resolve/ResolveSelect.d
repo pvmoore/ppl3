@@ -53,7 +53,7 @@ public:
             If prev;
 
             foreach(c; n.cases()) {
-                If if_ = makeNode!If(n);
+                If if_ = makeNode!If;
                 if(first is null) first = if_;
 
                 if(prev) {
@@ -87,7 +87,7 @@ public:
             if(n.valueType.isBool) {
 
                 auto val = n.valueExpr();
-                auto as  = makeNode!As(n);
+                auto as  = makeNode!As;
 
                 foldUnreferenced.fold(val, as);
 

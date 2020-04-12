@@ -17,7 +17,7 @@ final class LiteralNull : Expression, CompileTimeConstant {
 
     /// <CompileTimeConstant>
     LiteralNull copy() {
-        auto c = makeNode!LiteralNull(this);
+        auto c = makeNode!LiteralNull;
         c.type = type;
         return c;
     }

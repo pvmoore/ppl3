@@ -72,7 +72,7 @@ private:
             return a.getPriority > b.getPriority;
         };
 
-        auto builder = mainModule.builder(entry);
+        auto builder = mainModule.nodeBuilder;
 
         /// Find __runModuleConstructors function
         auto rmcFuncs = mainModule.getFunctions("__runModuleConstructors");

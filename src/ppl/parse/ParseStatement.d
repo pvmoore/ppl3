@@ -337,14 +337,14 @@ private: //=====================================================================
 
             /// For each exported function and type, add proxies to this module
             foreach(f; imp.mod.parser.publicFunctions.values) {
-                auto fn       = makeNode!Function(t);
+                auto fn       = makeNode!Function;
                 fn.name       = f;
                 fn.moduleName = imp.moduleName;
                 fn.isImport   = true;
                 imp.add(fn);
             }
             foreach(d; imp.mod.parser.publicTypes.values) {
-                auto def        = Alias.make(t);
+                auto def        = Alias.make();
                 def.name        = d;
                 def.type        = TYPE_UNKNOWN;
                 def.moduleName  = imp.moduleName;
@@ -355,6 +355,8 @@ private: //=====================================================================
             if(t.type==TT.COMMA) {
                 t.next;
             } else break;
+
+            imp.setEndPos(t);
         }
     }
     ///
@@ -383,6 +385,8 @@ private: //=====================================================================
 
         alias_.isImport   = false;
         alias_.moduleName = module_.canonicalName;
+
+        alias_.setEndPos(t);
     }
     ///
     /// return_statement ::= "return" [ expression ]
@@ -404,6 +408,8 @@ private: //=====================================================================
         if(t.type!=TT.RCURLY && t.get().line==line) {
             exprParser().parse(t, r);
         }
+
+        r.setEndPos(t);
     }
     void parseAssert(Tokens t, ASTNode parent) {
         t.skip("assert");
@@ -412,6 +418,8 @@ private: //=====================================================================
         parent.add(a);
 
         exprParser().parse(t, a);
+
+        a.setEndPos(t);
     }
     void parseBreak(Tokens t, ASTNode parent) {
 
@@ -419,12 +427,16 @@ private: //=====================================================================
         parent.add(b);
 
         t.skip("break");
+
+        b.setEndPos(t);
     }
     void parseContinue(Tokens t, ASTNode parent) {
         auto c = makeNode!Continue(t);
         parent.add(c);
 
         t.skip("continue");
+
+        c.setEndPos(t);
     }
     void parseLoop(Tokens t, ASTNode parent) {
 
@@ -486,6 +498,8 @@ private: //=====================================================================
             parse(t, body_);
         }
         t.skip(TT.RCURLY);
+
+        loop.setEndPos(t);
     }
     void parseEnum(Tokens t, ASTNode parent) {
 
@@ -528,12 +542,16 @@ private: //=====================================================================
                 exprParser().parse(t, value);
             }
 
+            value.setEndPos(t);
+
             t.expect(TT.COMMA, TT.RCURLY);
             if(t.type==TT.COMMA) t.next;
         }
 
         /// }
         t.skip(TT.RCURLY);
+
+        e.setEndPos(t);
     }
 }
 

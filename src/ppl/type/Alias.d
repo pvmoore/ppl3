@@ -33,6 +33,12 @@ public:
     bool isInnerType()     { return (kind & Kind.INNER_TYPE) != 0; }
     bool isTemplateProxy() { return (kind & Kind.TEMPLATE_PROXY) !=0; }
 
+    static Alias make(Kind kind = Kind.STANDARD) {
+        auto a = makeNode!Alias;
+        a.type = TYPE_UNKNOWN;
+        a.kind = kind;
+        return a;
+    }
     static Alias make(Tokens t, Kind kind = Kind.STANDARD) {
         auto a = makeNode!Alias(t);
         a.type = TYPE_UNKNOWN;
@@ -40,7 +46,7 @@ public:
         return a;
     }
     static Alias make(ASTNode n, Kind kind = Kind.STANDARD) {
-        auto a = makeNode!Alias(n);
+        auto a = makeNode!Alias;
         a.type = TYPE_UNKNOWN;
         a.kind = kind;
         return a;

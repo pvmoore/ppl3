@@ -208,7 +208,7 @@ private:
             case "ptr": {
                 if(resolver.isAStaticTypeExpr(prev)) break;
 
-                auto b = module_.builder(n);
+                auto b = module_.nodeBuilder;
                 As as;
                 if(prevType.isArray) {
                     as = b.as(b.addressOf(prev), Pointer.of(prevType.getArrayType.subtype, 1));
@@ -236,7 +236,7 @@ private:
                         return;
                     } else {
                         /// identifier.value
-                        auto emv  = makeNode!EnumMemberValue(n);
+                        auto emv  = makeNode!EnumMemberValue;
                         emv.enum_ = prevType.getEnum;
                         emv.add(dot.left());
 

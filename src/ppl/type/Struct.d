@@ -2,7 +2,7 @@ module ppl.type.Struct;
 
 import ppl.internal;
 
-class Struct : ASTNode, Type, Container {
+class Struct : Statement, Type, Container {
 protected:
     LLVMTypeRef _llvmType;
     int _size      = -1;

@@ -24,7 +24,6 @@ private:
     Hash!20 sourceTextHash;
 public:
     Set!string publicTypes;
-    //Set!string privateFunctions;
     Set!string publicFunctions;
 
     ulong getElapsedNanos()   { return watch.peek().total!"nsecs"; }
@@ -66,10 +65,10 @@ public:
         tokenise();
         collectTypesAndFunctions();
 
-        // Set Module endLine and endColumn
+        // Set Module endPos
         Token last = mainTokens.peek(mainTokens.length()-1);
         if(last != NO_TOKEN) {
-            module_.endPos = Position(last.line, last.column + last.length);
+            module_.endPos = last.end;
         }
     }
     void readSourceFromDisk() {
@@ -108,6 +107,8 @@ public:
     }
     void appendTokensFromTemplate(ASTNode afterNode, Token[] tokens) {
         auto t = new Tokens(module_, tokens);
+        t.isTemplateExpansion = true;
+
         this.templateTokens ~= t;
         if(afterNode.isFunction) {
             t.setAccess(afterNode.as!Function.access);
@@ -261,23 +262,8 @@ private:
         bool isMainModule  = module_.isMainModule;
 
         /// Add a module new() function if it does not exist
-        Function initFunc;
-        if(hasModuleInit) {
-            initFunc = fns[0];
-        } else {
-            /// No module init function exists
-            initFunc = makeNode!Function;
-            initFunc.name       = "new";
-            initFunc.moduleName = module_.canonicalName;
-            module_.add(initFunc);
-
-            auto params = makeNode!Parameters;
-            auto type   = makeNode!FunctionType;
-            type.params = params;
-            auto lit    = makeNode!LiteralFunction;
-            lit.add(params);
-            lit.type = type;
-            initFunc.add(lit);
+        if(hasModuleInit==false) {
+            addModuleInitFunction();
         }
 
         if(isMainModule) {
@@ -299,6 +285,21 @@ private:
             }
         }
     }
+    void addModuleInitFunction() {
+        auto initFunc = makeNode!Function;
+        initFunc.name       = "new";
+        initFunc.moduleName = module_.canonicalName;
+        module_.add(initFunc);
+
+        auto params = makeNode!Parameters;
+        auto type   = makeNode!FunctionType;
+        type.params = params;
+
+        auto lit    = makeNode!LiteralFunction;
+        lit.add(params);
+        lit.type = type;
+        initFunc.add(lit);
+    }
     /**
      *  Rename main function to __user_main
      *  Add main {void->int} function that calls __user_main
@@ -308,7 +309,7 @@ private:
      *  See https://docs.microsoft.com/en-us/cpp/build/reference/entry-entry-point-symbol?view=vs-2017
      */
     void addRealProgramEntry(Function main) {
-        auto b = module_.builder(main);
+        auto b = module_.nodeBuilder;
 
         /// Rename "main"/"WinMain" to "__user_main"
         main.name = "__user_main";

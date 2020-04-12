@@ -12,7 +12,7 @@ final class LiteralArray : Expression {
     Array type;
 
     this() {
-        type         = makeNode!Array(this);
+        type         = makeNode!Array;
         type.subtype = TYPE_UNKNOWN;
         type.add(LiteralNumber.makeConst(0, TYPE_INT));
     }

@@ -126,7 +126,7 @@ public:
                     module_.addError(n.hasChildren ? n.first : n, "Expecting array type as first argument", true);
                 } else {
 
-                    auto array = makeNode!LiteralArray(n);
+                    auto array = makeNode!LiteralArray;
 
                     array.type.subtype = n.first().getType;
                     array.type.setCount(LiteralNumber.makeConst(n.numExprs-1, TYPE_INT));
@@ -145,7 +145,7 @@ public:
                     module_.addError(n, "Expecting at least one expression", true);
                 }
 
-                auto struct_ = makeNode!LiteralTuple(n);
+                auto struct_ = makeNode!LiteralTuple;
 
                 foreach(ch; n.children[].dup) {
                     struct_.add(ch);

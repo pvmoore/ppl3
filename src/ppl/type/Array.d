@@ -7,7 +7,7 @@ import ppl.internal;
 /// array_type
 ///     count_expr
 ///
-final class Array : ASTNode, Type {
+final class Array : Statement, Type {
 private:
     LLVMTypeRef _llvmType;
 public:

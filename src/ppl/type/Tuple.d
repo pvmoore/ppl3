@@ -4,7 +4,7 @@ import ppl.internal;
 ///
 ///
 ///
-final class Tuple : ASTNode, Type, Container {
+final class Tuple : Statement, Type, Container {
 private:
     LLVMTypeRef _llvmType;
     int _size      = -1;

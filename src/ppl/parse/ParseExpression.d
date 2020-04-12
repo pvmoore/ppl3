@@ -271,6 +271,7 @@ private:
                     break;
                 case TT.PIPE:
                     if(t.peek(1).type==TT.PIPE) errorBadSyntax(module_, t, "Did you mean 'or'");
+
                     parent = attachAndRead(t, parent, parseBinary(t));
                     break;
                 case TT.LSQBRACKET:
@@ -366,6 +367,8 @@ private:
 
         t.next;
 
+        b.setEndPos(t);
+
         return b;
     }
     ///
@@ -380,6 +383,8 @@ private:
         } else {
             t.skip(TT.DBL_COLON);
         }
+
+        d.setEndPos(t);
 
         return d;
     }
@@ -399,6 +404,8 @@ private:
 
         i.detach();
 
+        i.setEndPos(t);
+
         return i;
     }
     ///
@@ -410,6 +417,7 @@ private:
 
         t.skip("as");
 
+        a.setEndPos(t);
         return a;
     }
     Expression parseIs(Tokens t) {
@@ -422,6 +430,7 @@ private:
             i.negate = true;
         }
 
+        i.setEndPos(t);
         return i;
     }
     void parseTypeExpr(Tokens t, ASTNode parent) {
@@ -433,6 +442,8 @@ private:
         if(e.type is null) {
             errorMissingType(module_, t, t.value);
         }
+
+        e.setEndPos(t);
     }
     ///
     /// call_expression::= identifier [template args] "(" [ expression ] { "," expression } ")"
@@ -563,6 +574,8 @@ private:
 
             parse(t, c);
         }
+
+        c.setEndPos(t);
     }
     void parseIdentifier(Tokens t, ASTNode parent) {
 
@@ -578,6 +591,8 @@ private:
         id.target = new Target(module_);
         id.name = t.value;
         t.next;
+
+        id.setEndPos(t);
     }
     void parseParenthesis(Tokens t, ASTNode parent) {
         auto p = makeNode!Parenthesis(t);
@@ -590,6 +605,8 @@ private:
         parse(t, p);
 
         t.skip(TT.RBRACKET);
+
+        p.setEndPos(t);
     }
     void parseUnary(Tokens t, ASTNode parent) {
 
@@ -608,6 +625,8 @@ private:
         t.next;
 
         parse(t, u);
+
+        u.setEndPos(t);
     }
     ///
     /// constructor ::= type "(" { cexpr [ "," cexpr ] } ")"
@@ -644,7 +663,7 @@ private:
         auto con = makeNode!Constructor(t);
         parent.add(con);
 
-        auto b = module_.builder(con);
+        auto b = module_.nodeBuilder;
 
         /// type
         con.type = typeParser().parse(t, parent);
@@ -748,6 +767,8 @@ private:
             call.add(parens.first());
         }
         parens.detach();
+
+        con.setEndPos(t);
     }
     void parseAddressOf(Tokens t, ASTNode parent) {
 
@@ -757,6 +778,8 @@ private:
         t.skip(TT.AMPERSAND);
 
         parse(t, a);
+
+        a.setEndPos(t);
     }
     void parseValueOf(Tokens t, ASTNode parent) {
 
@@ -766,6 +789,8 @@ private:
         t.skip(TT.ASTERISK);
 
         parse(t, v);
+
+        v.setEndPos(t);
     }
     ///
     /// if   ::= "if" "(" [ var  ";" ] expression ")" then [ else ]
@@ -843,6 +868,8 @@ private:
                 stmtParser().parse(t, else_);
             }
         }
+
+        i.setEndPos(t);
     }
     ///
     /// select_expr ::= "select" "(" [ { stmt } ";" ] expr ")" "{" { case } else_case "}"
@@ -934,6 +961,8 @@ private:
                 t.skip(TT.COLON);
 
                 case_.add(comp);
+
+                case_.setEndPos(t);
             }
 
             if(t.type==TT.LCURLY) {
@@ -963,6 +992,8 @@ private:
         if(countCases==0) {
             module_.addError(s, "Select must have at least one non-default clause", true);
         }
+
+        s.setEndPos(t);
     }
     void parseModuleAlias(Tokens t, ASTNode parent, Import imp) {
 
@@ -973,6 +1004,8 @@ private:
         parent.add(alias_);
 
         t.next;
+
+        alias_.setEndPos(t);
     }
     /// @typeOf, @sizeOf etc...
     ///
@@ -1022,6 +1055,8 @@ private:
             }
             t.skip(TT.RCURLY);
         }
+
+        bif.setEndPos(t);
     }
 }
 

@@ -623,6 +623,10 @@ private:
         foreach(n; m.children) {
             recursiveVisit(n);
         }
+
+        if(m.endPos == INVALID_POSITION) {
+            assert(m.line==-1 && m.column==-1);
+        }
     }
     void checkAttributes() {
 

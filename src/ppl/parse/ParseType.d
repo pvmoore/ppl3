@@ -210,11 +210,7 @@ private:
             n.access = Access.PUBLIC;
         }
 
-        // Set endLine and endColumn
-        auto tok = t.peek(-1);
-        s.endLine = tok.line;
-        s.endColumn = tok.column;
-
+        s.setEndPos(t);
         return s;
     }
     ///
@@ -228,6 +224,7 @@ private:
     /// Type[expr] array
     /// Type[expr][expr][expr] array // any number of sub arrays allowed
     Type parseArrayType(Tokens t, Type subtype, ASTNode node, bool addToNode) {
+
         if(!addToNode && subtype.isA!ASTNode) {
             subtype.as!ASTNode.detach();
         }
@@ -251,6 +248,7 @@ private:
         if(!addToNode) {
             a.detach();
         }
+        a.setEndPos(t);
         return a;
     }
     ///
@@ -304,6 +302,7 @@ private:
             f.detach();
         }
 
+        f.setEndPos(t);
         return Pointer.of(f, 1);
     }
     /// @typeOf ( expr )
@@ -314,7 +313,7 @@ private:
         /// (
         t.skip(TT.LBRACKET);
 
-        auto a = Alias.make(t, Alias.Kind.TYPEOF);
+        auto a = Alias.make(Alias.Kind.TYPEOF);
         node.add(a);
 
         exprParser().parse(t, a);

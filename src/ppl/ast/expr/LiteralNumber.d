@@ -35,9 +35,9 @@ public:
     }
     /// <CompileTimeConstant>
     LiteralNumber copy() {
-        auto c   = makeNode!LiteralNumber(this);
-        c.line   = line;
-        c.column = column;
+        auto c   = makeNode!LiteralNumber;
+        //c.line   = line;
+        //c.column = column;
         c.str    = str;
         c._type  = _type;
         c.value  = Value(c);

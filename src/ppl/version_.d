@@ -16,8 +16,22 @@ const string VERSION = "3.43.0";
         - Use fast math option when generating code
 
         - Add class - make structs implicitly packed pods? Remove struct constructors?
+            - Finish this off. Still needs to be an implicit pointer
+
+        - Add evaluation phase alongside parse and resolve. This will try to evaluate compile time values (CTValue)
+            where possible. This should mean we will not neet to fold away expressions so much which means
+            it should be easier to offser suggestions to the IDE. Also, we should be able to cache whether or
+            not a node has been resolved if we don't keep changing the structure. When the structure changes this flag
+            will need to be reset though but it should be faster. Also keep a isZombie flag on statement to aid
+            in evaluating.
+
+        - Server: Requires evaluation refactor otherwise certain positions in the code cannot provide suggestions
+            because they have been folded away.
+
 
 3.43.0 - Refactor logging.
+         Add end position to Token.
+         Add end position to ASTNode.
 
 3.42.0 - Add class - needs more work.
          Add server and incremental builder - needs more work.

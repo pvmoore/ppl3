@@ -57,7 +57,7 @@ public:
             /// [int] a = [1]
             /// a == [1,2,3]
             if(bothValues && bothTuples) {
-                auto isExpr = makeNode!Is(n);
+                auto isExpr = makeNode!Is;
                 isExpr.add(n.left);
                 isExpr.add(n.right);
 
@@ -148,7 +148,7 @@ private:
         /// No special handling for = == <>
         if(n.op==Operator.ASSIGN) return false;
 
-        auto builder = module_.builder(n);
+        auto builder = module_.nodeBuilder;
         Enum enum_;
 
         /// eg. +=
@@ -192,7 +192,7 @@ private:
                     /// Rewrite to:
                     /// As enum
                     ///     Binary
-                    auto as = makeNode!As(n);
+                    auto as = makeNode!As;
                     foldUnreferenced.fold(n, as);
 
                     as.add(n);
@@ -242,7 +242,7 @@ private:
             }
         }
 
-        auto b = module_.builder(n);
+        auto b = module_.nodeBuilder;
 
         Expression expr;
 

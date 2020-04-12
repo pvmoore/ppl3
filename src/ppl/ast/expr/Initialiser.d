@@ -95,7 +95,7 @@ private:
     void convertToAssignment() {
         //_literal = last().as!LiteralNumber;
 
-        auto b = getModule.builder(var);
+        auto b = getModule.nodeBuilder;
 
         Expression left  = b.identifier(var);
         auto right = last().as!Expression;

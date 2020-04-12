@@ -8,7 +8,7 @@ final class ExpressionRef : Expression {
     Expression reference;
 
     static Expression make(Expression r) {
-        auto ref_ = makeNode!ExpressionRef(r);
+        auto ref_ = makeNode!ExpressionRef;
         ref_.reference = r;
         return ref_;
     }

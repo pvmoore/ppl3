@@ -17,7 +17,7 @@ public:
 
         auto lt      = n.leftType();
         auto rt      = n.rightType();
-        auto builder = module_.builder(n);
+        auto builder = module_.nodeBuilder;
 
         if(!lt.isKnown || !rt.isKnown) return;
 
@@ -92,7 +92,7 @@ public:
 
             auto p = n.parent;
 
-            auto value = makeNode!ValueOf(n);
+            auto value = makeNode!ValueOf;
 
             auto left  = builder.addressOf(n.left);
             auto right = builder.addressOf(n.right);

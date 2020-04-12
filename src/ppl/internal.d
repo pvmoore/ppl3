@@ -8,7 +8,7 @@ import core.sync.mutex : Mutex;
 
 import std.stdio               : writefln, writeln;
 import std.format              : format;
-import std.string              : toLower, indexOf, lastIndexOf;
+import std.string              : toLower, indexOf, lastIndexOf, leftJustify, rightJustify;
 import std.conv                : to;
 import std.array               : Appender, appender, array, join;
 import std.range               : takeOne;

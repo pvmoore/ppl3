@@ -28,7 +28,7 @@ public:
             ///             size
             ///     TypeExpr
 
-            auto b = module_.builder(n);
+            auto b = module_.nodeBuilder;
 
             auto dot = b.callStatic("GC", "calloc", n);
             dot.second().add(b.integer(n.valueType.size));

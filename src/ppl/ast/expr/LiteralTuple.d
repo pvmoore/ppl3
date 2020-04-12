@@ -37,11 +37,11 @@ final class LiteralTuple : Expression {
     Tuple getInferredType() {
         if(!areKnown(elementTypes())) return null;
 
-        auto t = makeNode!Tuple(this);
+        auto t = makeNode!Tuple;
 
         /// Create a child Variable for each member type
         foreach (ty; elementTypes) {
-            auto v = makeNode!Variable(this);
+            auto v = makeNode!Variable;
             v.type = ty;
             t.add(v);
         }

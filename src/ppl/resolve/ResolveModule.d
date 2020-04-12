@@ -206,7 +206,7 @@ public:
     void visit(Dot n) {
         auto lt      = n.leftType();
         auto rt      = n.rightType();
-        auto builder = module_.builder(n);
+        auto builder = module_.nodeBuilder;
 
         /// Rewrite Enum.A where A is also a type declared elsewhere
         //if(lt.isEnum && n.right().isTypeExpr) {

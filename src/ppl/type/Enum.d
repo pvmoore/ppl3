@@ -5,7 +5,7 @@ import ppl.internal;
 ///
 /// Enum
 ///     [] children are all Variables
-final class Enum : ASTNode, Type {
+final class Enum : Statement, Type {
 private:
     LLVMTypeRef _llvmType;
 public:

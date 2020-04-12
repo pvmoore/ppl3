@@ -11,7 +11,6 @@ final class Parameters : ASTNode {
     override NodeID id() const { return NodeID.PARAMETERS; }
     override Type getType()    { return TYPE_VOID; }
 
-
     int numParams() const {
         return children.length.toInt;
     }
@@ -48,7 +47,7 @@ final class Parameters : ASTNode {
     void addThisParameter(Struct ns) {
         /// Poke the this* ptr into the start of the parameter list
 
-        auto a = makeNode!Variable(ns);
+        auto a = makeNode!Variable;
         a.name = "this";
         a.type = Pointer.of(ns, 1);
         addToFront(a);

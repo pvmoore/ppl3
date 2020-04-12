@@ -4,30 +4,24 @@ import ppl.internal;
 
 final class NodeBuilder {
     Module module_;
-    ASTNode node;
 
     this(Module module_) {
         this.module_ = module_;
     }
 
-    NodeBuilder forNode(ASTNode n) {
-        this.node = n;
-        return this;
-    }
-
     AddressOf addressOf(Expression expr) {
-        auto a = makeNode!AddressOf(node);
+        auto a = makeNode!AddressOf;
         a.add(expr);
         return a;
     }
     As as(Expression left, Type type) {
-        auto a = makeNode!As(node);
+        auto a = makeNode!As;
         a.add(left);
         a.add(typeExpr(type));
         return a;
     }
     Binary assign(Expression left, Expression right, Type type=TYPE_UNKNOWN) {
-        auto b = makeNode!Binary(node);
+        auto b = makeNode!Binary;
         b.type = type;
         b.op   = Operator.ASSIGN;
 
@@ -36,7 +30,7 @@ final class NodeBuilder {
         return b;
     }
     Binary or(Expression left, Expression right, Type type=TYPE_UNKNOWN) {
-        auto b = makeNode!Binary(node);
+        auto b = makeNode!Binary;
         b.type = type;
         b.op   = Operator.BOOL_OR;
 
@@ -45,7 +39,7 @@ final class NodeBuilder {
         return b;
     }
     Binary binary(Operator op, Expression left, Expression right, Type type=TYPE_UNKNOWN) {
-        auto b = makeNode!Binary(node);
+        auto b = makeNode!Binary;
         b.type = type;
         b.op   = op;
 
@@ -54,7 +48,7 @@ final class NodeBuilder {
         return b;
     }
     Call call(string name, Function f = null) {
-        auto call   = makeNode!Call(node);
+        auto call   = makeNode!Call;
         call.target = new Target(module_);
         call.name   = name;
         if(f) {
@@ -72,35 +66,35 @@ final class NodeBuilder {
         return dot(typeExpr(t), call(memberName));
     }
     Dot dot(ASTNode left, ASTNode right) {
-        auto d = makeNode!Dot(node);
+        auto d = makeNode!Dot;
         d.add(left);
         d.add(right);
         return d;
     }
     EnumMember enumMember(Enum enum_, Expression expr) {
-        auto em = makeNode!EnumMember(node);
+        auto em = makeNode!EnumMember;
         em.name = module_.makeTemporary("");
         em.type = enum_;
         em.add(expr);
         return em;
     }
     EnumMemberValue enumMemberValue(Enum enum_, Expression expr) {
-        auto emv  = makeNode!EnumMemberValue(node);
+        auto emv  = makeNode!EnumMemberValue;
         emv.enum_ = enum_;
         emv.add(expr);
         return emv;
     }
     Function function_(string name) {
-        Function f   = makeNode!Function(node);
+        Function f   = makeNode!Function;
         f.name       = name;
         f.moduleName = module_.canonicalName;
 
-        auto body_ = makeNode!LiteralFunction(node);
+        auto body_ = makeNode!LiteralFunction;
 
-        auto params = makeNode!Parameters(node);
+        auto params = makeNode!Parameters;
         body_.add(params);
 
-        auto type   = makeNode!FunctionType(node);
+        auto type   = makeNode!FunctionType;
         type.params = params;
         body_.type  = Pointer.of(type, 1);
 
@@ -109,20 +103,20 @@ final class NodeBuilder {
         return f;
     }
     Identifier identifier(Variable v) {
-        auto id   = makeNode!Identifier(node);
+        auto id   = makeNode!Identifier;
         id.target = new Target(module_);
         id.name   = v.name;
         id.target.set(v);
         return id;
     }
     Identifier identifier(string name) {
-        auto id   = makeNode!Identifier(node);
+        auto id   = makeNode!Identifier;
         id.target = new Target(module_);
         id.name   = name;
         return id;
     }
     Index index(Expression left, Expression right) {
-        auto i = makeNode!Index(node);
+        auto i = makeNode!Index;
         i.add(left);
         i.add(right);
         return i;
@@ -131,37 +125,38 @@ final class NodeBuilder {
         return LiteralNumber.makeConst(value, TYPE_INT);
     }
     Return return_(Expression expr) {
-        auto ret = makeNode!Return(node);
+        auto ret = makeNode!Return;
         ret.add(expr);
         return ret;
     }
     Return returnVoid() {
-        return makeNode!Return(node);
+        auto ret = makeNode!Return;
+        return ret;
     }
     TypeExpr typeExpr(Type t) {
-        auto e = makeNode!TypeExpr(node);
+        auto e = makeNode!TypeExpr;
         e.type = t;
         return e;
     }
     Unary unary(Operator op, Expression expr) {
-        auto u = makeNode!Unary(node);
+        auto u = makeNode!Unary;
         u.op = op;
         u.add(expr);
         return u;
     }
     Unary not(Expression expr) {
-        auto u = makeNode!Unary(node);
+        auto u = makeNode!Unary;
         u.op = Operator.BOOL_NOT;
         u.add(expr);
         return u;
     }
     ValueOf valueOf(Expression expr) {
-        auto v = makeNode!ValueOf(node);
+        auto v = makeNode!ValueOf;
         v.add(expr);
         return v;
     }
     Variable variable(string name, Type t, bool isConst = false) {
-        auto var    = makeNode!Variable(node);
+        auto var    = makeNode!Variable;
         var.name    = name;
         var.type    = t;
         var.isConst = isConst;
@@ -170,7 +165,7 @@ final class NodeBuilder {
 
     Constructor string_(LiteralString lit) {
         /// Create an alloca
-        auto con = makeNode!Constructor(node);
+        auto con = makeNode!Constructor;
         con.type = module_.typeFinder.findType("string", module_);
 
         auto var = variable(module_.makeTemporary("str"), con.type);

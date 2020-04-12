@@ -74,7 +74,7 @@ private:
         ///    _temp
         ///
 
-        auto b = module_.builder(n);
+        auto b = module_.nodeBuilder;
 
         auto var  = n.first().as!Variable;
 

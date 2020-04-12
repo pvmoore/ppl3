@@ -138,10 +138,10 @@ public:
             /// (
             t.skip(TT.LBRACKET);
 
-            auto params = makeNode!Parameters(t);
+            auto params = makeNode!Parameters;
             f.add(params);
 
-            auto type   = makeNode!FunctionType(t);
+            auto type   = makeNode!FunctionType;
             type.params = params;
 
             while(t.type!=TT.RBRACKET) {
@@ -169,10 +169,7 @@ public:
             auto body_ = f.getBody();
             body_.type = Pointer.of(type, 1);
 
-            // Set LiteralFunction endLine and endColumn
-            auto tok = t.peek(-1);
-            body_.endLine = tok.line;
-            body_.endColumn = tok.column;
+            body_.setEndPos(t);
 
             /// Add implicit this* parameter if this is a non-static struct member function
             if(ns && !f.isStatic) {
@@ -180,10 +177,7 @@ public:
             }
         }
 
-        // Set Function endLine and endColumn
-        auto tok = t.peek(-1);
-        f.endLine = tok.line;
-        f.endColumn = tok.column;
+        f.setEndPos(t);
     }
     /// eg. extern fn putchar(int) int
     void parseExtern(Tokens t, ASTNode parent) {
@@ -202,5 +196,7 @@ public:
 
         /// type
         f.externType = typeParser().parse(t, f);
+
+        f.setEndPos(t);
     }
 }

@@ -144,10 +144,7 @@ public:
             moveInitCodeInsideDefaultConstructor(n);
         }
 
-        // Set endLine and endColumn
-        auto tok = t.peek(-1);
-        n.endLine = tok.line;
-        n.endColumn = tok.column;
+        n.setEndPos(t);
     }
 private:
     /// "(" variables ")"
@@ -190,19 +187,19 @@ private:
         auto defCons = ns.getDefaultConstructor();
         if(!defCons) {
 
-            defCons            = makeNode!Function(t);
+            defCons            = makeNode!Function;
             defCons.name       = "new";
             defCons.moduleName = module_.canonicalName;
             defCons.access     = Access.PUBLIC;
             ns.add(defCons);
 
-            auto params = makeNode!Parameters(t);
+            auto params = makeNode!Parameters;
             params.addThisParameter(ns);
 
-            auto type   = makeNode!FunctionType(t);
+            auto type   = makeNode!FunctionType;
             type.params = params;
 
-            auto bdy  = makeNode!LiteralFunction(t);
+            auto bdy  = makeNode!LiteralFunction;
             bdy.add(params);
             bdy.type = type;
             defCons.add(bdy);

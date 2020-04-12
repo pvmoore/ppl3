@@ -11,6 +11,7 @@ private:
     Attribute[] attributes;
 public:
     Module module_;
+    bool isTemplateExpansion;    // true if these tokens have been added as a template expansion
 
     this(Module module_, Token[] tokens) {
         this.module_  = module_;

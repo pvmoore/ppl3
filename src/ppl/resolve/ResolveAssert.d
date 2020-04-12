@@ -62,7 +62,7 @@ private:
     ///     int     (line number)
     void rewriteAsCallToAssert(Assert n, Type exprType) {
         auto parent = n.parent;
-        auto b      = module_.builder(n);
+        auto b      = module_.nodeBuilder;
 
         auto c = b.call("__assert", null);
 
