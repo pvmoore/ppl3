@@ -7,15 +7,16 @@ module server;
  *  - Provide suggestions
  */
 import ppl.internal;
-import std.stdio : writefln;
 import std.socket;
 import std.algorithm.iteration : filter;
-import std.range : array;
-import std.format : format;
-import std.base64 : Base64URLNoPadding;
-import std.json : JSONValue;
-import std.conv : to;
-import common : From;
+import std.stdio    : writefln;
+import std.range    : array;
+import std.format   : format;
+import std.base64   : Base64URLNoPadding;
+import std.json     : JSONValue;
+import std.conv     : to;
+import std.array    : split;
+import common       : From;
 
 void main(string[] argv) {
 
@@ -302,6 +303,8 @@ private:
 
         writefln("suggestions requested for module %s [%s:%s] prefix=%s", module_, line, column, prefix);
 
+        JSONValue[] suggestions;
+
         if(prefix.length > 0 && module_.length > 0) {
 
             Module* ptr = module_ in resolvedModules;
@@ -312,6 +315,10 @@ private:
                 Module m = *ptr;
                 writefln("Inspecting module %s%s", m, m.isResolved ? " (resolved)" : "");
 
+                string[] prefixes = prefix.split(".");
+                writefln("prefixes = %s", prefixes);
+                assert(prefixes.length>0);
+
                 auto position = Position(line, column);
 
                 Container con = m.getContainerAtPosition(position);
@@ -321,11 +328,86 @@ private:
 
 
                     if(con.isFunction()) {
-                        auto func = con.as!LiteralFunction.getFunction;
-                        writefln("\tFunction %s", func.name);
+                        auto scope_ = con.as!LiteralFunction.getFunction;
+                        writefln("\tFunction %s", scope_.name);
 
-                        auto node = func.findNearestTo(position);
+                        auto node = scope_.findNearestTo(position);
                         writefln("\tNearest node = %s", node);
+
+                        // find class/struct/tuple/enum
+                        writefln("Looking for target %s", prefixes[0]);
+                        auto varOrFunc = m.idTargetFinder.find(prefixes[0], node);
+                        if(varOrFunc) {
+                            Variable var  = varOrFunc.as!Variable;
+                            Function func = varOrFunc.as!Function;
+
+                            if(var) {
+                                writefln("\tVariable found: %s", var);
+
+                                // Add members to list of suggestions
+
+                                auto struct_ = var.getType.getStruct();
+                                auto array = var.getType().getArrayType();
+                                auto tuple_ = var.getType().getTuple();
+
+
+                                if(struct_) {
+
+                                    foreach(v; struct_.getMemberVariables()) {
+                                        JSONValue suggest = [
+                                            "name"   : v.name,
+                                            "kind"   : "memberVariable",
+                                            "type"   : "%s".format(v.type),
+                                            "public" : v.access.isPublic ? "true" : "false"
+                                        ];
+                                        suggestions ~= suggest;
+                                    }
+                                    foreach(v; struct_.getStaticVariables()) {
+                                        JSONValue suggest = [
+                                            "name"   : v.name,
+                                            "kind"   : "staticVariable",
+                                            "type"   : "%s".format(v.type),
+                                            "public" : v.access.isPublic ? "true" : "false"
+                                        ];
+                                        suggestions ~= suggest;
+                                    }
+                                    foreach(f; struct_.getMemberFunctions()) {
+
+                                        // private function has been removed :(
+
+                                        if(f.name=="new") {
+                                            // Handle new?
+                                            continue;
+                                        }
+
+                                        auto type = f.getType().getFunctionType();
+
+                                        JSONValue[] params;
+
+                                        foreach(p; f.params().getParams()) {
+
+                                            // Handle implicit this* ?
+
+                                            JSONValue param = [ "name" : p.name, "type" : "%s".format(p.getType()) ];
+                                            params ~= param;
+                                        }
+
+                                        JSONValue suggest = [
+                                            "name"       : f.name,
+                                            "kind"       : "memberFunction",
+                                            "returnType" : "%s".format(type.returnType()),
+                                            "public"     : f.access.isPublic ? "true" : "false"
+                                        ];
+                                        suggest["params"] = params;
+                                        suggestions ~= suggest;
+                                    }
+
+                                }
+
+                            } else {
+                                writefln("\tFunction found: %s", func);
+                            }
+                        }
 
                     } else if(con.isModule()) {
                         writefln("\tModule");
@@ -366,7 +448,7 @@ private:
             }
         }
 
-        JSONValue suggestions = [ "one" ];
+
 
         JSONValue json = [ "suggestions" : suggestions ];
 

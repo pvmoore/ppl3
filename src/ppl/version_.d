@@ -2,7 +2,7 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.43.0";
+const string VERSION = "3.44.0";
 
 /*
 
@@ -28,6 +28,7 @@ const string VERSION = "3.43.0";
         - Server: Requires evaluation refactor otherwise certain positions in the code cannot provide suggestions
             because they have been folded away.
 
+3.44.0 - More work on Server.
 
 3.43.0 - Refactor logging.
          Add end position to Token.

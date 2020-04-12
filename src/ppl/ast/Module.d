@@ -39,10 +39,12 @@ public:
 
     NodeBuilder nodeBuilder;
     TypeFinder typeFinder;
+    IdentifierTargetFinder idTargetFinder;
 
     /// Generation properties
     LLVMModule llvmValue;
     LiteralString moduleNameLiteral;
+
 
     this(string canonicalName, LLVMWrapper llvmWrapper, BuildState buildState) {
         import std.array : replace;
@@ -74,6 +76,7 @@ public:
         varParser         = new ParseVariable(this);
         nodeBuilder       = new NodeBuilder(this);
         typeFinder        = new TypeFinder(this);
+        idTargetFinder    = new IdentifierTargetFinder(this);
         literalParser     = new ParseLiteral(this);
 
         moduleNameLiteral = makeNode!LiteralString;
