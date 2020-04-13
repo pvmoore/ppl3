@@ -69,6 +69,7 @@ public:
                 auto t = _find(n);
                 if (t) return found(t);
             }
+
             return null;
 
         } else if(nid==NodeID.TUPLE || nid==NodeID.STRUCT || nid==NodeID.LITERAL_FUNCTION) {
@@ -138,8 +139,6 @@ private:
         auto ns     = t.getStruct;
         auto en     = t.getEnum;
         assert(alias_ !is null || ns !is null || en !is null);
-
-
 
         if(alias_) {
             module_.buildState.moduleRequired(alias_.moduleName);

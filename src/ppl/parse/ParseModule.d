@@ -24,6 +24,7 @@ private:
     Hash!20 sourceTextHash;
 public:
     Set!string publicTypes;
+    Set!string privateTypes;
     Set!string publicFunctions;
 
     ulong getElapsedNanos()   { return watch.peek().total!"nsecs"; }
@@ -36,6 +37,7 @@ public:
         this.state            = module_.buildState;
         this.lexer            = new Lexer(module_);
         this.publicTypes      = new Set!string;
+        this.privateTypes     = new Set!string;
         //this.privateFunctions = new Set!string;
         this.publicFunctions  = new Set!string;
     }
@@ -202,6 +204,13 @@ private:
                     break;
                 }
                 t.next(eob);
+            } else {
+                // Check for private types
+
+                if(isStruct() || isAlias() || isEnum()) {
+                    t.next;
+                    privateTypes.add(t.value);
+                }
             }
             t.next;
         }

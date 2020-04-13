@@ -33,7 +33,7 @@ final class FileLogger {
         }catch(Exception e) {}
     }
     void close() {
-        if(file.isOpen) file.close();
+        if(file.isOpen) { flush(); file.close(); }
     }
     void log(string str) nothrow {
         doLog(str);
@@ -43,7 +43,13 @@ final class FileLogger {
             doLog(format(fmt, args));
         }catch(Exception e) {}
     }
-    private:
+    void push(A...)(string fmt, A args) nothrow {
+        try{
+            doLog(format(fmt, args));
+            file.flush();
+        }catch(Exception e) {}
+    }
+private:
     string filename;
     File file;
 

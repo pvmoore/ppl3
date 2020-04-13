@@ -3,7 +3,7 @@ import { Node, Module, Struct, Enum, Variable } from "./model";
 import { state } from "./server";
 import { log } from "./util";
 import {
-    CompletionItem, TextDocumentPositionParams, Position, CompletionItemKind, CompletionParams
+    CompletionItem, TextDocumentPositionParams, Position, CompletionItemKind, CompletionParams, TextEdit
 } from "vscode-languageserver";
 
 export default class Suggestions {
@@ -25,16 +25,16 @@ export default class Suggestions {
 
 
         return [
-            {
-                label: 'fieldname',
-                kind: CompletionItemKind.Field,
-                data: { name: "Peter", type: "Field", parent: "TheClass" }
-            },
-            {
-                label: 'methodname',
-                kind: CompletionItemKind.Method,
-                data: { name: "Bruce", type: "Method", parent: "TheClass2" }
-            }
+            // {
+            //     label: 'fieldname',
+            //     kind: CompletionItemKind.Field,
+            //     data: { name: "Peter", type: "Field", parent: "TheClass" }
+            // },
+            // {
+            //     label: 'methodname',
+            //     kind: CompletionItemKind.Method,
+            //     data: { name: "Bruce", type: "Method", parent: "TheClass2" }
+            // }
         ];
     }
     static resolve(item: CompletionItem): CompletionItem {
@@ -44,18 +44,21 @@ export default class Suggestions {
             case CompletionItemKind.Method:
                 break;
             case CompletionItemKind.Function:
+                item.insertText = item.label.substring(0, item.label.indexOf('('));
                 break;
             case CompletionItemKind.Struct:
                 break;
             case CompletionItemKind.Class:
                 break;
             case CompletionItemKind.Property:
-                item.detail = item.data.
-                    break;
+                item.detail = item.data.parent;
+                item.documentation = "# Readme\n\n- Blah";
+                break;
         }
 
         if (item.data.type === "Field") {
             item.detail = item.data.parent;
+
         } else if (item.data.type === "Method") {
             item.detail = item.data.parent;
         }
@@ -72,11 +75,30 @@ export default class Suggestions {
         // Get the word preceeding the pos
         const text = this.module.text;
 
-
         // Find the definition of the word
 
         // Get the properties
 
-        return [];
+        // item.insertText = item.label.substring(0, item.label.indexOf('('));
+        // item.textEdit = TextEdit.insert(Position.create(), "");
+        // log("insertText = " + item.insertText);
+
+        return [
+            {
+                label: 'fieldname',
+                kind: CompletionItemKind.Field,
+                data: { name: "Peter", type: "Field", parent: "TheClass" }
+            },
+            {
+                label: 'methodname',
+                kind: CompletionItemKind.Method,
+                data: { name: "Bruce", type: "Method", parent: "TheClass2" }
+            },
+            {
+                label: 'setX(float x)',
+                kind: CompletionItemKind.Property,
+                data: { name: "Bruce", type: "Method", parent: "TheClass2" }
+            }
+        ];
     }
 }

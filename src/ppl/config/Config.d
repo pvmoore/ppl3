@@ -43,16 +43,13 @@ public:
     bool collectOutput = false;
 
     /// Compiler meta options
-    bool logDebug     = true;
     bool logTokens    = false;
-    bool logParser    = false;
-    bool logResolver  = false;
 
     bool writeASM     = true;
     bool writeOBJ     = true;
     bool writeAST     = true;
     bool writeIR      = true;
-    bool writeJSON    = true;
+    bool writeJSON    = false;
 
     ///==================================================================================
 

@@ -53,7 +53,7 @@ public:
                 if(ty) {
                     t.next;
                     found = true;
-                }
+                } 
 
                 /// Consume possible template parameters
                 if(t.type==TT.LANGLE) {

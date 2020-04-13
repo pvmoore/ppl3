@@ -20,7 +20,7 @@ import common       : From;
 
 void main(string[] argv) {
 
-    ushort port  = 8080;
+    ushort port  = 6536;
 
     auto server = new Server(port);
 
@@ -28,10 +28,10 @@ void main(string[] argv) {
     char[1024] buf;
 
 
-    writefln("value = %s", Base64URLNoPadding.encode(cast(ubyte[])"value", buf[]));
+    //writefln("value = %s", Base64URLNoPadding.encode(cast(ubyte[])"value", buf[]));
 
-    auto req = Request("GET", "/watch", "HTTP/1.1", ["directory":""]);
-    server.startIncrementalBuilder(req);
+    //auto req = Request("GET", "/watch", "HTTP/1.1", ["directory":""]);
+    //server.startIncrementalBuilder(req);
 
     server.startListening();
 
@@ -73,14 +73,20 @@ private:
     Socket[] clients;
     bool isRunning = true;
     IncrementalBuilder builder;
+    FileLogger log;
 
     Module[string] parsedModules;
     Module[string] resolvedModules;
 public:
     this(ushort port) {
         this.port = port;
+        this.log = new FileLogger(".logs/server.log");
     }
     void startListening() {
+        scope(exit) {
+            log.close();
+        }
+
         listener = new TcpSocket();
         listener.blocking = true;
         listener.bind(new InternetAddress(port));
@@ -88,7 +94,7 @@ public:
 
         socketSet = new SocketSet();
 
-        writefln("Server listening on localhost:%s ...", port);
+        log.push("Server listening on localhost:%s ...", port);
 
         while(isRunning) {
             socketSet.reset();
@@ -128,7 +134,7 @@ public:
                 resolvedModules[m.canonicalName] = m;
             }
         }
-        writefln("%s resolved, %s parsed", resolvedModules.length, parsedModules.length);
+        log.push("%s resolved, %s parsed", resolvedModules.length, parsedModules.length);
 
         if(state.hasErrors()) {
 
@@ -142,13 +148,21 @@ private:
         listener.shutdown(SocketShutdown.BOTH);
         if(builder) builder.shutdown();
     }
+    /**
+     *   // standard input --> sent to server
+     *   { "jsonrpc": "2.0", "method": "subtract", "params": [42, 23], "id": 1 }
+     *
+     *   // standard output <-- sent to client
+     *   { "jsonrpc": "2.0", "result": 19, "id": 1 }
+     */
     void handle(Socket socket) {
+        log.push("Handling socket");
 
         string content = readAll(socket);
-        //writefln("content = %s", content);
+        log.push("content = %s", content);
 
         Request req = decodeRequest(content);
-        writefln("%s", req);
+        log.push("%s", req);
 
         string response;
 
@@ -169,7 +183,7 @@ private:
                 break;
         }
 
-        writefln("returning: %s", response);
+        log.push("returning: %s", response);
 
         socket.send("HTTP/1.1 200 OK\r\n");
         socket.send("Connection: close\r\n");
@@ -232,9 +246,9 @@ private:
         }
 
 
-        //writefln("headers = %s", r.headers);
+        //log.push("headers = %s", r.headers);
 
-        //writefln("%s", r.toString());
+        //log.push("%s", r.toString());
 
         return r;
     }
@@ -253,12 +267,12 @@ private:
         directory = "\\pvmoore\\d\\apps\\ppl3\\projects\\test\\";
 
         if(false==From!"std.file".exists(directory)) {
-            writefln("directory '%s' does not exist", directory);
+            log.push("directory '%s' does not exist", directory);
             return;
         }
 
         string configFile = directory ~ "config.toml";
-        writefln("Reading config from %s", configFile);
+        log.push("Reading config from %s", configFile);
 
         auto ppl = PPL3.instance();
 
@@ -271,11 +285,12 @@ private:
 
         config.loggingFlags &= ~Logging.STATE;
 
-        writefln("\n%s", config.toString());
+        log.push("\n%s", config.toString());
 
         this.builder = ppl.createIncrementalBuilder(config);
         this.builder.addListener(this);
 
+        log.push("Builder started");
     }
     void returnErrors(Request req) {
 
@@ -301,7 +316,7 @@ private:
         int line       = req.getQueryIntValue("line", -1);
         int column     = req.getQueryIntValue("column", -1);
 
-        writefln("suggestions requested for module %s [%s:%s] prefix=%s", module_, line, column, prefix);
+        log.push("suggestions requested for module %s [%s:%s] prefix=%s", module_, line, column, prefix);
 
         JSONValue[] suggestions;
 
@@ -313,36 +328,36 @@ private:
             }
             if(ptr) {
                 Module m = *ptr;
-                writefln("Inspecting module %s%s", m, m.isResolved ? " (resolved)" : "");
+                log.push("Inspecting module %s%s", m, m.isResolved ? " (resolved)" : "");
 
                 string[] prefixes = prefix.split(".");
-                writefln("prefixes = %s", prefixes);
+                log.push("prefixes = %s", prefixes);
                 assert(prefixes.length>0);
 
                 auto position = Position(line, column);
 
                 Container con = m.getContainerAtPosition(position);
                 if(con is null) {
-                    writefln("\tNo container found");
+                    log.push("\tNo container found");
                 } else {
 
 
                     if(con.isFunction()) {
                         auto scope_ = con.as!LiteralFunction.getFunction;
-                        writefln("\tFunction %s", scope_.name);
+                        log.push("\tFunction %s", scope_.name);
 
                         auto node = scope_.findNearestTo(position);
-                        writefln("\tNearest node = %s", node);
+                        log.push("\tNearest node = %s", node);
 
                         // find class/struct/tuple/enum
-                        writefln("Looking for target %s", prefixes[0]);
+                        log.push("Looking for target %s", prefixes[0]);
                         auto varOrFunc = m.idTargetFinder.find(prefixes[0], node);
                         if(varOrFunc) {
                             Variable var  = varOrFunc.as!Variable;
                             Function func = varOrFunc.as!Function;
 
                             if(var) {
-                                writefln("\tVariable found: %s", var);
+                                log.push("\tVariable found: %s", var);
 
                                 // Add members to list of suggestions
 
@@ -405,22 +420,22 @@ private:
                                 }
 
                             } else {
-                                writefln("\tFunction found: %s", func);
+                                log.push("\tFunction found: %s", func);
                             }
                         }
 
                     } else if(con.isModule()) {
-                        writefln("\tModule");
+                        log.push("\tModule");
 
 
                     } else if(con.isTuple()) {
-                        writefln("\tTuple");
+                        log.push("\tTuple");
 
 
                     } else {
                         // Struct or Class
                         auto struct_ = con.as!Struct;
-                        writefln("\tStruct or Class %s", struct_.name);
+                        log.push("\tStruct or Class %s", struct_.name);
 
 
                     }
@@ -428,9 +443,9 @@ private:
 
                 // Find the nearest node
                 // auto stmts = m.getStatementsOnLine(line);
-                // writefln("Found %s statements on line %s", stmts.length, line);
+                // log.push("Found %s statements on line %s", stmts.length, line);
                 // foreach(stmt; stmts) {
-                //     writefln("\t%s", stmt);
+                //     log.push("\t%s", stmt);
                 // }
 
 

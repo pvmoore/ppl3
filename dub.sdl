@@ -28,7 +28,7 @@ configuration "server" {
 	excludedSourceFiles "src/main.d" "src/bench.d"
 
 	targetType "executable"
-	targetName "ppl3"
+	targetName "server"
 }
 configuration "bench" {
 	mainSourceFile "src/bench.d"

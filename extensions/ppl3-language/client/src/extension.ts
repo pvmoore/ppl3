@@ -4,14 +4,15 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as path from 'path';
-import { workspace, ExtensionContext } from 'vscode';
+import { workspace, ExtensionContext, window } from 'vscode';
 
 import {
 	LanguageClient,
 	LanguageClientOptions,
 	ServerOptions,
 	TransportKind,
-	ExecutableOptions
+	ExecutableOptions,
+	RequestType0
 } from 'vscode-languageclient';
 
 let client: LanguageClient;
@@ -50,33 +51,54 @@ export function activate(context: ExtensionContext) {
 	};
 
 	// Create the language client and start the client.
-	client = new LanguageClient(
-		'ppl3-lsp-client',
-		'PPL3 Language Server',
-		serverOptions,
-		clientOptions
-	);
+	// client = new LanguageClient(
+	// 	'ppl3-lsp-client',
+	// 	'PPL3 Language Server',
+	// 	serverOptions,
+	// 	clientOptions
+	// );
+
+
 
 	// Create a language client that starts up an external server
-	// client = new LanguageClient(
-	// 	"ppl3-lsp-client",
-	// 	"PPL3 Language Server2",
-	// 	<ServerOptions>{
-	// 		command: "ppl3-server",
-	// 		args: [],
-	// 		options: <ExecutableOptions>{
-	// 			cwd: ".",
-	// 			env: "",
-	// 			detached: false
-	// 		}
-	// 	},
-	// 	<LanguageClientOptions>{
-
-	// 	}, true
-	// )
+	client = new LanguageClient(
+		"ppl3-lsp-client",
+		"PPL3 LSP",
+		<ServerOptions>{
+			command: "server.exe",
+			args: ["-lsp"],
+			options: <ExecutableOptions>{
+				cwd: "\\pvmoore\\d\\apps\\ppl3\\",
+				env: "",
+				detached: false
+			}
+		},
+		<LanguageClientOptions>{
+			documentSelector: [{ scheme: 'file', language: 'ppl3' }],
+			outputChannel: window.createOutputChannel("PPL3 LSP")
+		},
+		true
+	)
 
 	// Start the client. This will also launch the server
 	client.start();
+
+	client.onReady().then(() => {
+		console.log("onReady");
+		client.onNotification("window/logMessage", function (info) {
+			console.log("onNotification");
+		});
+	});
+
+	//client.onRequest(RequestType0.);
+
+	//client.sendRequest();
+
+	context.subscriptions.push({
+		dispose() {
+			client.stop();
+		}
+	});
 }
 
 export function deactivate(): Thenable<void> | undefined {
