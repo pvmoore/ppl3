@@ -286,6 +286,10 @@ public:
                 /// Expect this to be converted into a call to the default constructor
                 return CALLABLE_NOT_READY;
             }
+            if(call.name=="new") {
+                // This is a bad constructor
+                return CALLABLE_NOT_READY;
+            }
 
             string argsStr;
             if(call.paramNames.length>0) {

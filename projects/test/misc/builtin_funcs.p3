@@ -65,15 +65,15 @@ pub fn testBuiltinFuncs() {
         assert @initOf(float) is 0.0
         assert @initOf(byte*) is null
     }
-    const isRef = || {
-        assert @isRef(int*)
-        assert @isRef(int**)
-        assert not @isRef(int)
+    const isPointer = || {
+        assert @isPointer(int*)
+        assert @isPointer(int**)
+        assert not @isPointer(int)
 
         int a
         int* b
-        assert not @isRef(a)
-        assert @isRef(b)
+        assert not @isPointer(a)
+        assert @isPointer(b)
     }
     const isValue = || {
         assert @isValue(int)
@@ -144,7 +144,7 @@ pub fn testBuiltinFuncs() {
     alignOf()
     typeOf()
     initOf()
-    isRef()
+    isPointer()
     isValue()
     isInteger()
     isReal()

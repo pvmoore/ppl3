@@ -17,6 +17,7 @@ string toString(Access a) {
 Access getAccess(ASTNode n) {
     switch(n.id) with(NodeID) {
         case STRUCT:
+        case CLASS:
             return n.as!Struct.access;
         case ALIAS:
             return n.as!Alias.access;

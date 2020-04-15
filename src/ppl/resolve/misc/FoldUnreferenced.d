@@ -38,7 +38,7 @@ public:
         }
 
         /// Try to fold structs
-        foreach(s; module_.getStructs()) {
+        foreach(s; module_.getStructsAndClasses()) {
             processStruct(s);
         }
         /// Try to fold private enums

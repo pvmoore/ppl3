@@ -90,3 +90,9 @@ pub struct M3 <T>(
         return 272
     }
 }
+
+pub class Gremlin() {
+
+}
+pub alias ImportedGargoyle = Gargoyle
+pub alias ImportedGargoyle2 = Gargoyle*

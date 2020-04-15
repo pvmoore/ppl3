@@ -24,6 +24,11 @@ public:
 
             auto struct_ = n.type.getStruct;
 
+            if(n.type.getPtrDepth() > 1) {
+                module_.addError(n, "Cannot construct an instance of type %s".format(n.type), true);
+                return;
+            }
+
             /// If struct is a POD then rewrite call to individual property setters
             if(struct_.isPOD) {
 
@@ -34,6 +39,8 @@ public:
                 }
                 return;
             }
+        } else {
+
         }
     }
 private:

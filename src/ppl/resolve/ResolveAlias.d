@@ -53,11 +53,16 @@ public:
                 return;
             }
             Type externalType = m.getAlias(alias_.name);
-            if(!externalType) externalType = m.getStruct(alias_.name);
+            if(!externalType) externalType = m.getStructOrClass(alias_.name);
             if(!externalType) externalType = m.getEnum(alias_.name);
             if(!externalType) {
                 module_.addError(module_, "Import %s not found in module %s".format(alias_.name, alias_.moduleName), true);
                 return;
+            }
+
+            if(externalType.isA!Class) {
+                // Classes are implicit pointers
+                externalType = Pointer.of(externalType, 1);
             }
 
             _resolveTo(externalType);
@@ -72,11 +77,11 @@ public:
                 resolve(node, t);
             }
 
-            /// Resolve until we have the Struct
+            /// Resolve until we have the Struct/Class
             if(alias_.type.isAlias) {
                 resolve(node, alias_.type);
             }
-            if(!alias_.type.isStruct) {
+            if(!alias_.type.isStructOrClass()) {
                 resolveModule.addUnresolved(alias_);
                 return;
             }

@@ -12,8 +12,8 @@ final class ValueOf : Expression {
         if(!expr().isResolved) return TYPE_UNKNOWN;
 
         if(type) {
-            assert(type.getPtrDepth==expr().getType.getPtrDepth-1,
-            "ptrdepth=%s %s".format(type.getPtrDepth, expr()));
+            // Catch this error in CheckModule
+            //assert(type.getPtrDepth==expr().getType.getPtrDepth-1, "ptrdepth=%s %s".format(type.getPtrDepth, expr()));
 
             return type;
         }
@@ -29,6 +29,8 @@ final class ValueOf : Expression {
 
 
     Expression expr() { return children[0].as!Expression; }
+
+    Type exprType() { return expr().getType(); }
 
     override string toString() {
         return "ValueOf (%s)".format(getType);

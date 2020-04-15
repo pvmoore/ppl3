@@ -30,7 +30,10 @@ public:
             /// Type is not a ptr any more
             return t.as!Pointer.decoratedType;
         }
-        assert(addPtrDepth >= 0, "%s".format(addPtrDepth));
+
+        // Catch this error in CheckModule
+        //assert(addPtrDepth >= 0, "%s".format(addPtrDepth));
+
         if(addPtrDepth>0) {
             return new Pointer(t, addPtrDepth);
         }

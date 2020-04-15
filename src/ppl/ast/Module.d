@@ -181,18 +181,18 @@ public:
         selectDescendents!Enum(array);
         return array[];
     }
-    Struct getStruct(string name) {
-        return getStructs()
+    Struct getStructOrClass(string name) {
+        return getStructsAndClasses()
             .filter!(it=>it.name==name)
             .frontOrNull!Struct;
     }
-    Struct[] getStructs() {
+    Struct[] getStructsAndClasses() {
         return children[]
-            .filter!(it=>it.id==NodeID.STRUCT)
+            .filter!(it=>it.id==NodeID.STRUCT || it.id==NodeID.CLASS)
             .map!(it=>cast(Struct)it)
             .array;
     }
-    Struct[] getStructsRecurse() {
+    Struct[] getStructsAndClassesRecurse() {
         auto array = new DynamicArray!Struct;
         selectDescendents!Struct(array);
         return array[];
@@ -224,7 +224,7 @@ public:
             .array;
     }
     //================================================================================
-    Struct[] getImportedStructs() {
+    Struct[] getImportedStructsAndClasses() {
         Struct[string] structs;
 
         recurse((ASTNode it) {
@@ -287,7 +287,7 @@ public:
     ///
     Module[] getReferencedModules() {
         auto m = new Set!Module;
-        foreach(ns; getImportedStructs()) {
+        foreach(ns; getImportedStructsAndClasses()) {
             m.add(ns.getModule);
         }
         foreach(e; getImportedEnums()) {

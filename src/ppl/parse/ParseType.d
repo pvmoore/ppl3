@@ -140,6 +140,10 @@ private:
         }
         if(type) {
 
+            if(type.isA!Class) {
+                type = Pointer.of(type, 1);
+            }
+
         } else {
             t.resetToMark();
         }

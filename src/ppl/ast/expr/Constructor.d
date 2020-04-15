@@ -20,7 +20,7 @@ import ppl.internal;
 ///    _temp
 ///
 final class Constructor : Expression {
-    Type type;               /// Struct (or Alias resolved to Struct)
+    Type type;               /// Struct/Class (or Alias resolved to Struct/Class)
 
 /// ASTNode
     override bool isResolved() { return type.isKnown; }
@@ -38,7 +38,7 @@ final class Constructor : Expression {
 
 
     string getName() {
-        return (type.isStruct() || type.isClass()) ? type.getStruct.name : type.getAlias.name;
+        return (type.isStructOrClass()) ? type.getStruct.name : type.getAlias.name;
     }
     override string toString() {
         return "Constructor %s%s".format(getName(), type.isPtr ? "*":"");

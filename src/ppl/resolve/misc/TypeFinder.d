@@ -10,7 +10,7 @@ public:
         this.module_ = module_;
     }
     ///
-    /// Look for a Alias, Enum or Struct with given name starting from _node_.
+    /// Look for a Alias, Enum, Struct or Class with given name starting from _node_.
     ///
     /// It is expected that this function is used during the parse phase so that
     /// is why we treat all nodes within a literal function as possible targets.
@@ -72,7 +72,7 @@ public:
 
             return null;
 
-        } else if(nid==NodeID.TUPLE || nid==NodeID.STRUCT || nid==NodeID.LITERAL_FUNCTION) {
+        } else if(nid==NodeID.TUPLE || nid==NodeID.STRUCT || nid==NodeID.CLASS || nid==NodeID.LITERAL_FUNCTION) {
             /// Check all scope level nodes
             foreach(n; node.children) {
                 auto t = _find(n);
@@ -101,7 +101,7 @@ public:
         auto type = untemplatedType;
 
         assert(templateParams.length>0);
-        assert(type && (type.isAlias || type.isStruct));
+        assert(type && (type.isAlias || type.isStructOrClass()));
 
         auto alias_ = type.getAlias;
         auto ns     = type.getStruct;

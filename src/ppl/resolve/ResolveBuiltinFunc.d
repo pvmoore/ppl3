@@ -37,10 +37,16 @@ public:
                     foldUnreferenced.fold(n, ini);
                 }
                 break;
-            case "isRef":
+            case "isPointer":
                 if(n.numExprs > 0) {
                     auto r = n.exprTypes()[0].isPtr;
                     foldUnreferenced.fold(n, LiteralNumber.makeConst(r, TYPE_BOOL));
+                }
+                break;
+            case "pointerDepth":
+                if(n.numExprs > 0) {
+                    int r = n.exprTypes()[0].getPtrDepth();
+                    foldUnreferenced.fold(n, LiteralNumber.makeConst(r, TYPE_INT));
                 }
                 break;
             case "isValue":
@@ -64,6 +70,12 @@ public:
             case "isStruct":
                 if(n.numExprs > 0) {
                     auto b = n.exprTypes()[0].isStruct;
+                    foldUnreferenced.fold(n, LiteralNumber.makeConst(b, TYPE_BOOL));
+                }
+                break;
+            case "isClass":
+                if(n.numExprs > 0) {
+                    auto b = n.exprTypes()[0].isClass;
                     foldUnreferenced.fold(n, LiteralNumber.makeConst(b, TYPE_BOOL));
                 }
                 break;

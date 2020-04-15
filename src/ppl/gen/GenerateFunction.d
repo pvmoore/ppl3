@@ -35,7 +35,7 @@ private:
         }
     }
     void generateLocalStructFunctionDeclarations(Module module_) {
-        foreach(ns; module_.getStructsRecurse()) {
+        foreach(ns; module_.getStructsAndClassesRecurse()) {
             foreach(f; ns.getMemberFunctions()) {
                 generateFunctionDeclaration(module_, f);
             }
@@ -45,7 +45,7 @@ private:
         }
     }
     void generateLocalStructMemberFunctionBodies(Module module_, GenerateLiteral literalGen) {
-        foreach(ns; module_.getStructsRecurse()) {
+        foreach(ns; module_.getStructsAndClassesRecurse()) {
 
             /// Ignore struct template blueprints
             if(ns.isTemplateBlueprint()) continue;
@@ -61,7 +61,7 @@ private:
             foreach(f; ns.getStaticFunctions()) {
                 /// Ignore function template blueprints
                 if(f.isTemplateBlueprint()) continue;
-                
+
                 auto litFunc = f.getBody();
                 literalGen.generate(litFunc, f.llvmValue);
             }

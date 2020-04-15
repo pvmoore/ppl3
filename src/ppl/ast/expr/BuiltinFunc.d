@@ -6,7 +6,7 @@ import ppl.internal;
 /// @sizeOf     (expr)
 /// @initOf     (expr)
 ///
-/// @isRef      (expr)
+/// @isPointer  (expr)
 /// @isValue    (expr)
 /// @isInteger  (expr)
 /// @isReal     (expr)

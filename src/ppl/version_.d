@@ -15,20 +15,21 @@ const string VERSION = "3.44.0";
 
         - Use fast math option when generating code
 
-        - Add class - make structs implicitly packed pods? Remove struct constructors?
-            - Finish this off. Still needs to be an implicit pointer
-
         - Add evaluation phase alongside parse and resolve. This will try to evaluate compile time values (CTValue)
             where possible. This should mean we will not neet to fold away expressions so much which means
             it should be easier to offser suggestions to the IDE. Also, we should be able to cache whether or
             not a node has been resolved if we don't keep changing the structure. When the structure changes this flag
-            will need to be reset though but it should be faster. Also keep a isZombie flag on statement to aid
-            in evaluating.
+            will need to be reset though but it should be faster.
+            - Also keep a isZombie flag on statement to aid in evaluating.
 
         - Server: Requires evaluation refactor otherwise certain positions in the code cannot provide suggestions
             because they have been folded away.
 
+        - Refactor parseConstructor so that any structural changes are done during the resolve phase.
+
 3.44.0 - More work on Server.
+         Make class types implicitly pointer. eg. class C() ; @isPointer(C) == true
+         Add @pointerDepth and @isClass builtin functions.
 
 3.43.0 - Refactor logging.
          Add end position to Token.
@@ -40,7 +41,7 @@ const string VERSION = "3.44.0";
 3.41.0 - Change attributes syntax to --attribute.
 
 3.40.0 - Record and display number of inactive modules.
-         Change attributes syntax to !!attrbute [=value]
+         Change attributes syntax to !!attribute [=value]
          Fix bugs.
 
 3.39.0 - Check that parameters, properties and return types of public structs/functions and enums
@@ -182,6 +183,10 @@ TODO Lib:
 
 
 TODO Known bugs:
+
+- ParseExpression/parseConstructor
+    If the type is an alias we may not know at that point whether or not it is a ptr.
+    We should write the constructor code in ResolveConstructor instead after the type is resolved.
 
 - Infinite struct should not be allowed:
 

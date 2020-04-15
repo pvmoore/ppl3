@@ -690,6 +690,8 @@ private:
         con.add(var);
 
         /// allocate memory
+
+        // FIXME - if the type is an alias we might not know that the type is a pointer at this stage
         if(con.type.isPtr) {
             /// Heap calloc
 

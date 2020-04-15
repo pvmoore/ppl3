@@ -16,12 +16,12 @@ final class GenerateStruct {
     }
 private:
     void generateImportedStructDeclarations(Module module_) {
-        foreach(s; module_.getImportedStructs()) {
+        foreach(s; module_.getImportedStructsAndClasses()) {
             setTypes(s.getLLVMType(), s.getLLVMTypes(), s.isPacked);
         }
     }
     void generateLocalStructDeclarations(Module module_) {
-        foreach(s; module_.getStructsRecurse()) {
+        foreach(s; module_.getStructsAndClassesRecurse()) {
             setTypes(s.getLLVMType(), s.getLLVMTypes(), s.isPacked);
         }
     }

@@ -33,6 +33,10 @@ Type getBestFit(Type a, Type b) {
         // todo - some clever logic here
         return null;
     }
+    if(a.isClass || b.isClass) {
+        // todo - some clever logic here
+        return null;
+    }
     if(a.isStruct || b.isStruct) {
         // todo - some clever logic here
         return null;
@@ -122,7 +126,9 @@ int size(Type t) {
         case HALF: return 2;
         case FLOAT: return 4;
         case DOUBLE: return 8;
-        case STRUCT: return t.getStruct.getSize();
+        case STRUCT:
+        case CLASS:
+            return t.getStruct.getSize();
         case TUPLE: return t.getTuple.getSize();
         case ARRAY: return t.getArrayType.countAsInt()*t.getArrayType.subtype.size();
         case ENUM: return t.getEnum().elementType.size();
@@ -143,7 +149,9 @@ int alignment(Type t) {
         case HALF: return 2;
         case FLOAT: return 4;
         case DOUBLE: return 8;
-        case STRUCT: return t.getStruct.getAlignment();
+        case STRUCT:
+        case CLASS:
+            return t.getStruct.getAlignment();
         case TUPLE: return t.getTuple.getAlignment();
         case ARRAY: return t.getArrayType().subtype.alignment();
         case ENUM: return t.getEnum().elementType.alignment();
@@ -156,6 +164,7 @@ LLVMValueRef zeroValue(Type t) {
     final switch(t.category) with(Type) {
         case UNKNOWN:
         case STRUCT:
+        case CLASS: // class value
         case TUPLE:
         case ARRAY:
         case FUNCTION:
@@ -181,6 +190,7 @@ Expression initExpression(Type t) {
         case VOID:
             assert(false, "initExpression - type is %s".format(t));
         case STRUCT:
+        case CLASS: // class value
         case TUPLE:
         case ARRAY:
         case FUNCTION:

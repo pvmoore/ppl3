@@ -537,6 +537,13 @@ public:
     }
     void visit(ValueOf n) {
 
+        auto et = n.exprType();
+
+        if(et.isValue()) {
+            module_.addError(n, "Cannot dereference value type", true);
+        } else if(et.isClass && et.getPtrDepth()==1) {
+            module_.addError(n, "Cannot dereference a class type", true);
+        }
     }
     void visit(Variable n) {
         if(n.isConst) {
