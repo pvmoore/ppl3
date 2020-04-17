@@ -43,6 +43,11 @@ public:
 
             if(n.isStartOfChain()) {
 
+                // Wait for the Constructor to be rewritten
+                if(n.name=="new" && n.parent.isA!Constructor) {
+                    return;
+                }
+
                 auto callable = functionFinder.standardFind(n);
                 if(callable.resultReady) {
                     /// If we get here then we have 1 good match

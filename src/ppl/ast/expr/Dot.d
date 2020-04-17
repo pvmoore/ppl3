@@ -30,6 +30,6 @@ final class Dot : Expression {
     Type rightType() { return right().getType; }
 
     override string toString() {
-        return ". (type=%s)".format(getType);
+        return "Dot (type=%s)".format(getType);
     }
 }

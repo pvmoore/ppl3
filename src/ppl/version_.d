@@ -2,7 +2,7 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.44.0";
+const string VERSION = "3.45.0";
 
 /*
 
@@ -25,7 +25,7 @@ const string VERSION = "3.44.0";
         - Server: Requires evaluation refactor otherwise certain positions in the code cannot provide suggestions
             because they have been folded away.
 
-        - Refactor parseConstructor so that any structural changes are done during the resolve phase.
+3.45.0 - Refactor parseConstructor so that any structural changes are done during the resolve phase.
 
 3.44.0 - More work on Server.
          Make class types implicitly pointer. eg. class C() ; @isPointer(C) == true

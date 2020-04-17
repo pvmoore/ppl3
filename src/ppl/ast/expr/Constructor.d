@@ -2,28 +2,32 @@ module ppl.ast.expr.Constructor;
 
 import ppl.internal;
 
-/// S(...)
-///    Variable _temp (type=S)
-///    Dot
-///       _temp
-///       Call new
-///          addressof(_temp)
-///    _temp
-
-/// S*(...)
-///    Variable _temp (type=S*)
-///    _temp = calloc
-///    Dot
-///       _temp
-///       Call new
-///          _temp
-///    _temp
-///
+/**
+ * AFTER PARSE :
+ *
+ *  Constructor
+ *      Call new
+ *          { args }
+ *
+ * AFTER RESOLVE :
+ *
+ * Constructor type = S or type = S*
+ *    Variable _temp (type=S or S*)
+ *    _temp = calloc    // if ptr
+ *    Dot
+ *       _temp
+ *       Call new
+ *          _temp | addressof(_temp)
+ *          [ args ]                    // if non-POD
+ *    _temp.name = arg                  // for each arg if POD
+ *    _temp
+ */
 final class Constructor : Expression {
     Type type;               /// Struct/Class (or Alias resolved to Struct/Class)
+    bool isRewritten = false;
 
 /// ASTNode
-    override bool isResolved() { return type.isKnown; }
+    override bool isResolved() { return isRewritten && type.isKnown; }
     override NodeID id() const { return NodeID.CONSTRUCTOR; }
     override Type getType()    { return type; }
 
@@ -35,7 +39,6 @@ final class Constructor : Expression {
         // todo - this might be made comptime
         return CT.NO;
     }
-
 
     string getName() {
         return (type.isStructOrClass()) ? type.getStruct.name : type.getAlias.name;

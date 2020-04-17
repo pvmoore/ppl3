@@ -633,37 +633,17 @@ private:
     /// cexpr       :: expression | paramname ":" expression
     ///
     void parseConstructor(Tokens t, ASTNode parent) {
-        import common : contains;
 
-        /// Convert this:
+        /// Create this node structure:
         ///
-        /// type(...)
-        ///
-        /// To one of these (depending on whether the type is a pointer) :
-
-        /// S(...)
-        ///    Variable _temp (type=S)
-        ///    Dot
-        ///       _temp
-        ///       Call new
-        ///          AddressOf(_temp)
-        ///          [ optional args ]
-        ///    _temp
-
-        /// S*(...)
-        ///    Variable _temp (type=S*)
-        ///    _temp = calloc
-        ///    Dot
-        ///       _temp
-        ///       Call new
-        ///          _temp
-        ///          [ optional args ]
-        ///    _temp
-        ///
-        auto con = makeNode!Constructor(t);
-        parent.add(con);
+        /// Constructor
+        ///     Call "new"
+        ///         { arguments }
 
         auto b = module_.nodeBuilder;
+
+        auto con = makeNode!Constructor(t);
+        parent.add(con);
 
         /// type
         con.type = typeParser().parse(t, parent);
@@ -675,45 +655,10 @@ private:
             errorBadSyntax(module_, t, "Expecting a struct name here");
         }
 
-        Variable makeVariable() {
-            auto prefix = con.getName();
-            if(prefix.contains("__")) prefix = "constructor";
-            return b.variable(module_.makeTemporary(prefix), con.type, false);
-        }
+        Call call = b.call("new", null);
+        call.implicitThisArgAdded = true;
+        con.add(call);
 
-        /// Prepare the call to new(this, ...)
-        auto call       = b.call("new", null);
-        Expression expr = call;
-        Variable var    = makeVariable();
-
-        /// variable _temp
-        con.add(var);
-
-        /// allocate memory
-
-        // FIXME - if the type is an alias we might not know that the type is a pointer at this stage
-        if(con.type.isPtr) {
-            /// Heap calloc
-
-            /// _temp = calloc
-            auto calloc  = makeNode!Calloc(t);
-            calloc.valueType = con.type.getValueType;
-            con.add(b.assign(b.identifier(var.name), calloc));
-
-            call.add(b.identifier(var.name));
-        } else {
-            /// Stack alloca
-            call.add(b.addressOf(b.identifier(var.name)));
-        }
-        /// Dot
-        ///    _temp
-        ///    Call new
-        ///       _temp
-        auto dot = b.dot(b.identifier(var), call);
-        con.add(dot);
-
-        /// _temp
-        con.add(b.identifier(var));
 
         /// (
         t.skip(TT.LBRACKET);
@@ -723,18 +668,16 @@ private:
         auto parens = makeNode!Parenthesis(t);
         call.add(parens);
 
+        import common : contains;
+
         while(t.type!=TT.RBRACKET) {
 
+            // name : expression
             if(t.peek(1).type==TT.COLON) {
                 /// paramname = expr
 
                 if(parens.numChildren>1 && call.paramNames.length==0) {
                     module_.addError(con, "Mixing named and un-named constructor arguments", true);
-                }
-
-                /// Add the implicit 'this' param
-                if(parens.numChildren==0) {
-                    call.paramNames ~= "this";
                 }
 
                 if(call.paramNames.contains(t.value)) {
@@ -752,6 +695,7 @@ private:
                 parse(t, parens);
 
             } else {
+                // expression
                 if(call.paramNames.length>0) {
                     module_.addError(con, "Mixing named and un-named constructor arguments", true);
                 }

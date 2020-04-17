@@ -2,6 +2,10 @@ module ppl.ast.expr.Call;
 
 import ppl.internal;
 
+/**
+ *  Call
+ *      [ args ]
+ */
 final class Call : Expression {
     string name;
     Target target;

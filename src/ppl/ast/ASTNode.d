@@ -307,7 +307,7 @@ public:
     //================================================================================= Dump
     final void dumpToConsole(string indent="") {
         //dd(this.id);
-        dd("[%·4s] %s".format(this.line+1, indent ~ this.toString()));
+        dd("[% 4s] %s".format(this.line+1, indent ~ this.toString()));
         foreach(ch; this.children) {
             ch.dumpToConsole(indent ~ "   ");
         }
