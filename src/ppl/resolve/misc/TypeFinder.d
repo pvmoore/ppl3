@@ -70,6 +70,22 @@ public:
                 if (t) return found(t);
             }
 
+            // Check module structs and classes. The type may not have been parsed yet
+            if(module_.parser.classes.contains(name)) {
+                // Add class _name_ to module scope
+                //module_.addToFront()
+            }
+            if(module_.parser.structs.contains(name)) {
+                // Add struct _name_ to module scope
+                // auto struct_ = makeNode!Struct;
+                // struct_.name = name;
+                // struct_.moduleName = module_.canonicalName;
+                // struct_.isDeclarationOnly = true;
+                // module_.addToFront(struct_);
+                // dd("!!! --->", name);
+                // return found(struct_);
+            }
+
             return null;
 
         } else if(nid==NodeID.TUPLE || nid==NodeID.STRUCT || nid==NodeID.CLASS || nid==NodeID.LITERAL_FUNCTION) {

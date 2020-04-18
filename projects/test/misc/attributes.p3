@@ -87,7 +87,7 @@ fn testPack() {
     assert @alignOf(G) == 4
 }
 --pod struct H(
-    // default visibility of a POD is pub
+    // default visibility of POD properties is pub
     int a = 100,
     int b = 101,
     int c = 102

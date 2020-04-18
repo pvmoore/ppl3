@@ -24,8 +24,10 @@ private:
     Hash!20 sourceTextHash;
 public:
     Set!string publicTypes;
-    Set!string privateTypes;
     Set!string publicFunctions;
+
+    Set!string classes;
+    Set!string structs;
 
     ulong getElapsedNanos()   { return watch.peek().total!"nsecs"; }
     Tokens getInitialTokens() { return mainTokens; }
@@ -37,8 +39,8 @@ public:
         this.state            = module_.buildState;
         this.lexer            = new Lexer(module_);
         this.publicTypes      = new Set!string;
-        this.privateTypes     = new Set!string;
-        //this.privateFunctions = new Set!string;
+        this.classes          = new Set!string;
+        this.structs          = new Set!string;
         this.publicFunctions  = new Set!string;
     }
     void clearState() {
@@ -148,7 +150,10 @@ private:
         auto t = mainTokens;
 
         bool isStruct() {
-            return t.isKeyword("struct") || t.isKeyword("class");
+            return t.isKeyword("struct");
+        }
+        bool isClass() {
+            return t.isKeyword("class");
         }
         bool isAlias() {
             return t.isKeyword("alias");
@@ -174,7 +179,15 @@ private:
                 /// Public declaration found
                 t.next;
 
-                if(isStruct() || isAlias() || isEnum()) {
+                if(isStruct()) {
+                    t.next;
+                    structs.add(t.value);
+                    publicTypes.add(t.value);
+                } else if(isClass()) {
+                    t.next;
+                    classes.add(t.value);
+                    publicTypes.add(t.value);
+                } else if(isAlias() || isEnum()) {
                     t.next;
                     publicTypes.add(t.value);
                 } else if(isFuncDecl()) {
@@ -207,9 +220,12 @@ private:
             } else {
                 // Check for private types
 
-                if(isStruct() || isAlias() || isEnum()) {
+                if(isStruct()) {
                     t.next;
-                    privateTypes.add(t.value);
+                    structs.add(t.value);
+                } else if(isClass()) {
+                    t.next;
+                    classes.add(t.value);
                 }
             }
             t.next;
