@@ -146,21 +146,20 @@ public:
 
             while(t.type!=TT.RBRACKET) {
 
+                if(t.value=="return") {
+                    t.next;
+                    type.returnType(typeParser.parse(t, f));
+                    break;
+                }
+
                 varParser().parseParameter(t, params);
 
-                t.expect(TT.RBRACKET, TT.COMMA);
+                t.expect(TT.RBRACKET, TT.COMMA, TT.IDENTIFIER);
+                if(t.type==TT.IDENTIFIER) t.expect("return");
                 if(t.type==TT.COMMA) t.next;
             }
             /// )
             t.skip(TT.RBRACKET);
-
-            /// Return type
-            if(t.type==TT.LCURLY) {
-                /// Assume void or inferred
-
-            } else {
-                type.returnType(typeParser.parse(t, f));
-            }
 
             /// function literal
             t.expect(TT.LCURLY);

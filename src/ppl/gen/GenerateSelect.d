@@ -39,7 +39,7 @@ final class GenerateSelect {
         /// Value
         n.valueExpr().visit!GenerateModule(gen);
 
-        auto switch_ = builder.switch_(gen.rhs, elseLabel, cases.length.toInt);
+        auto switch_ = builder.switch_(gen.rhs, elseLabel, cases.length.as!int);
 
         /// Case conditions
         foreach(i, c; cases) {

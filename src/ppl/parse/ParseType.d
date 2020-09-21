@@ -257,11 +257,12 @@ private:
     }
     ///
     /// function_type ::= with_name | without_name
-    /// without_name  ::= "fn"    "(" [ type { "," type } ] ")" type
-    /// with_name     ::= "fn" id "(" [ type { "," type } ] ")" type
+    /// without_name  ::= "fn"    "(" [ type { "," type } ] "return" type ")" type
+    /// with_name     ::= "fn" id "(" [ type { "," type } ] "return" type ")" type
+
     ///
     Type parseFunctionType(Tokens t, ASTNode node, bool addToNode) {
-
+        //dd("parseFunctionType", t.get);
         t.skip("fn");
 
         if(t.type==TT.LBRACKET) {
@@ -275,17 +276,29 @@ private:
         auto f = makeNode!FunctionType(t);
         node.add(f);
 
-        /// args
+        bool hasReturnType;
+        auto numParams = 0;
+
+        /// args (and optional return type)
         while(t.type!=TT.RBRACKET) {
 
+            if(t.isKeyword("return")) {
+                t.next();
+                hasReturnType = true;
+                varParser().parseReturnType(t, f);
+                break;
+            }
+
+            numParams++;
             varParser().parseFunctionTypeParameter(t, f);
 
-            t.expect(TT.RBRACKET, TT.COMMA);
+            t.expect(TT.RBRACKET, TT.COMMA, TT.IDENTIFIER);
+            if(t.type==TT.IDENTIFIER) t.expect("return");
             if(t.type==TT.COMMA) t.next;
         }
 
-        /// If type is fn(void)type then remove the unnecessary void param
-        if(f.numChildren==1) {
+        /// If type is fn(void) then remove the unnecessary void param
+        if(f.numParams==1) {
             auto var = f.first().as!Variable;
             if(var.type.isVoid && var.type.isValue && !var.name) {
                 var.detach();
@@ -295,11 +308,11 @@ private:
         /// )
         t.skip(TT.RBRACKET);
 
-        /// Return type
-        if(t.onSameLine) {
-            varParser().parseReturnType(t, f);
-        } else {
-            module_.addError(t, "Missing function type return type", true);
+
+        if(!hasReturnType) {
+            // Add a default void return type
+            auto b = module_.nodeBuilder;
+            f.add(b.variable(null, TYPE_VOID));
         }
 
         if(!addToNode) {
@@ -307,6 +320,7 @@ private:
         }
 
         f.setEndPos(t);
+
         return Pointer.of(f, 1);
     }
     /// @typeOf ( expr )

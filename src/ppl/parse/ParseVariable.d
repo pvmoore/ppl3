@@ -41,8 +41,8 @@ public:
     void parseFunctionTypeParameter(Tokens t, ASTNode parent) {
         parse(t, parent, Loc.FUNCTYPE_PARAM);
     }
-    /// () type
-    ///    ^^^^
+    /// (return type)
+    ///         ^^^^
     void parseReturnType(Tokens t, ASTNode parent) {
         parse(t, parent, Loc.RET_TYPE);
     }
@@ -195,7 +195,7 @@ private:
         }
 
         /// Name
-        if(loc!=Loc.RET_TYPE && t.type==TT.IDENTIFIER && !t.get.templateType) {
+        if(loc!=Loc.RET_TYPE && t.type==TT.IDENTIFIER && t.value!="return" && !t.get.templateType) {
             if(!nameAllowed()) {
                 module_.addError(t, "Variable name not allowed here", true);
             }

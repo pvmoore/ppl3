@@ -18,10 +18,10 @@ pub struct Optional<T>(
     pub fn getOr(T other) {
         return if(this.exists) this.value else other
     }
-    pub fn else(fn()void doThis) {
+    pub fn else(fn(return void) doThis) {
         if(not this.exists) doThis()
     }
-    pub fn then(fn(T t)void doThis) {
+    pub fn then(fn(T t return void) doThis) {
         if(this.exists) doThis(this.value)
     }
 }

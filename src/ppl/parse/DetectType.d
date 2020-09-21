@@ -53,7 +53,7 @@ public:
                 if(ty) {
                     t.next;
                     found = true;
-                } 
+                }
 
                 /// Consume possible template parameters
                 if(t.type==TT.LANGLE) {
@@ -133,29 +133,24 @@ private:
         t.next(end+1);
         return true;
     }
-    ///
-    /// fn(type) type
+    /// fn()
+    /// fn(type)
+    /// fn(return type)
+    /// fn(type return type)
     ///
     bool possibleFunctionType(Tokens t, ASTNode node) {
-
         /// "fn"
         t.skip("fn");
 
+        // (
         if(t.type!=TT.LBRACKET) return false;
 
+        //int start = t.index;
         int end = t.findEndOfBlock(TT.LBRACKET);
         if(end==-1) return false;
 
         t.next(end+1);
-
-        /// return type
-        int end2 = endOffset(t, node);
-        if(end2==-1) {
-            errorBadSyntax(module_, t, "Function ptr return type is missing");
-            return false;
-        }
-
-        t.next(end2 + 1);
+        // )
 
         return true;
     }

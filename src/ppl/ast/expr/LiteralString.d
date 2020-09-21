@@ -67,8 +67,8 @@ public:
     int calculateLength() {
         final switch(enc) with(Encoding) {
             case UNKNOWN: assert(false);
-            case UTF8: return value.length.toInt;
-            case REGEX:  return value.length.toInt;
+            case UTF8: return value.length.as!int;
+            case REGEX:  return value.length.as!int;
         }
     }
 

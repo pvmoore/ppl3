@@ -27,6 +27,6 @@ name = "vulkan"
 directory = "./libs"
 
 [[lib-dependency]]
-name = "glfw"
-debugLibs   = ["./libs/glfw/glfw3.lib"]
-releaseLibs = ["./libs/glfw/glfw3.lib"]
+#name = "glfw"
+#debugLibs   = ["./libs/glfw/glfw3.lib"]
+#releaseLibs = ["./libs/glfw/glfw3.lib"]

@@ -27,7 +27,7 @@ final class GenerateLiteral {
             ch.visit!GenerateModule(gen);
             gen.rhs = gen.castType(gen.rhs, ch.getType, n.type.subtype);
 
-            gen.setArrayValue(ptr, gen.rhs, i.toInt, "[%s]".format(i));
+            gen.setArrayValue(ptr, gen.rhs, i.as!int, "[%s]".format(i));
         }
 
         /// Set literal array ptr as the lhs
@@ -108,7 +108,7 @@ final class GenerateLiteral {
             e.visit!GenerateModule(gen);
             gen.rhs = gen.castType(gen.rhs, elementTypes[i], varTypes[i]);
 
-            gen.setStructValue(structPtr, gen.rhs, i.toInt);
+            gen.setStructValue(structPtr, gen.rhs, i.as!int);
         }
 
         gen.lhs = structPtr;

@@ -1,4 +1,4 @@
-module ppl.misc.lexer;
+module ppl.lex.lexer;
 
 import ppl.internal;
 
@@ -528,6 +528,9 @@ public:
                 case ':':
                     if(peek(1)==':') {
                         addToken(TT.DBL_COLON, 2);
+                        index++;
+                    } else if(peek(1)=='=') {
+                        addToken(TT.COLON_EQUALS, 2);
                         index++;
                     } else {
                         addToken(TT.COLON);

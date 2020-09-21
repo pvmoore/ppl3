@@ -2,11 +2,15 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.45.0";
+const string VERSION = "3.46.0";
 
 /*
 
-// todo - Change function ptr syntax to fn(int a -> void)
+// todo -
+
+        - Add null checks before all member accesses if nullChecks == true
+
+        - add :=
 
         - Add formatted string f"My name is ${name}, age ${04f:age}"
         - Implement regex strings
@@ -14,6 +18,7 @@ const string VERSION = "3.45.0";
         - Rename loop to for?
 
         - Use fast math option when generating code
+
 
         - Add evaluation phase alongside parse and resolve. This will try to evaluate compile time values (CTValue)
             where possible. This should mean we will not neet to fold away expressions so much which means
@@ -24,6 +29,9 @@ const string VERSION = "3.45.0";
 
         - Server: Requires evaluation refactor otherwise certain positions in the code cannot provide suggestions
             because they have been folded away.
+
+3.46.0 - Fix compilation errors due to changes in common.class MyClass
+       - Change function ptr syntax to fn(int a return int)
 
 3.45.0 - Refactor parseConstructor so that any structural changes are done during the resolve phase.
 

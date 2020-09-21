@@ -210,7 +210,7 @@ public:
                         module_.addError(n, "Parameter name %s not found".format(name), true);
                         return;
                     }
-                    args[index] = n.arg(i.toInt);
+                    args[index] = n.arg(i.as!int);
                 }
                 assert(args.length==n.numArgs);
 

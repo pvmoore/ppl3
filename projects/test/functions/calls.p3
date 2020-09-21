@@ -24,10 +24,10 @@ pub fn testCalls() {
         println("Test ... Groovy type function calls")
 
         // declarations
-		const blah = |fn()void closure| {
+		const blah = |fn(return void) closure| {
             closure()
         }
-        const blah2 = |int a, fn()void closure| {
+        const blah2 = |int a, fn(return void) closure| {
             closure()
         }
 
@@ -49,7 +49,7 @@ pub fn testCalls() {
     testGroovyStyleCall()
 }
 
-fn blah3<T>(fn(T p)void closure) {
+fn blah3<T>(fn(T p return void) closure) {
 
 }
 

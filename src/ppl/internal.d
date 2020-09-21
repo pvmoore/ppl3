@@ -22,7 +22,7 @@ import std.algorithm.sorting   : sort;
 import common : DynamicArray = Array;
 import common : IQueue, makeSPSCQueue;
 import common : From, Hash, Hasher, Queue, Set, Stack, StringBuffer,
-                as, dynamicDispatch, isA, isOneOf, firstNotNull, flushConsole, endsWith,
+                as, contains, dynamicDispatch, isA, isOneOf, firstNotNull, flushConsole, endsWith,
                 putIfAbsent,
                 removeChars, repeat, toInt, visit;
 
@@ -107,6 +107,10 @@ import ppl.gen.GenerateModule;
 import ppl.gen.GenerateSelect;
 import ppl.gen.GenerateStruct;
 import ppl.gen.GenerateVariable;
+
+import ppl.lex.lexer;
+import ppl.lex.token;
+import ppl.lex.tokens;
 
 import ppl.misc.JsonWriter;
 import ppl.misc.linker;

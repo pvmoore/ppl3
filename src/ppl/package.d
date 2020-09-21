@@ -4,7 +4,6 @@ public:
 
 import ppl.global;
 import ppl.ppl3;
-import ppl.tokens;
 import ppl.version_;
 
 import ppl.ast.ASTNode;
@@ -21,7 +20,9 @@ import ppl.config.Logging;
 import ppl.error.CompilationAborted;
 import ppl.error.CompileError;
 
-import ppl.misc.lexer;
+import ppl.lex.lexer;
+import ppl.lex.tokens;
+
 import ppl.misc.toml;
 
 import ppl.type.IType;

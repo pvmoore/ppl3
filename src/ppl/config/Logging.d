@@ -9,4 +9,5 @@ enum Logging : ulong {
     DCE                 = 1L<<5,
     GENERATE            = 1L<<6,
     ID_TARGET_FINDER    = 1L<<7,
+    LINKER              = 1L<<8,
 }

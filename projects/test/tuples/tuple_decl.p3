@@ -13,9 +13,9 @@ pub fn testTupleDecl() {
     const r2 = returnTuple2();
 }
 
-fn returnTuple() struct(int) {
+fn returnTuple(return struct(int)) {
     return @structOf(1)
 }
-fn returnTuple2() struct(fn(int)void) {
+fn returnTuple2(return struct(fn(int return void))) {
     return @structOf(|int a| {})
 }

@@ -86,12 +86,15 @@ private:
 
         bool flag = true;
         int br = 0, sq = 0, angle = 0;
-        enum : int { FN=1, STRUCT }
-        auto stk = new Stack!int;
+        //enum : int { FN=1, STRUCT }
+        //auto stk = new Stack!int;
 
         while(nav.hasNext) {
             if(nav.type==TT.IDENTIFIER) {
-                if(flag) {
+                if(nav.value=="return") {
+                    reg ~= " return ";
+                    flag = true;
+                } else if(flag) {
                     if(proxyNames.contains(nav.value)) {
                         reg          ~= "(.*)";
                         proxiesFound ~= nav.value;
@@ -103,7 +106,10 @@ private:
                 nav.next;
             } else {
 
-                if(nav.type==TT.COMMA && br==0 && sq==0 && angle==0) {
+                bool endOfParam = br==0 && sq==0 && angle==0;
+                endOfParam &= (nav.type==TT.COMMA || nav.value=="return");
+
+                if(endOfParam) {
                     /// end of param
                     addParam();
                     nav.next;
@@ -123,15 +129,16 @@ private:
 
                             /// Remember whether it was a fn or a struct
                             /// that opened this parenthesis
-                            stk.push(nav.peek(-1).value=="fn"     ? FN :
-                                     nav.peek(-1).value=="struct" ? STRUCT : 0);
+                            //stk.push(nav.peek(-1).value=="fn"     ? FN :
+                            //         nav.peek(-1).value=="struct" ? STRUCT : 0);
                             break;
                         case TT.RBRACKET:
                             br--;
 
                             /// If the parenthesis started with "fn" then we expect
                             /// another type so set flag to true to test the next identifier
-                            flag = stk.pop()==FN;
+                            //stk.pop();
+                            flag = false;//stk.pop()==FN;
                             break;
                         case TT.COMMA:
                             flag = true;
@@ -145,15 +152,17 @@ private:
         if(start != nav.index) {
             addParam();
         }
-        this.numParams = paramTokens.length.toInt;
+        this.numParams = paramTokens.length.as!int;
 
         assert(proxyLists.length==numParams);
         assert(regexes.length==numParams);
         assert(regexStrings.length==numParams);
 
+        //if(proxyNames.length==2 && proxyNames.contains("X")) {
         //if(ns && ns.name=="M1") {
         //    dd("-->", proxyNames.values);
         //    dd("   -->", regexStrings);
+        //}
         //}
     }
 }

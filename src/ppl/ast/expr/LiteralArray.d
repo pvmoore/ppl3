@@ -31,7 +31,7 @@ final class LiteralArray : Expression {
 
 
     int length() {
-        return children.length.toInt;
+        return children.length.as!int;
     }
 
     string generateName() {

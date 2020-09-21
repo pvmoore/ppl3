@@ -75,7 +75,7 @@ public:
     }
     ///========================================================================================
     int numMemberVariables() {
-        return getMemberVariables().length.toInt;
+        return getMemberVariables().length.as!int;
     }
     Variable[] getMemberVariables() {
         return children[].filter!(it=>it.id==NodeID.VARIABLE)
@@ -95,7 +95,7 @@ public:
         if(!var) return -1;
         assert(!var.isStatic);
         foreach(i, v; getMemberVariables()) {
-            if(var is v) return i.toInt;
+            if(var is v) return i.as!int;
         }
         return -1;
     }

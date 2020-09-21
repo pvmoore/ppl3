@@ -1,7 +1,7 @@
 // This module should be first
 --module_priority=-1_000_000
 
-pub alias Destructor = fn(void*)void
+pub alias Destructor = fn(void*)
 
 struct tgc_ptr_t(
     void* ptr,
@@ -21,26 +21,26 @@ struct tgc_t(
     long nitems, long nslots, long mitems, long nfrees
 )
 
-extern fn tgc_start(tgc_t* gc, void* stk) void
-extern fn tgc_stop(tgc_t* gc) void
-extern fn tgc_pause(tgc_t* gc) void
-extern fn tgc_resume(tgc_t* gc) void
-extern fn tgc_run(tgc_t* gc) void
+extern fn tgc_start(tgc_t* gc, void* stk)
+extern fn tgc_stop(tgc_t* gc)
+extern fn tgc_pause(tgc_t* gc)
+extern fn tgc_resume(tgc_t* gc)
+extern fn tgc_run(tgc_t* gc)
 
-extern fn tgc_alloc      (tgc_t* gc, long size) void*
-extern fn tgc_calloc     (tgc_t* gc, long num, long size) void*
-extern fn tgc_realloc    (tgc_t* gc, void* ptr, long size) void*
-extern fn tgc_alloc_opt  (tgc_t* gc, long size, int flags, Destructor dtor) void*
-extern fn tgc_calloc_opt (tgc_t* gc, long num, long size, int flags, Destructor dtor) void*
-extern fn tgc_free       (tgc_t* gc, void* ptr) void
+extern fn tgc_alloc      (tgc_t* gc, long size return void*)
+extern fn tgc_calloc     (tgc_t* gc, long num, long size return void*)
+extern fn tgc_realloc    (tgc_t* gc, void* ptr, long size return void*)
+extern fn tgc_alloc_opt  (tgc_t* gc, long size, int flags, Destructor dtor return void*)
+extern fn tgc_calloc_opt (tgc_t* gc, long num, long size, int flags, Destructor dtor return void*)
+extern fn tgc_free       (tgc_t* gc, void* ptr)
 
-extern fn tgc_set_flags (tgc_t* gc, void* ptr, int flags) void
-extern fn tgc_get_flags (tgc_t* gc, void *ptr) int
+extern fn tgc_set_flags (tgc_t* gc, void* ptr, int flags)
+extern fn tgc_get_flags (tgc_t* gc, void *ptr return int)
 
-extern fn tgc_get_size (tgc_t* gc, void* ptr) long
+extern fn tgc_get_size (tgc_t* gc, void* ptr return long)
 
-extern fn tgc_set_dtor ( tgc_t* gc, void* ptr, Destructor dtor) void
-extern fn tgc_get_dtor ( tgc_t* gc, void* ptr) Destructor
+extern fn tgc_set_dtor ( tgc_t* gc, void* ptr, Destructor dtor)
+extern fn tgc_get_dtor ( tgc_t* gc, void* ptr return Destructor)
 
 // todo - This needs to be thread-local
 tgc_t gc

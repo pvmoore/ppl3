@@ -69,7 +69,7 @@ fn unreferencedFunc() {
 }
 
 struct Thingy(pub int a) {
-    pub fn()int b = ||{ return 1 }
+    pub fn(return int) b = ||{ return 1 }
     //new = { Thingy* this }    // implicit
 }
 
@@ -91,7 +91,7 @@ fn noofoo(int a) {
     var b = a
     return b
 }
-fn tempfoo<T>(T a, int b) void {
+fn tempfoo<T>(T a, int b) {
 
 }
 
@@ -132,8 +132,8 @@ pub fn main() {
 
     testing()
 
-    fn()int fptr      = || { return 1 }
-    fn(int)void fptr2 = |int a| {}
+    fn(return int) fptr       = || { return 1 }
+    fn(int return void) fptr2 = |int a| {}
 
     const noobar = ||{
         return 1
@@ -194,10 +194,10 @@ pub fn main() {
         someArrays()
     }
     const test1 = ||{
-        fn()int b = ||{ return 1 }
+        fn(return int) b = ||{ return 1 }
     }
     const test2 = ||{
-        fn()struct(int a,int b) f = ||{
+        fn(return struct(int a,int b)) f = ||{
             return @structOf(1,2)
         }
 

@@ -43,7 +43,7 @@ public:
         auto paramTokens = f.blueprint.getParamTokens();
 
         foreach(i, callType; call.argTypes) {
-            matchArg(paramTokens, i.toInt, callType);
+            matchArg(paramTokens, i.as!int, callType);
         }
 
         if(hash.length==f.blueprint.numTemplateParams) {

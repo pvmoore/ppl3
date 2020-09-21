@@ -111,11 +111,14 @@ public:
         } else {
             paramsPart = "?";
         }
+
         if(returnType().isKnown) {
-            retPart = "%s".format(returnType());
+            if(!returnType().isVoid) {
+                retPart = " return %s".format(returnType());
+            }
         } else {
-            retPart = "?";
+            retPart = " return ?";
         }
-        return "fn(%s)%s".format(paramsPart, retPart);
+        return "fn(%s%s)".format(paramsPart, retPart);
     }
 }

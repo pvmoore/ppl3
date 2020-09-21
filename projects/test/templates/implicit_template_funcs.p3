@@ -3,14 +3,14 @@ struct Goo <T>(T a)
 struct Gaa <T>(T a)
 struct Gee <T>(T a)
 
-fn func<A,B>(fn(A)B a   ) { return 0 }
-fn func<A>(A[2][1] a    ) { return 1 }
-fn func<A>(A[3] a       ) { return 2 }
-fn func<A>(A[2] a       ) { return 3 }
-fn func<A>(Goo<A> a     ) { return 4 }
-fn func<A>(Gaa<A> a     ) { return 5 }
-fn func<A>(A* a         ) { return 6 }
-fn func<A>(Gee<Gaa<A>> a) { return 7 }
+fn func<X,Y>(fn(X return Y) a) { return 0 }
+fn func<A>(A[2][1] a         ) { return 1 }
+fn func<A>(A[3] a            ) { return 2 }
+fn func<A>(A[2] a            ) { return 3 }
+fn func<A>(Goo<A> a          ) { return 4 }
+fn func<A>(Gaa<A> a          ) { return 5 }
+fn func<A>(A* a              ) { return 6 }
+fn func<A>(Gee<Gaa<A>> a     ) { return 7 }
 
 fn func<A>(A a, int b) { return 10 }
 fn func<A>(int a, int b, struct(A, A) c) { return 20 }
@@ -19,7 +19,7 @@ fn func<A>(int a, int b, struct(A a, A b ,A c) c) { return 40 }
 
 pub fn testImplicitTemplateFunctions() {
     const singleArg = || {
-        fn(int)bool arg0
+        fn(int return bool) arg0
         assert 0 == func(arg0)
 
         short[2][1] arg1

@@ -73,7 +73,9 @@ public:
             string key = config.isDebug ? "debugLibs" : "releaseLibs";
 
             foreach(lib; t.getStringArray(key)) {
-                config.addLib(lib);
+                if(lib.length>0) {
+                    config.addLib(lib);
+                }
             }
         });
         doc.iterate("linker", (t) {
@@ -90,7 +92,9 @@ private:
         return table.get(key, TOMLValue(defaultValue)).str;
     }
     string[] getStringArray(TOMLValue[string] table, string key) {
-        return table.get(key, TOMLValue([""])).array.map!(it=>it.str).array;
+        return table.get(key, TOMLValue([""])).array
+                    .map!(it=>it.str)
+                    .array;
     }
     int getInt(TOMLValue[string] table, string key, int defaultValue=0) {
         return table.get(key, TOMLValue(defaultValue)).integer.to!int;

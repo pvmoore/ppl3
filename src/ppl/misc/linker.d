@@ -52,9 +52,11 @@ public:
             "/OUT:" ~ targetExe
         ];
 
-        args ~= m.config.getExternalLibs();
+        args ~= config.getExternalLibs();
 
-        //dd("link command:", args);
+        if(config.shouldLog(Logging.LINKER)) {
+            writefln("link command: %s", args);
+        }
 
         import std.process : spawnProcess, wait;
 

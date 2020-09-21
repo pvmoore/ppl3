@@ -22,7 +22,7 @@ public:
     }
 
     int numTemplateParams() {
-        return paramNames.length.toInt;
+        return paramNames.length.as!int;
     }
     int numFuncParams() {
         return paramTokens.numParams;
@@ -32,7 +32,7 @@ public:
     }
     int indexOf(string paramName) {
         foreach(i, n; paramNames) {
-            if(n==paramName) return i.toInt;
+            if(n==paramName) return i.as!int;
         }
         return -1;
     }
@@ -47,9 +47,11 @@ public:
         this.isPub      = isPub;
     }
     ///
-    /// tokens::= "(" [ params ] ")" [type] "{" {statment} "}"
+    /// paramNames = eg. <U,V>
+    /// tokens     ::= "(" [ params ] ["return" type]")" "{" {statment} "}"
     ///
     void setFunctionTokens(Struct ns, string[] paramNames, Token[] tokens, bool isPub) {
+        assert(paramNames.length>0);
         assert(tokens.length>0);
         assert(tokens[0].type==TT.LBRACKET);
         assert(tokens[$-1].type==TT.RCURLY);
@@ -82,19 +84,20 @@ public:
         return tokens;
     }
     Token[] extractFunction(string mangledName, Type[] types, bool isStatic) {
-        /// [pub] [static] mangledName { ... }
+        /// [pub] [static] "fn" mangledName ( params [return type]) { ... }
 
-        /// new style:
-        /// [pub] [static] "fn" mangledName ( params ) [type] { ... }
+        assert(this.tokens[0].type==TT.LBRACKET);
 
-        bool newStyle = this.tokens[0].type==TT.LBRACKET;
+        if(mangledName.contains("func") && module_.canonicalName=="implicit_template_funcs") {
+            dd("!!!!!", mangledName);
+        }
 
         Token[] tokens;
 
         if(isPub) tokens ~= this.tokens[0].copy("pub");
         if(isStatic) tokens ~= this.tokens[0].copy("static");
 
-        if(newStyle) tokens ~= this.tokens[0].copy("fn");
+        tokens ~= this.tokens[0].copy("fn");
 
         tokens ~= [
             this.tokens[0].copy(mangledName)
@@ -108,10 +111,6 @@ public:
                 }
             }
         }
-
-        //if(newStyle) {
-        //    dd("extractFunction:", tokens.toSimpleString);
-        //}
 
         return tokens;
     }

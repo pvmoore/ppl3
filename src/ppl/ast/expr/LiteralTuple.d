@@ -53,7 +53,7 @@ final class LiteralTuple : Expression {
     }
 
     int numElements() {
-        return children.length.toInt;
+        return children.length.as!int;
     }
     Expression[] elements() {
         return cast(Expression[])children[];

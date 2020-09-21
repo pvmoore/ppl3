@@ -176,7 +176,7 @@ private:
             /// Rewrite call args to assignments
 
             foreach(i, arg; args) {
-                auto name = _getMemberName(i.toInt);
+                auto name = _getMemberName(i.as!int);
                 if(!name) return;
 
                 /// assign
