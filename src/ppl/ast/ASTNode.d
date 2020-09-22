@@ -98,10 +98,10 @@ bool isSelect(inout ASTNode n)          { return n.id()==NodeID.SELECT; }
 bool isTypeExpr(inout ASTNode n)        { return n.id()==NodeID.TYPE_EXPR; }
 bool isVariable(inout ASTNode n)        { return n.id()==NodeID.VARIABLE; }
 
-bool areAll(NodeID ID)(ASTNode[] n) { return n.all!(it=>it.id==ID); }
-bool areResolved(ASTNode[] nodes) { return nodes.all!(it=>it.isResolved); }
+bool areAll(NodeID ID)(ASTNode[] n)  { return n.all!(it=>it.id==ID); }
+bool areResolved(ASTNode[] nodes)    { return nodes.all!(it=>it.isResolved); }
 bool areResolved(Expression[] nodes) { return nodes.all!(it=>it.isResolved); }
-bool areResolved(Variable[] nodes) { return nodes.all!(it=>it.isResolved); }
+bool areResolved(Variable[] nodes)   { return nodes.all!(it=>it.isResolved); }
 
 abstract class ASTNode {
 private:
@@ -132,7 +132,9 @@ public:
     abstract Type getType();
 
     final bool isEthereal() {
-        return this.id.isOneOf(NodeID.COMPOSITE, NodeID.CONSTRUCTOR, NodeID.INITIALISER, NodeID.PARAMETERS);
+        return this.id.isOneOf(
+            NodeID.COMPOSITE, NodeID.CONSTRUCTOR,
+            NodeID.INITIALISER, NodeID.PARAMETERS);
     }
 
     final Position getEndPosition() {

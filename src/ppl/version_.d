@@ -2,7 +2,7 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.46.0";
+const string VERSION = "3.47.0";
 
 /*
 
@@ -11,6 +11,8 @@ const string VERSION = "3.46.0";
         - Add null checks before all member accesses if nullChecks == true
 
         - add :=
+
+        // todo - allow names in function types?
 
         - Add formatted string f"My name is ${name}, age ${04f:age}"
         - Implement regex strings
@@ -21,14 +23,16 @@ const string VERSION = "3.46.0";
 
 
         - Add evaluation phase alongside parse and resolve. This will try to evaluate compile time values (CTValue)
-            where possible. This should mean we will not neet to fold away expressions so much which means
+            where possible. This should mean we will not need to fold away expressions so much which means
             it should be easier to offser suggestions to the IDE. Also, we should be able to cache whether or
             not a node has been resolved if we don't keep changing the structure. When the structure changes this flag
             will need to be reset though but it should be faster.
             - Also keep a isZombie flag on statement to aid in evaluating.
 
-        - Server: Requires evaluation refactor otherwise certain positions in the code cannot provide suggestions
+        - IDE: Requires evaluation refactor otherwise certain positions in the code cannot provide suggestions
             because they have been folded away.
+
+3.47.0 - Add simple control flow check to ensure functions are not missing a required return
 
 3.46.0 - Fix compilation errors due to changes in common.class MyClass
        - Change function ptr syntax to fn(int a return int)
@@ -213,13 +217,6 @@ TODO Known bugs:
         foo {
             assert this     // <--- error
         }
-    }
-
-- Missing return at end of function
-    func {
-        if(var a=0; true) return a
-
-        // should be a return here
     }
 
 - Should be able to determine type of null

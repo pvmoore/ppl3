@@ -387,7 +387,6 @@ public:
         });
 
         controlFlow.check(n);
-
         escapeAnalysis.analyse(n);
     }
     void visit(LiteralMap n) {
