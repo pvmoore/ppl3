@@ -116,6 +116,7 @@ shared static this() {
     g_ttToOperator[TT.SHR_ASSIGN] = Operator.SHR_ASSIGN;
     g_ttToOperator[TT.USHR_ASSIGN] = Operator.USHR_ASSIGN;
     g_ttToOperator[TT.EQUALS] = Operator.ASSIGN;
+    g_ttToOperator[TT.COLON_EQUALS] = Operator.REASSIGN;
 
     g_keywords = new Set!string;
     g_keywords.add([

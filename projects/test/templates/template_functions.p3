@@ -2,7 +2,7 @@
 import imports::imports
 
 struct Thing(int value) {
-    fn new(int value) { this.value = value }
+    fn new(int value) { this.value := value }
 }
 
 struct M1() {

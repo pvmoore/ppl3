@@ -23,6 +23,10 @@ public:
         checkReturn(f);
     }
 private:
+    /**
+     * If this function returns non-void, check the last node to see if it is a return.
+     * If not then assume it is wrong.
+     */
     void checkReturn(LiteralFunction f) {
 
         auto type = f.type.getFunctionType();

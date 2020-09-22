@@ -93,7 +93,8 @@ enum Operator : Op {
     SHL_ASSIGN     = Op(33, 14, "<<="),
     SHR_ASSIGN     = Op(34, 14, ">>="),
     USHR_ASSIGN    = Op(35, 14, ">>>="),
-    ASSIGN         = Op(36, 14, "=")
+    ASSIGN         = Op(36, 14, "="),
+    REASSIGN       = Op(36, 14, ":=")
 
     /// Calloc      = 15
     /// Lambda      = 15
@@ -127,7 +128,7 @@ Operator removeAssign(Operator o) {
     }
 }
 bool isAssign(Operator o) {
-    return o.id >= Operator.ADD_ASSIGN.id && o.id <= Operator.ASSIGN.id;
+    return o.id >= Operator.ADD_ASSIGN.id && o.id <= Operator.REASSIGN.id;
 }
 bool isBool(Operator o) {
     switch(o.id) with(Operator) {

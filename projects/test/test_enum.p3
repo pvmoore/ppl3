@@ -10,17 +10,17 @@ enum A {
 }
 // Element type is byte
 enum B : byte {
-    ONE,        // 0 
-    TWO,        // 1  
-    THREE       // 2  
-}  
+    ONE,        // 0
+    TWO,        // 1
+    THREE       // 2
+}
 enum C : float {
     ONE,        // 0.0
-    TWO = 10,   // 10.0  
+    TWO = 10,   // 10.0
     THREE       // 11.0
 }
 enum D : long {
-    ONE   = 1 << 0,     // 1 
+    ONE   = 1 << 0,     // 1
     TWO   = 1 << 1,     // 2
     THREE = 1 << 2,     // 4
     FOUR  = 1 << 3      // 8
@@ -85,7 +85,7 @@ pub fn testEnum() {
         var b   = D.ONE | D.TWO     ; assert @typeOf(b) is D;    assert b.value == 3
         A c = A.TWO + 1             ; assert c.value == 2
 
-        c = c + A.TWO               ; assert c.value == 3
+        c := c + A.TWO               ; assert c.value == 3
 
         // op assign
         b += D.THREE                ; assert @typeOf(b) is D;    assert b.value == 7

@@ -148,12 +148,17 @@ public:
                     }
                     return;
                 default:
+                    if(t.peek(1).type==TT.EQUALS) {
+                        varParser().parseLocal(t, parent);
+                        return;
+                    }
                     break;
             }
         }
         switch(t.type) with(TT) {
             case SEMICOLON:
                 t.next;
+                if(t.type==SEMICOLON) module_.addError(t, "Extra semi-colon found", true);
                 return;
             case PIPE:
                 /// Lambda

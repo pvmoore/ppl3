@@ -88,7 +88,7 @@ public:
 
         if(n.op.isAssign) {
 
-            if(n.op!=Operator.ASSIGN && n.leftType.isPtr && n.rightType.isInteger) {
+            if(n.op!=Operator.ASSIGN && n.op!=Operator.REASSIGN && n.leftType.isPtr && n.rightType.isInteger) {
                 /// int* a = 10
                 /// a += 10
             } else if(!n.rightType.canImplicitlyCastTo(n.leftType)) {
@@ -103,6 +103,10 @@ public:
                 }
             }
         } else {
+
+        }
+
+        if(n.op==Operator.ASSIGN) {
 
         }
     }
@@ -372,7 +376,8 @@ public:
 
                     if(sameScope) {
                         module_.addError(v, "Variable '%s' is declared more than once in this scope (Previous declaration is on line %s)"
-                            .format(v.name, v2.line+1), true);
+                               .format(v.name, v2.line+1), true);
+
                     } else if(v.isLocalAlloc) {
 
                         /// Check for shadowing

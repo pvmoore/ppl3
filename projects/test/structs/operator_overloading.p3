@@ -1,10 +1,10 @@
 
 struct Red(pub int a) {
-    pub fn new(int a)       { this.a = a }
-    pub fn reset(int value) { this.a = value }
+    pub fn new(int a)       { this.a := a }
+    pub fn reset(int value) { this.a := value }
 
     pub fn test() {
-        this.a = 0
+        this.a := 0
 
 		assert this.operator!=(1)
 		assert this.operator!=(Red(1))
@@ -21,7 +21,7 @@ struct Red(pub int a) {
     }
     // set
     pub fn operator[](int index, int value) {
-        this.a = index*value
+        this.a := index*value
     }
 
     // scalar comparison
@@ -93,7 +93,7 @@ pub fn testOperatorOverloading() {
         Red b
 
         assert a[10] == 20              // index*2
-        a[10] = 3;  assert a.a == 30    // index*value
+        a[10] := 3;  assert a.a == 30    // index*value
 
 	}
 	const internal = || {

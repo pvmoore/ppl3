@@ -56,8 +56,7 @@ public:
     void parseTupleMember(Tokens t, ASTNode parent) {
         parse(t, parent, Loc.TUPLE_MEMBER);
     }
-    /// func { [const] [var|type] a ...
-    ///
+    /// [static | const ] type name ...
     void parseLocal(Tokens t, ASTNode parent) {
         parse(t, parent, Loc.LOCAL);
     }
@@ -66,7 +65,7 @@ private:
     /// type
     /// id
     /// type id
-    /// type id "=" expression
+    /// [ pub static const ] type id "=" expression
     ///
     void parse(Tokens t, ASTNode parent, Loc loc) {
         //dd("variable", t.get);

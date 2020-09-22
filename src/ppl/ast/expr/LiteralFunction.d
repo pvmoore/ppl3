@@ -72,6 +72,11 @@ class LiteralFunction : Expression, Container {
         /// Don't include Parameters
         return numChildren-1;
     }
+    Variable[] getLocalVariables() {
+        return children[].filter!(it=>it.isVariable)
+                         .map!(it=>it.as!Variable)
+                         .array;
+    }
 
     override string toString() {
         return "{} (type=%s)".format(type);

@@ -2,7 +2,7 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.47.0";
+const string VERSION = "3.48.0";
 
 /*
 
@@ -31,6 +31,10 @@ const string VERSION = "3.47.0";
 
         - IDE: Requires evaluation refactor otherwise certain positions in the code cannot provide suggestions
             because they have been folded away.
+
+3.48.0 - Add ':=' as an alias for '=' for reassigning a variable.
+       - Assume 'name = value' is a variable declaration and definition (use ':=' re reassignment)
+       - Add error for unnecessary extra semi-colon
 
 3.47.0 - Add simple control flow check to ensure functions are not missing a required return
 

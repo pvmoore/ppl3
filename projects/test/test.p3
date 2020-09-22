@@ -121,7 +121,7 @@ hello
 }
 struct Vector(pub float x, pub float y, pub float z) {
     fn dot() { return this.x*this.x + this.y*this.y + this.z*this.z}
-    fn setX(float x) { this.x = x }
+    fn setX(float x) { this.x := x }
     pub fn setY(float y) {}
 }
 
@@ -272,8 +272,8 @@ fn testModules() {
     var dogsAge = dog1.age + 1
 
     Dog* dog2 = null     // from test_imports
-    dog2 = &dog1
-    dog2 = null
+    dog2 := &dog1
+    dog2 := null
 
     var dog3 = Dog*()
 

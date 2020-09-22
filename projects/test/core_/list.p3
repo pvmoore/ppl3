@@ -22,7 +22,7 @@ pub fn testList() {
     //print(list.arrayLength)
 
     print(list[3])
-    list[3] = 90
+    list[3] := 90
     print(list[3])
 
     print(list.first())

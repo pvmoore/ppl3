@@ -25,7 +25,7 @@ pub fn testArrays() {
         assert a[0].length==3
         assert a[0][0] == 0
 
-        a[0][1] = 77
+        a[0][1] := 77
 
         const b = a[0][1]
         assert b==77
@@ -45,7 +45,7 @@ pub fn testArrays() {
     }
     const arrayOfNamedStructOfArray = || {
         struct SOA(pub int[5] array) {
-            pub fn setArray(int[5] values) { this.array = values }
+            pub fn setArray(int[5] values) { this.array := values }
         }
         SOA[2] soa = @arrayOf(SOA, SOA(),SOA() )
         assert soa.length==2
@@ -107,7 +107,7 @@ fn testLiteralArrays() {
         int[2]* ptr
         assert ptr is null
 
-        ptr = &@arrayOf(int, 3 as int, 7)
+        ptr := &@arrayOf(int, 3 as int, 7)
 
         assert @typeOf(ptr[0]) is int[2]
         assert ptr[0][0] == 3

@@ -57,7 +57,7 @@ public:
         }
         t.skip(TT.PIPE);
 
-        
+
 
         /// {
         t.skip(TT.LCURLY);
@@ -75,6 +75,8 @@ public:
 
         lit.setEndPos(t);
         lambda.setEndPos(t);
+
+        checkDuplicateVariables(lit);
     }
     ///
     /// literal_function ::= "{" { statement } "}"
@@ -98,6 +100,8 @@ public:
         t.skip(TT.RCURLY);
 
         lit.setEndPos(t);
+
+        checkDuplicateVariables(lit);
     }
     ///
     /// literal_string ::= prefix quote { char } quote
@@ -182,5 +186,18 @@ public:
         }
 
         e.setEndPos(t);
+    }
+private:
+    void checkDuplicateVariables(LiteralFunction lit) {
+        // Check for duplicate variables here before we fold any
+        auto names = new Set!string;
+        foreach(v; lit.getLocalVariables()) {
+            if(v.name !is null) {
+                if(names.contains(v.name)) {
+                    module_.addError(v, "Variable %s defined more than once in this scope".format(v.name), false);
+                }
+                names.add(v.name);
+            }
+        }
     }
 }

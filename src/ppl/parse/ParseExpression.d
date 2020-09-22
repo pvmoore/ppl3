@@ -231,6 +231,10 @@ private:
                 case TT.DOLLAR:
                     /// end of expression
                     return;
+
+                case TT.EQUALS:
+                    warn(t, "Deprecated assignment");
+                    goto case TT.PLUS;
                 case TT.PLUS:
                 case TT.MINUS:
                 case TT.DIV:
@@ -243,7 +247,7 @@ private:
                 case TT.RANGLE:
                 case TT.LTE:
                 case TT.GTE:
-                case TT.EQUALS:
+                case TT.COLON_EQUALS:
                 case TT.ADD_ASSIGN:
                 case TT.SUB_ASSIGN:
                 case TT.MUL_ASSIGN:

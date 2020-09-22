@@ -8,8 +8,8 @@ pub struct Optional<T>(
     pub bool exists)
 {
     pub fn new(T value) {
-        this.exists = true
-        this.value = value
+        this.exists := true
+        this.value  := value
     }
 
     pub fn get() {

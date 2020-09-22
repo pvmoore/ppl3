@@ -20,7 +20,7 @@ pub fn testLoop() {
     const forLoop2 = || {
         var count  = 0
         int count2
-        loop(var i = 10, count2 = 10;
+        loop(var i = 10, count2 := 10;
             i>0;
             i-=1, count2 -= 1)
         {

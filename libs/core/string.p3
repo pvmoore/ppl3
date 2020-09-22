@@ -9,16 +9,16 @@ pub struct string( // 16 bytes
     pub int length)  // public property - readable from outside the struct but not modifiable
 {
     pub fn new(byte* ptr, int offset, int len) {
-        this.basePtr = ptr
-        this.offset  = offset
-        this.length  = len
+        this.basePtr := ptr
+        this.offset  := offset
+        this.length  := len
     }
     pub static fn of(int v) {
         if(v==0) return ""
         var list = List<byte>()
         if(v<0) {
             list.add('-' as byte)
-            v = -v
+            v := -v
         }
         loop(; v>0; v/=10) {
             var mod = v%10
@@ -39,7 +39,7 @@ pub struct string( // 16 bytes
 
         var copy = GC.alloc(this.length+1) as byte*
         memcpy(copy, this.ptr(), this.length)
-        copy[this.length] = 0 as byte
+        copy[this.length] := 0 as byte
 
         return copy
     }
@@ -71,7 +71,7 @@ pub struct string( // 16 bytes
         if(end<0) return -1
 
         loop(int pos=startIndex; pos<=end; pos += 1) {
-            pos = this.indexOf(s.first(), pos)
+            pos := this.indexOf(s.first(), pos)
 
             select(pos) {
                 -1 : break

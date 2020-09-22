@@ -22,7 +22,7 @@ struct Fruit(
     }
     pub fn bar(/* Fruit* this, */ int a) {
         struct Vegetable(bool isGreen)
-        this.isABanana = true
+        this.isABanana := true
         return a
     }
     pub fn baz(/* Fruit* this, */ bool sing) {
@@ -50,12 +50,12 @@ struct Colour() {
 int global = 99
 
 struct Alpha(pub int a) {
-    pub fn init(int v) { this.a = v }
+    pub fn init(int v) { this.a := v }
 }
 struct Beta() {}
 struct Gamma(int g)
 struct Delta<T>(pub T a) {
-    pub fn init(T v) { this.a = v }
+    pub fn init(T v) { this.a := v }
 }
 struct Epsilon<T>(T a)
 

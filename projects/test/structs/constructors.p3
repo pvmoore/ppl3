@@ -9,21 +9,21 @@ struct S(
         // All struct var initialisers will be put in here
         // This will be called before properties are set manually during initialisation
 
-        this.b += 3
-        this.flag = true
+        this.b    += 3
+        this.flag := true
     }
     // rename me
     pub fn new( /*S* this,*/ int value) {
-        this.a = value
+        this.a := value
     }
     pub fn new( /*S* this,*/ bool flag, short sh) {
-        this.b    = sh
-        this.flag = flag
+        this.b    := sh
+        this.flag := flag
     }
     pub fn new(float a, double b, int c) {
-        this.a    = a as int
-        this.b    = b as int
-        this.flag = c as bool
+        this.a    := a as int
+        this.b    := b as int
+        this.flag := c as bool
     }
     pub fn new(float a, int b) {
 

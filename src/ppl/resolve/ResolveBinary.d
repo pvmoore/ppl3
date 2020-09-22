@@ -145,8 +145,8 @@ private:
 
         /// Either left or right or both are enums
 
-        /// No special handling for = == <>
-        if(n.op==Operator.ASSIGN) return false;
+        /// No special handling for = :=
+        if(n.op==Operator.ASSIGN || n.op==Operator.REASSIGN) return false;
 
         auto builder = module_.nodeBuilder;
         Enum enum_;
@@ -157,7 +157,7 @@ private:
             ///
             /// a += expr
             /// to:
-            /// a = a + expr
+            /// a := a + expr
 
             /// If left is not an identifier then bail out
             if(!n.left().isIdentifier) return false;
@@ -167,7 +167,7 @@ private:
             auto bin2 = builder.binary(n.op.removeAssign(), id2, n.right());
             n.add(bin2);
 
-            n.op = Operator.ASSIGN;
+            n.op = Operator.REASSIGN;
 
             resolver.setModified(n);
             return true;

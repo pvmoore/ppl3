@@ -40,7 +40,7 @@ fn rets() {
             int* b = &a
             var c = b
             if(false) return c  // bad
-            c = null
+            c := null
             return c    // ok
         }
         // no local alloca

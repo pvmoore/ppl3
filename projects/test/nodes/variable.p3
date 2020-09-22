@@ -1,4 +1,5 @@
 
+
 pub fn testVariables() {
     const basicTypes = || {
         bool a
@@ -8,7 +9,7 @@ pub fn testVariables() {
         byte b
         byte b1  = 1 as byte
         byte b2  = b1
-        byte* b3 = &b2;     ; assert *b3 == 1
+        byte* b3 = &b2      ; assert *b3 == 1
 
         short c
         short c1  = 2 as short

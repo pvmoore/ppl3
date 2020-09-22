@@ -14,7 +14,7 @@ pub struct List <T>(
     }
     pub fn add(T value) {
         this.expand(1)
-        this.array[this.length] = value
+        this.array[this.length] := value
         this.length += 1
         return this
     }
@@ -22,7 +22,7 @@ pub struct List <T>(
         return this.array[index]
     }
     pub fn operator[] (int index, T value) {
-        this.array[index] = value
+        this.array[index] := value
     }
     pub fn operator== (List<T> other) {
         if(this.length != other.length) return false
@@ -63,7 +63,7 @@ pub struct List <T>(
         return this
     }
     pub fn clear() {
-        this.length = 0
+        this.length := 0
         return this
     }
     pub fn pack() {
@@ -73,19 +73,19 @@ pub struct List <T>(
     pub fn reversed() {
         var copy = List<T>(this.length)
         loop(var dest = 0, var src=this.length-1; src>=0; src -= 1) {
-            copy.array[dest] = this.array[src]
+            copy.array[dest] := this.array[src]
         }
         return copy
     }
     fn expand(int required) {
         if(required < 1) return
         if(not this.array) {
-            this.arrayLength = required + 7
-            this.array       = malloc(this.arrayLength*@sizeOf(T)) as T*
+            this.arrayLength := required + 7
+            this.array       := malloc(this.arrayLength*@sizeOf(T)) as T*
             assert this.array
         } else if(this.length+required > this.arrayLength) {
-            this.arrayLength = (this.length+required) * 2
-            this.array       = realloc(this.array, this.arrayLength*@sizeOf(T)) as T*
+            this.arrayLength := (this.length+required) * 2
+            this.array       := realloc(this.array, this.arrayLength*@sizeOf(T)) as T*
             assert this.array
         }
     }
