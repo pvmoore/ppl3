@@ -115,6 +115,23 @@ final class NodeBuilder {
         id.name   = name;
         return id;
     }
+    If if_(Expression condition, Expression then, Expression else_ = null) {
+        assert(condition);
+        assert(then);
+
+        auto i = makeNode!If;
+
+        auto init = Composite.make(Composite.Usage.INLINE_KEEP);
+        auto thn  = Composite.make(Composite.Usage.INNER_KEEP).add(then);
+        auto els  = else_ ? Composite.make(Composite.Usage.INNER_KEEP).add(else_) : null;
+
+        i.add(init);
+        i.add(condition);
+        i.add(thn);
+        if(els) i.add(els);
+
+        return i;
+    }
     Index index(Expression left, Expression right) {
         auto i = makeNode!Index;
         i.add(left);
@@ -182,6 +199,48 @@ final class NodeBuilder {
         //auto valueof = valueOf(dot);
         con.add(valueOf(dot(identifier(var.name), call)));
         return con;
+    }
+
+    /**
+    // Replace:
+    //
+    // e
+    //
+    // if
+    //   Composite
+    //   Composite
+    //     not
+    //       e
+    //   Composite
+    //     call
+    //       __nullCheckFail
+    //         modulename
+    //         line
+    //     e
+    //   Composite
+    //     e
+    */
+    void addNullCheck(Expression e) {
+        auto p = e.parent;
+        auto dummy = LiteralNumber.makeConst(0, TYPE_INT);
+        p.replaceChild(e, dummy);
+        //p.dumpToConsole();
+
+        auto moduleName = module_.moduleNameLiteral.copy();
+        auto line = LiteralNumber.makeConst(e.line+1, TYPE_INT);
+
+        auto call = this.call("__nullCheckFail")
+            .add(moduleName)
+            .add(line)
+            .as!Expression;
+
+        auto if_ = this.if_(not(e), call, ExpressionRef.make(e));
+
+        call.parent.add(ExpressionRef.make(e));
+
+        p.replaceChild(dummy, if_);
+
+        //p.dumpToConsole();
     }
 }
 

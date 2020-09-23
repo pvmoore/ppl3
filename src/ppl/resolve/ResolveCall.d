@@ -41,6 +41,10 @@ public:
             bool isTemplated = n.isTemplated;
             Expression prev  = n.prevLink();
 
+            foreach(ref t; n.templateTypes) {
+                resolver.aliasResolver.resolve(n, t);
+            }
+
             if(n.isStartOfChain()) {
 
                 // Wait for the Constructor to be rewritten
@@ -89,7 +93,6 @@ public:
                 Struct ns = prevType.getStruct;
                 assert(ns);
 
-
                 bool isStaticAccess = resolver.isAStaticTypeExpr(prev);
 
                 //if(dot.isStaticAccess!=isStaticAccess) {
@@ -114,6 +117,8 @@ public:
                 } else {
 
                     if(n.name!="new" && !n.implicitThisArgAdded) {
+
+
 
                         /// Rewrite this call so that prev becomes the 1st argument (this*)
 
@@ -155,6 +160,14 @@ public:
 
                     if(callable.resultReady) {
                         /// If we get here then we have 1 good match
+
+                        if(module_.config.nullChecks) {
+                            if(prevType.isPtr && prev.isIdentifier) {
+                                auto id = prev.getIdentifier();
+
+                                module_.nodeBuilder.addNullCheck(id);
+                            }
+                        }
 
                         if(callable.isFunction) {
                             _setFuncTarget(callable.func);

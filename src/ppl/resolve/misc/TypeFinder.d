@@ -5,6 +5,7 @@ import ppl.internal;
 final class TypeFinder {
 private:
     Module module_;
+    bool doChat;
 public:
     this(Module module_) {
         this.module_ = module_;
@@ -19,9 +20,14 @@ public:
     ///
     Type findType(string name, ASTNode node, bool isInnerType = false) {
 
+        //doChat = true || name=="Optional<float>";
+        //chat("findType %s from %s line %s", name, node.id, node.line);
+
         Type _find(ASTNode n) {
             auto def = n.as!Alias;
-            if(def && def.name==name) return def;
+            if(def) {
+                if(def.name==name) return def;
+            }
 
             auto ns = n.as!Struct;
             if(ns && ns.name==name) return ns;
@@ -125,8 +131,10 @@ public:
 
         found(type);
 
-        if(ns && templateParams.areKnown) {
-            string name2      = ns.name ~ "<" ~ module_.buildState.mangler.mangle(templateParams) ~ ">";
+        string name = ns ? ns.name : alias_.name;
+
+        if(templateParams.areKnown) {
+            string name2      = name ~ "<" ~ module_.buildState.mangler.mangle(templateParams) ~ ">";
             auto concreteType = findType(name2, node);
             if(concreteType) {
                 /// We found the concrete impl
@@ -165,5 +173,10 @@ private:
         }
 
         return t;
+    }
+    void chat(A...)(lazy string fmt, lazy A args) {
+        if(doChat) {
+            dd(format(fmt, args));
+        }
     }
 }

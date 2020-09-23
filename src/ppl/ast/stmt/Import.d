@@ -15,6 +15,11 @@ final class Import : Statement {
 
     bool hasAliasName() { return aliasName !is null; }
 
+    bool hasFunction(string name) {
+        return children[].filter!(it=>it.id==NodeID.FUNCTION)
+                         .map!(it=>cast(Function)it)
+                         .any!(it=>it.name==name);
+    }
     Function[] getFunctions(string name) {
         return children[].filter!(it=>it.id==NodeID.FUNCTION)
                          .map!(it=>cast(Function)it)

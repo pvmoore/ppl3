@@ -89,7 +89,7 @@ public:
     }
     void setToRelease() {
         mode               = Mode.RELEASE;
-        nullChecks         = false;
+        nullChecks         = true;
         enableAsserts      = false;
         enableInlining     = true;
         enableOptimisation = true;

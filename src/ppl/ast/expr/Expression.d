@@ -57,3 +57,14 @@ abstract class Expression : Statement {
         return result;
     }
 }
+
+Call getCall(ASTNode n) {
+    if(n.isA!Call) return n.as!Call;
+    if(n.isA!ExpressionRef) return getCall(n.as!ExpressionRef.reference);
+    return null;
+}
+Identifier getIdentifier(ASTNode n) {
+    if(n.isA!Identifier) return n.as!Identifier;
+    if(n.isA!ExpressionRef) return getIdentifier(n.as!ExpressionRef.reference);
+    return null;
+}

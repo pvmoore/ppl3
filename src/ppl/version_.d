@@ -2,16 +2,11 @@ module ppl.version_;
 
 public:
 
-const string VERSION = "3.48.0";
+enum VERSION = "3.49.0";
 
 /*
 
 // todo -
-
-        - Add null checks before all member accesses if nullChecks == true
-
-        - add :=
-
         // todo - allow names in function types?
 
         - Add formatted string f"My name is ${name}, age ${04f:age}"
@@ -31,6 +26,10 @@ const string VERSION = "3.48.0";
 
         - IDE: Requires evaluation refactor otherwise certain positions in the code cannot provide suggestions
             because they have been folded away.
+
+3.50.0 -
+
+3.49.0 - Add (optional) null check whenever a pointer member variable or function is accessed
 
 3.48.0 - Add ':=' as an alias for '=' for reassigning a variable.
        - Assume 'name = value' is a variable declaration and definition (use ':=' re reassignment)
@@ -166,9 +165,6 @@ TODO Compiler:
     - Add integration tests folder and create a script to run through all tests in the folder,
       asserting compiler errors.
 
-    - Implement ControlFlow to check that every route through a function returns
-      correctly
-
     - Add checks if boundsChecks=true
 
     - Add null checks if nullChecks=true
@@ -235,7 +231,7 @@ TODO Known bugs:
 
 -   config.enableOptimisation = false produces link errors
 
--   indexOf { string s ->
+-   fn indexOf(string s) {
         indexOf(s, 0)   // this.indexOf(s,0) works
     }
 

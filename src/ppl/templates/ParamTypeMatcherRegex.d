@@ -20,6 +20,7 @@ private:
     Type[string] hash;
     StringBuffer buf, buf2;
     Lexer lexer;
+    bool doChat;
 public:
     this(Module module_) {
         this.module_ = module_;
@@ -30,13 +31,17 @@ public:
     bool getEstimatedParams(Call call, Function f, ref Type[] estimatedParams) {
         assert(estimatedParams.length==0);
 
+        //doChat = call.name=="foo0" && module_.canonicalName=="template_functions";
+
         this.call    = call;
         this.func    = f;
         this.proxies = f.blueprint.paramNames;
         this.hash.clear();
 
         chat("====> ParamTypeMatcherRegex for %s(%s) => template %s<%s>(%s)",
-            f.name, call.argTypes.toString, f.name,
+            f.name,
+            call.argTypes.toString,
+            f.name,
             f.blueprint.paramNames.toString(),
             f.blueprint.getParamTokens().getTokensForAllParams().map!(it=>it.toSimpleString));
 
@@ -49,8 +54,11 @@ public:
         if(hash.length==f.blueprint.numTemplateParams) {
             chat("Hash = %s", hash);
             estimatedParams = new Type[proxies.length];
+
             for(auto n=0; n<estimatedParams.length; n++) {
-                estimatedParams[n] = hash.get(proxies[n], TYPE_VOID);
+                auto t = hash.get(proxies[n], TYPE_VOID);
+
+                estimatedParams[n] = t;
             }
             bool result = checkEstimate(f, estimatedParams);
             chat("Match: %s<%s> --> %s", f.name, estimatedParams.toString(), result ? "Pass" : "Fail");
@@ -61,7 +69,7 @@ public:
     }
 private:
     void chat(A...)(lazy string fmt, lazy A args) {
-        static if(false) {
+        if(doChat) {
             dd(format(fmt, args));
         }
     }
@@ -81,12 +89,24 @@ private:
     }
     bool checkEstimate(Function f, Type[] estimatedParams) {
         Type[] paramTypes = f.blueprint.getFuncParamTypes(module_, call, estimatedParams);
-        //chat("  paramTypes=%s", paramTypes);
+        Type[] argTypes   = call.argTypes;
+        chat("  argTypes   = %s", argTypes);
+        chat("  paramTypes = %s", paramTypes);
 
-        return canImplicitlyCastTo(call.argTypes, paramTypes);
+        foreach(i; 0..paramTypes.length) {
+            if(paramTypes[i].isAlias) {
+                // assume this will work
+            } else if(argTypes[i].canImplicitlyCastTo(paramTypes[i])) {
+                // this one is good
+            } else {
+                return false;
+            }
+        }
+        return true;
     }
     Type getType(string str) {
         auto tokens = lexer.tokenise!true(str);
+        chat("\t\ttype tokens = %s", tokens.toSimpleString());
         auto nav = new Tokens(null, tokens);
         return module_.typeParser.parseForTemplate(nav, call);
     }

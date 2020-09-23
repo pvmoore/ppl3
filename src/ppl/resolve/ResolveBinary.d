@@ -162,7 +162,7 @@ private:
             /// If left is not an identifier then bail out
             if(!n.left().isIdentifier) return false;
 
-            auto id   = n.left().as!Identifier;
+            auto id   = n.left().getIdentifier();
             auto id2  = builder.identifier(id.name);
             auto bin2 = builder.binary(n.op.removeAssign(), id2, n.right());
             n.add(bin2);

@@ -358,7 +358,7 @@ public:
         f.log("======================== Unresolved Nodes (%s)", unresolved.length);
 
         foreach (i, n; unresolved.values) {
-            f.log("\t[%s] Line %s %s", i, n.line, n);
+            f.log("\t[%s] Line %s %s", i, n.line, n.id);
         }
         f.log("==============================================");
     }
@@ -422,12 +422,16 @@ private:
         }
 
         static if(VERBOSE) {
-            dd("  resolve", typeid(m), "nid:", m.nid, module_.canonicalName, "line:", m.line+1);
+            dd("  resolve children of", typeid(m), "nid:", m.nid, module_.canonicalName, "line:", m.line+1);
         }
 
         /// Resolve children
         foreach(n; m.children[].dup) {
             recursiveVisit(n);
+        }
+
+        static if(VERBOSE) {
+            dd("    resolve", typeid(m), "nid:", m.nid, module_.canonicalName, "line:", m.line+1);
         }
 
         /// Resolve this node

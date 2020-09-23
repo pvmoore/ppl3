@@ -290,7 +290,7 @@ private:
         assert(tuple || struct_);
 
         if(tuple) {
-            var   = tuple.getMemberVariable(n.name);
+            var = tuple.getMemberVariable(n.name);
             if(!var) {
                 module_.addError(n, "Tuple member '%s' not found".format(n.name), true);
                 return;
@@ -305,6 +305,14 @@ private:
 
         if(var) {
             n.target.set(var);
+
+            if(module_.config.nullChecks) {
+                if(prevType.isPtr && prev.isIdentifier) {
+                    auto id = prev.getIdentifier();
+                    
+                    module_.nodeBuilder.addNullCheck(id);
+                }
+            }
         }
     }
     void chat(A...)(lazy string fmt, lazy A args) {

@@ -39,7 +39,7 @@ public:
                 case BUILTIN_FUNC:
                     break;
                 case CALL: {
-                        auto call = n.parent.as!Call;
+                        auto call = n.parent.getCall();
                         if(call.isResolved) {
                             parentType = call.target.paramTypes()[n.index()];
                         }
@@ -177,7 +177,7 @@ public:
                     type = parent.as!Binary.leftType();
                     break;
                 case CALL: {
-                    auto call = parent.as!Call;
+                    auto call = parent.getCall();
                     if(call.isResolved) {
                         type = call.target.paramTypes()[n.index()];
                     }

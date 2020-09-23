@@ -5,56 +5,6 @@ import common : contains;
 
 __gshared bool doChat = false;
 
-struct Callable {
-    uint id;
-    Function func;
-    Variable var;
-
-    this(Variable v) {
-        this.id   = g_callableID++;
-        this.var  = v;
-    }
-    this(Function f) {
-        this.id   = g_callableID++;
-        this.func = f;
-    }
-    bool resultReady()         { return getNode() !is null; }
-    bool isVariable()          { return var !is null; }
-    bool isFunction()          { return func !is null; }
-    bool isStatic()            { return var ? var.isStatic : func.isStatic; }
-    bool isStructMember()      { return func ? func.isMember() : var.isMember(); }
-    bool isTemplateBlueprint() { return func ? func.isTemplateBlueprint : false; }
-    bool isPrivate()           { return (func ? func.access : var.access).isPrivate; }
-
-    string getName()           { return func ? func.name : var.name; }
-    Type getType()             { return func ? func.getType : var.type; }
-    ASTNode getNode()          { return func ? func : var; }
-    int numParams()            { return getType.getFunctionType.numParams; }
-    string[] paramNames()      { return getType.getFunctionType.paramNames; }
-    Type[] paramTypes()        { return getType.getFunctionType.paramTypes; }
-    Module getModule()         { return func ? func.getModule : var.getModule; }
-    Struct getStruct()         { return func ? func.getStruct() : var.getStruct(); }
-
-    size_t toHash() const @safe pure nothrow {
-        assert(id!=0);
-        return id;
-    }
-    /// Every node is unique
-    bool opEquals(ref const Callable o) const @safe  pure nothrow {
-        assert(id!=0 && o.id!=0);
-        return o.id==id;
-    }
-    string toString() {
-        if(!resultReady) return "Not ready";
-        string t = isTemplateBlueprint() ? " TEMPLATE":"";
-        if(!getType.getFunctionType) {
-            return "%s%s %s(type=%s)".format(func?"FUNC":"VAR", t, getName, getType);
-        }
-        return "%s%s %s(%s)".format(func?"FUNC":"VAR", t, getName, paramTypes);
-    }
-}
-//============================================================================================
-
 final class FunctionFinder {
 private:
     Module module_;
@@ -74,9 +24,12 @@ public:
     ///     call.argTypes may not yet be known
     ///
     Callable standardFind(Call call, ModuleAlias modAlias=null) {
-        //dd("resolveCall", call.name);
 
-        doChat = call.name.startsWith("foo") && module_.canonicalName=="templates::template_functions";
+        //doChat = call.name.contains("__nullCheck") &&
+        //    module_.canonicalName=="test_optional";
+
+        chat("---------------------------");
+        chat("resolveCall: %s(%s)", call.name, call.argTypes().toString());
 
         Struct ns = call.isStartOfChain() ? call.getAncestor!Struct : null;
 
@@ -86,7 +39,7 @@ public:
                 return CALLABLE_NOT_READY;
             }
             string mangledName = call.name ~ "<" ~ module_.buildState.mangler.mangle(call.templateTypes) ~ ">";
-
+            chat("  mangledName %s", mangledName);
             /// Possible implicit this.call<...>(...)
             // if(ns) {
             //     extractTemplates(ns, call, mangledName, false);
@@ -110,7 +63,7 @@ public:
             int numRemoved = removeInvisible();
 
             if(doChat) {
-                chat("overloads = %s, (%s invisible)", overloads.length, numRemoved);
+                chat("  overloads = %s, (%s invisible)", overloads.length, numRemoved);
                 foreach(o; overloads) chat("   %s", o);
             }
 
@@ -141,13 +94,13 @@ public:
             /// From this point onwards we need the resolved types
             if(!call.argTypes.areKnown) return CALLABLE_NOT_READY;
 
+            chat("  before filtering (%s overloads)", overloads.length);
             filterOverloads(call);
 
             if(doChat) {
-                chat("after filtering overloads = %s", overloads.length);
+                chat("  after filtering (%s overloads)", overloads.length);
                 foreach(o; overloads) chat("   %s", o);
             }
-            //chat("after filtering, overloads = %s", overloads);
 
             if(overloads.length==0) {
 
@@ -157,11 +110,12 @@ public:
                     /// There is a template with the same name. Try that
                     if(implicitTemplates.find(ns, call, funcTemplates)) {
 
-                        chat("Found an implicit template match");
+                        chat("  Found an implicit template match");
                         /// If we get here then we found a match.
                         /// call.templateTypes have been set
                         return CALLABLE_NOT_READY;
                     }
+                    chat("  No implicit template match");
                 }
 
                 string msg;
@@ -200,9 +154,12 @@ public:
     ///     call.argTypes may not yet be known
     ///
     Callable structFind(Call call, Struct ns, bool staticOnly) {
-        chat("structFind %s, from line %s", call.name, call.line+1);
-
         assert(ns);
+
+        //doChat = call.name=="fook";
+
+        chat("structFind %s.%s static=%s, from line %s",
+            ns.name, call.name, staticOnly, call.line+1);
 
         /// Come back when all root level Placeholders have been removed
         if(ns.containsPlaceholders) {
@@ -218,8 +175,6 @@ public:
             return CALLABLE_NOT_READY;
         }
 
-        chat("structFind looking for %s, staticOnly=%s", call.name, staticOnly);
-
         Function[] fns;
         Variable[] vars;
 
@@ -228,7 +183,7 @@ public:
             vars ~= ns.getStaticVariable(call.name);
 
             chat("    adding static funcs %s", fns);
-            //chat("    adding static var %s", var);
+            //chat("    adding static vars %s", vars);
 
             /// Ensure these functions are resolved
             //foreach(f; fns) {
@@ -239,6 +194,9 @@ public:
         } else {
             fns  ~= ns.getMemberFunctions(call.name);
             vars ~= ns.getMemberVariable(call.name);
+
+            chat("   adding member funcs %s", fns);
+            chat("   adding member vars %s", vars);
         }
 
         /// Filter
@@ -499,6 +457,9 @@ private:
                 foreach(o; overloads[].dup) {
                     if(o.id != callable.id) overloads.remove(o);
                 }
+
+                //dd("  -->", overloads);
+
                 assert(overloads.length==1);
             }
         }
@@ -578,9 +539,13 @@ private:
                 proxy.isImport   = true;
 
                 if(modAlias) {
-                    modAlias.imp.add(proxy);
+                    if(!modAlias.imp.hasFunction(mangledName)) {
+                        modAlias.imp.add(proxy);
+                    }
                 } else {
-                    module_.add(proxy);
+                    if(!module_.hasFunction(mangledName)) {
+                        module_.add(proxy);
+                    }
                 }
             }
         }
@@ -686,9 +651,7 @@ private:
         return CALLABLE_NOT_READY;
     }
     void chat(A...)(lazy string fmt, lazy A args) {
-
         if(doChat) {
-        //if(module_.canonicalName=="templates::template_functions") {
             dd(format(fmt, args));
         }
     }

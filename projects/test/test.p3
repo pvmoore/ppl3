@@ -102,6 +102,13 @@ struct Vector
 
 fn testing() {
 
+    struct Blue(int a) {
+        fn foo() { return "BANANAS" }
+    }
+    Blue* obj = null
+    //var value = obj.a
+    //print(obj.foo())
+
     import test_classes
 
     testClasses()
@@ -109,8 +116,6 @@ fn testing() {
     const a = Vector()
 
 	loop(var i = 0; i<10; i+=1) {
-
-
 
 	}
 

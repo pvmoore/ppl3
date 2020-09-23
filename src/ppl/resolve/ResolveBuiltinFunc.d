@@ -86,7 +86,7 @@ public:
                     auto isFunc = false;
 
                     if(e.isIdentifier) {
-                        isFunc = e.as!Identifier.target.isFunction;
+                        isFunc = e.getIdentifier().target.isFunction;
                     } else if(e.isTypeExpr) {
                         isFunc = ft && !ft.isFunctionPtr;
                     } else {
@@ -103,7 +103,7 @@ public:
                     auto isFunc = false;
 
                     if(e.isIdentifier) {
-                        isFunc = e.as!Identifier.target.isVariable;
+                        isFunc = e.getIdentifier().target.isVariable;
                     } else if(e.isTypeExpr) {
                         isFunc = ft && ft.isFunctionPtr;
                     } else {
@@ -123,7 +123,7 @@ public:
                         module_.addError(e, "Expression is already a type", true);
                     }
 
-                    if(t.isFunction && e.isIdentifier && e.as!Identifier.target.isVariable) {
+                    if(t.isFunction && e.isIdentifier && e.getIdentifier().target.isVariable) {
                         /// Set isFunctionPtr flag otherwise we won't be able to
                         /// differentiate this from a standard function
                         te.getType.getFunctionType.isFunctionPtr = true;

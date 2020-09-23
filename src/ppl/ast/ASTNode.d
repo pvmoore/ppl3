@@ -455,11 +455,10 @@ public:
         return array;
     }
     final void collectTargets(ref Target[] targets) {
-
         if(this.isIdentifier) {
-            targets ~= this.as!Identifier.target;
+            targets ~= this.getIdentifier().target;
         } else if(this.isCall) {
-            targets ~= this.as!Call.target;
+            targets ~= this.getCall().target;
         }
 
         foreach(ch; children) {

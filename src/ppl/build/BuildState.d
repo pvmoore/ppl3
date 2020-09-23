@@ -419,7 +419,7 @@ protected:
             foreach(n; m.resolver.getUnresolvedNodes()) with(NodeID) {
 
                 if(n.id==IDENTIFIER) {
-                    auto identifier = n.as!Identifier;
+                    auto identifier = n.getIdentifier();
                     m.addError(n, "Unresolved identifier %s".format(identifier.name), true);
                 } else if(n.id==VARIABLE) {
                     auto variable = n.as!Variable;

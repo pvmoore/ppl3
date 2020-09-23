@@ -88,10 +88,6 @@ public:
 
         assert(this.tokens[0].type==TT.LBRACKET);
 
-        if(mangledName.contains("func") && module_.canonicalName=="implicit_template_funcs") {
-            dd("!!!!!", mangledName);
-        }
-
         Token[] tokens;
 
         if(isPub) tokens ~= this.tokens[0].copy("pub");

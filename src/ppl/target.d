@@ -124,7 +124,7 @@ private:
         }
         if(targetModule.nid != module_.nid) {
 
-            if(targetModule.canonicalName=="core::core") { dd("------> plus"); }
+            //if(targetModule.canonicalName=="core::core") { dd("------> plus"); }
 
             targetModule.numRefs++;
             if(func) func.numExternalRefs++;
@@ -138,7 +138,7 @@ private:
         }
         if(targetModule.nid != module_.nid) {
 
-            if(targetModule.canonicalName=="core::core") { dd("------> minus"); }
+            //if(targetModule.canonicalName=="core::core") { dd("------> minus"); }
 
             targetModule.numRefs--;
             if(func) func.numExternalRefs--;

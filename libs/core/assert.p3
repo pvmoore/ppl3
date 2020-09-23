@@ -1,15 +1,11 @@
 --module_priority=-900_000
 
-/* multiline */
-
 pub fn __assert(bool result, byte* moduleName, int line) {
     if(@expect(not result, false)) {
-        print("ASSERTION FAILED in ")
+        print("ERROR: Assertion failed at ")
         print(moduleName)
         print(":")
-        println(line) 
-        exit(-1)/*
-
-        */
+        println(line)
+        exit(-1)
     }
 }

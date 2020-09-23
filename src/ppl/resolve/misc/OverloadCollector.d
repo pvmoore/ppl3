@@ -4,8 +4,8 @@ import ppl.internal;
 
 final class OverloadCollector {
 private:
-    Module module_;
-    DynamicArray!Callable results;
+    @Borrowed Module module_;
+    @Borrowed DynamicArray!Callable results;
     string name;
     bool ready;
 public:
@@ -24,13 +24,23 @@ public:
         this.results  = results;
         this.results.clear();
 
+        // if(call.name.startsWith("__nullCheck<S>")) {
+        //     dd("collecting", call.name, module_.canonicalName, results);
+        //     flag = true;
+        // } else flag = false;
+
         if(modAlias) {
             subCollect(modAlias.imp);
         } else {
             subCollect(call);
         }
+        // if(flag) {
+        //     dd(" -->");
+        //     foreach(r; results) dd("  ", r, r.func);
+        // }
         return ready && module_.isParsed;
     }
+    //bool flag;
 private:
     /// Collect from an aliased import
     void subCollect(Import imp) {
@@ -41,7 +51,7 @@ private:
 
     void subCollect(ASTNode node) {
         auto nid = node.id();
-        //dd("nid=", nid);
+        //if(flag) dd("subCollect nid=", nid);
 
         if(nid==NodeID.MODULE) {
             /// Check all module level variables/functions
@@ -86,6 +96,7 @@ private:
     }
 
     void check(ASTNode n) {
+        //if(flag) dd("  check", n.id, n);
         switch(n.id) with(NodeID) {
             case VARIABLE:
                 auto v = n.as!Variable;
@@ -135,6 +146,7 @@ private:
                 auto imp = n.as!Import;
                 /// Ignore alias imports
                 if(imp.hasAliasName) break;
+
                 foreach(ch; imp.children[]) {
                     check(ch);
                 }

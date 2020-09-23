@@ -86,12 +86,17 @@ private:
 
         bool flag = true;
         int br = 0, sq = 0, angle = 0;
-        //enum : int { FN=1, STRUCT }
-        //auto stk = new Stack!int;
 
         while(nav.hasNext) {
+            bool endOfParam = br==0 && sq==0 && angle==0;
+
             if(nav.type==TT.IDENTIFIER) {
-                if(nav.value=="return") {
+                if(nav.value=="return" && endOfParam) {
+                    // end of param
+                    addParam();
+                    start = nav.index;
+                    break;
+                } else if(nav.value=="return") {
                     reg ~= " return ";
                     flag = true;
                 } else if(flag) {
@@ -106,15 +111,12 @@ private:
                 nav.next;
             } else {
 
-                bool endOfParam = br==0 && sq==0 && angle==0;
-                endOfParam &= (nav.type==TT.COMMA || nav.value=="return");
-
-                if(endOfParam) {
+                if(nav.type==TT.COMMA && endOfParam) {
                     /// end of param
                     addParam();
                     nav.next;
                     start = nav.index;
-                    flag = true;
+                    flag  = true;
                 } else {
                     reg ~= escapeRegex(toSimpleString(nav.get));
 
@@ -123,23 +125,8 @@ private:
                         case TT.RSQBRACKET: sq--;    flag = false; break;
                         case TT.LANGLE:     angle++; flag = true;  break;
                         case TT.RANGLE:     angle--; flag = false; break;
-                        case TT.LBRACKET:
-                            br++;
-                            flag = true;
-
-                            /// Remember whether it was a fn or a struct
-                            /// that opened this parenthesis
-                            //stk.push(nav.peek(-1).value=="fn"     ? FN :
-                            //         nav.peek(-1).value=="struct" ? STRUCT : 0);
-                            break;
-                        case TT.RBRACKET:
-                            br--;
-
-                            /// If the parenthesis started with "fn" then we expect
-                            /// another type so set flag to true to test the next identifier
-                            //stk.pop();
-                            flag = false;//stk.pop()==FN;
-                            break;
+                        case TT.LBRACKET:   br++;    flag = true;  break;
+                        case TT.RBRACKET:   br--;    flag = false; break;
                         case TT.COMMA:
                             flag = true;
                             break;
@@ -158,7 +145,7 @@ private:
         assert(regexes.length==numParams);
         assert(regexStrings.length==numParams);
 
-        //if(proxyNames.length==2 && proxyNames.contains("X")) {
+        //if(proxyNames.contains("X")) {
         //if(ns && ns.name=="M1") {
         //    dd("-->", proxyNames.values);
         //    dd("   -->", regexStrings);

@@ -99,6 +99,6 @@ private:
 
         assert(entry.getBody().children[1].isA!Dot &&
                entry.getBody().children[1].as!Dot.right().isA!Call &&
-               entry.getBody().children[1].as!Dot.right().as!Call.name=="start");
+               entry.getBody().children[1].as!Dot.right().getCall().name=="start");
     }
 }

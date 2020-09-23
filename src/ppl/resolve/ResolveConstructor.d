@@ -77,7 +77,7 @@ private:
 
         auto b = module_.nodeBuilder;
         auto struct_ = n.type.getStruct;
-        auto call = n.first().as!Call;
+        auto call = n.first().getCall();
         auto numArgs = call.numChildren();
         auto names = call.paramNames ? call.paramNames : null;
         auto args  = call.args().dup;

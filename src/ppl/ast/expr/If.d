@@ -79,6 +79,8 @@ final class If : Expression {
             case ADDRESS_OF:
             case VALUE_OF:
             case PARENTHESIS:
+            case DOT:
+            case CALL:
                 return true;
             case IF:
                 return p.as!If.isExpr();
@@ -96,7 +98,7 @@ final class If : Expression {
     }
 
     override string toString(){
-        string e = isExpr ? "EXPR" : "STMT";
+        string e = parent ? (isExpr ? "EXPR" : "STMT") : "";
         return "If %s (type=%s)".format(e, getType());
     }
 }

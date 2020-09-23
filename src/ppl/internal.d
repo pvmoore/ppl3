@@ -21,7 +21,7 @@ import std.algorithm.sorting   : sort;
 
 import common : DynamicArray = Array;
 import common : IQueue, makeSPSCQueue;
-import common : From, Hash, Hasher, Queue, Set, Stack, StringBuffer,
+import common : Borrowed, From, Hash, Hasher, Queue, Set, Stack, StringBuffer,
                 as, contains, dynamicDispatch, isA, isOneOf, firstNotNull, flushConsole, endsWith,
                 putIfAbsent,
                 removeChars, repeat, toInt, visit;
@@ -151,6 +151,7 @@ import ppl.resolve.ResolveSelect;
 import ppl.resolve.ResolveUnary;
 import ppl.resolve.ResolveVariable;
 
+import ppl.resolve.misc.Callable;
 import ppl.resolve.misc.DeadCodeEliminator;
 import ppl.resolve.misc.FoldUnreferenced;
 import ppl.resolve.misc.FunctionFinder;

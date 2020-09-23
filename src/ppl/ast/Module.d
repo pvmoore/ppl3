@@ -197,6 +197,9 @@ public:
         selectDescendents!Struct(array);
         return array[];
     }
+    bool hasFunction(string name) {
+        return getFunctions().any!(it=>it.name==name);
+    }
     ///
     /// Find all functions with given name at module scope.
     ///
@@ -252,13 +255,13 @@ public:
         auto array = new DynamicArray!ASTNode;
         recursiveCollect(array,
             it=> it.id()==NodeID.CALL &&
-                 it.as!Call.target.isFunction() &&
-                 it.as!Call.target.targetModule.nid != nid
+                 it.getCall().target.isFunction() &&
+                 it.getCall().target.targetModule.nid != nid
         );
         /// De-dup
         auto set = new Set!Function;
         foreach(call; array) {
-            set.add(call.as!Call.target.getFunction());
+            set.add(call.getCall().target.getFunction());
         }
         return set.values;
     }
@@ -270,14 +273,14 @@ public:
         auto array = new DynamicArray!ASTNode;
         recursiveCollect(array, it=>
             it.id()==NodeID.IDENTIFIER &&
-            it.as!Identifier.target.isVariable() &&
-            it.as!Identifier.target.targetModule.nid != nid &&
-            it.as!Identifier.target.getVariable().isStatic
+            it.getIdentifier().target.isVariable() &&
+            it.getIdentifier().target.targetModule.nid != nid &&
+            it.getIdentifier().target.getVariable().isStatic
         );
         /// De-dup
         auto set = new Set!Variable;
         foreach(v; array) {
-            set.add(v.as!Identifier.target.getVariable());
+            set.add(v.getIdentifier().target.getVariable());
         }
         return set.values;
     }

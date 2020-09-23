@@ -97,7 +97,7 @@ public:
 
             /// Check whether we are modifying a const variable
             if(!n.parent.isInitialiser) {
-                auto id = n.left().as!Identifier;
+                auto id = n.left().getIdentifier();
                 if(id && id.target.isVariable && id.target.getVariable.isConst) {
                     module_.addError(n, "Cannot modify const %s".format(id.name), true);
                 }
@@ -615,7 +615,6 @@ public:
                 if(func.isVisibleToOtherModules()) {
                     checkForExposingPrivateType(n, n.getType(), "Public function parameter");
                 }
-
             }
 
         }
@@ -706,7 +705,7 @@ private:
 
         auto inSameModule = self.getModule() == targetVar.getModule();
 
-        Struct targetStruct   = targetVar.getStruct;
+        Struct targetStruct = targetVar.getStruct;
         // Struct thisStruct     = self.getAncestor!Struct;
         // bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
 
@@ -727,7 +726,7 @@ private:
         auto inSameModule = self.getModule() == targetVar.getModule();
 
         Struct targetStruct = targetVar.getStruct;
-        // Struct thisStruct   = self.getAncestor!Struct;
+        // Struct thisStruct = self.getAncestor!Struct;
         // if(!thisStruct) {
         //     /// It might be in the module new function
         //     auto ini = self.getAncestor!Initialiser;
@@ -755,7 +754,7 @@ private:
 
         auto inSameModule = self.getModule() == targetFunc.getModule();
 
-        Struct targetStruct   = targetFunc.getStruct;
+        Struct targetStruct = targetFunc.getStruct;
         // Struct thisStruct     = self.getAncestor!Struct;
         // bool isExternalAccess = (thisStruct is null) || thisStruct != targetStruct;
 

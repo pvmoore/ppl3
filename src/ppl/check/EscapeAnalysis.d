@@ -103,7 +103,7 @@ private:
                 auto dot = e.as!Dot;
                 return findRef(dot.right());
             case IDENTIFIER:
-                auto target = e.as!Identifier.target;
+                auto target = e.getIdentifier().target;
                 if(target.isVariable) return Ref(target.getVariable);
                 break;
             case INDEX:

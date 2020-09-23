@@ -9,6 +9,7 @@ private:
     Tokens nav;
     ParamTypeMatcherRegex typeMatcherRegex;
     ResolveIdentifier identifierResolver;
+    bool doChat;
 public:
     this(Module module_) {
         this.module_            = module_;
@@ -17,7 +18,10 @@ public:
         this.identifierResolver = new ResolveIdentifier(module_);
     }
     bool find(Struct ns, Call call, DynamicArray!Function templateFuncs) {
-        //dd("================== Get implicit function templates for call", call.name, "(", call.argTypes,")");
+        //doChat = call.name=="__nullCheck";// && module_.canonicalName=="test_optional";
+
+        chat("================== Get implicit function templates for call %s(%s)",
+            call.name, call.argTypes.toString());
 
         /// Exit if call is already templated or there are no non-this args
         if(call.name.contains("<")) return false;
@@ -29,13 +33,15 @@ public:
         auto matchingParams = appender!(Type[][]);
         auto matchingFuncs  = appender!(Function[]);
 
+
         foreach(f; templateFuncs) {
             if(f.blueprint.numFuncParams == call.numArgs) {
+                chat("  Trying template %s", f);
 
                 Type[] templateTypes;
 
                 if(typeMatcherRegex.getEstimatedParams(call, f, templateTypes)) {
-                    //dd("   MATCH", "<", templateTypes.prettyString, ">");
+                    chat("   MATCH <%s>", templateTypes.toString());
 
                     matchingParams ~= templateTypes;
                     matchingFuncs  ~= f;
@@ -53,8 +59,14 @@ public:
             call.templateTypes = matchingParams.data[0];
             return true;
         }
-        
+
         /// No matches
         return false;
+    }
+private:
+    void chat(A...)(lazy string fmt, lazy A args) {
+        if(doChat) {
+            dd(format(fmt, args));
+        }
     }
 }

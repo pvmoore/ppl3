@@ -18,6 +18,12 @@ final class Composite : Expression {
 
     Usage usage = Usage.INNER_KEEP;
 
+
+    static Composite make(Usage usage) {
+        auto c  = makeNode!Composite;
+        c.usage = usage;
+        return c;
+    }
     static Composite make(ASTNode node, Usage usage) {
         auto c  = makeNode!Composite;
         c.usage = usage;

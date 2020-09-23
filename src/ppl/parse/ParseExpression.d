@@ -589,7 +589,7 @@ private:
         /// Two identifiers in a row means one was probably a type that we don't know about
         auto prev = id.prevSibling;
         if(prev && prev.isA!Identifier && parent.id==NodeID.TUPLE) {
-            errorMissingType(module_, prev, prev.as!Identifier.name);
+            errorMissingType(module_, prev, prev.getIdentifier().name);
         }
 
         id.target = new Target(module_);

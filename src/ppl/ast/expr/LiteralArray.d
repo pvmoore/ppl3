@@ -42,7 +42,7 @@ final class LiteralArray : Expression {
                 name ~= "_for_" ~ node.as!Variable.name;
                 break;
             } else if(node.id==NodeID.IDENTIFIER) {
-                name ~= "_for_" ~ node.as!Identifier.name;
+                name ~= "_for_" ~ node.getIdentifier().name;
                 break;
             } else if(node.id==NodeID.LITERAL_FUNCTION) {
                 break;

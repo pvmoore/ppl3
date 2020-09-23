@@ -15,7 +15,6 @@ public:
     /// Attempt to remove any unreferenced nodes.
     /// Called after each resolution phase.
     void processModule() {
-
         /// Remove any Variable or Function that is not referenced
         if(allTargetsResolved(module_)) {
             /// All global variables are private so potentially foldable
@@ -50,7 +49,6 @@ public:
     }
     /// Called from ResolveXXX classes to fold a node
     void fold(ASTNode replaceMe, ASTNode withMe, bool dereference = true) {
-
         auto p = replaceMe.parent;
 
         resolveModule.setModified(replaceMe);
@@ -115,10 +113,10 @@ public:
     static void recursiveDereference(ASTNode n, Module m) {
         /// dereference
         if(n.isIdentifier) {
-            auto t = n.as!Identifier.target;
+            auto t = n.getIdentifier().target;
             t.dereference();
         } else if(n.isCall) {
-            auto t = n.as!Call.target;
+            auto t = n.getCall().target;
             t.dereference();
         } else if(n.isLambda) {
             m.removeLambda(n.as!Lambda);
