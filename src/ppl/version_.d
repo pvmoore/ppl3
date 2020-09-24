@@ -2,12 +2,17 @@ module ppl.version_;
 
 public:
 
-enum VERSION = "3.49.0";
+enum VERSION = "3.50.0";
 
 /*
 
 // todo -
         // todo - allow names in function types?
+
+        // why are we adding function import proxies to module and not to
+        // an import node?
+
+        // We need to add any struct/enum etc to the template module as a reference
 
         - Add formatted string f"My name is ${name}, age ${04f:age}"
         - Implement regex strings
