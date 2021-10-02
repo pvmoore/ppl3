@@ -17,19 +17,6 @@ public:
         auto lt = n.leftType();
         auto rt = n.rightType();
 
-        if(n.op==Operator.BOOL_AND) {
-            auto p = n.parent.as!Binary;
-            if(p && p.op==Operator.BOOL_OR) {
-                module_.addError(n, "Parenthesis required to disambiguate these expressions", true);
-            }
-        }
-        if(n.op==Operator.BOOL_OR) {
-            auto p = n.parent.as!Binary;
-            if(p && p.op==Operator.BOOL_AND) {
-                module_.addError(n, "Parenthesis required to disambiguate these expressions", true);
-            }
-        }
-
         /// We need the types before we can continue
         if(lt.isUnknown || rt.isUnknown) {
             return;

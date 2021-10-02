@@ -26,6 +26,21 @@ public:
 
         parseLHS(t, parent);
         parseRHS(t, parent);
+
+        // Check for un-parenthesised and/or combinations here because we can potentially remove
+        // parenthesis nodes before we can do the check later
+        parent.recurse!Binary((node) {
+            if(node.parent.isA!Binary) {
+                auto n = node.as!Binary.op;
+                auto m = node.parent.as!Binary.op;
+
+                if((n == Operator.BOOL_AND && m == Operator.BOOL_OR) ||
+                    (n == Operator.BOOL_OR && m == Operator.BOOL_AND)) {
+                    module_.addError(node, "Parenthesis required to disambiguate these boolean expressions", true);
+                }
+            }
+        });
+
     }
 private:
     void parseLHS(Tokens t, ASTNode parent) {

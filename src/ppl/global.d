@@ -3,7 +3,6 @@ module ppl.global;
 /// Handle all global shared initialisation and storage.
 ///
 import ppl.internal;
-import std.stdio : File;
 
 public:
 

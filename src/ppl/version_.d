@@ -7,6 +7,25 @@ enum VERSION = "3.50.0";
 /*
 
 // todo -
+        // Don't use Logger for writing .ast files. Change the extension to .ast3 and
+        // copy the extension from ppl4
+
+        // Remove vscode server and extension code
+
+        // Add fold phase which is separate from resolve phase. This will run after resolve on each
+        // pass. eg. Pass = parse -> resolve -> fold
+
+        // Remove 'var' and 'const'. Or just remove const and assume name = Expression is const
+
+        // Change attributes from --xxx to something better
+
+
+
+        // -----------------------------------------------------------------------------------------
+
+
+
+
         // todo - allow names in function types?
 
         // why are we adding function import proxies to module and not to
@@ -32,7 +51,8 @@ enum VERSION = "3.50.0";
         - IDE: Requires evaluation refactor otherwise certain positions in the code cannot provide suggestions
             because they have been folded away.
 
-3.50.0 -
+
+3.50.0 - Fix parenthesis required bug
 
 3.49.0 - Add (optional) null check whenever a pointer member variable or function is accessed
 

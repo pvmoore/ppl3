@@ -74,7 +74,7 @@ pub struct string( // 16 bytes
             pos := this.indexOf(s.first(), pos)
 
             select(pos) {
-                -1 : break
+                -1   : break
                 else : {
                     if(memcmp(this.ptr()+pos, s.ptr(), s.length)==0) return pos
                 }
@@ -106,6 +106,15 @@ pub struct string( // 16 bytes
         // todo
         assert false
     }
+    pub fn toBool() {
+        if(this.length != 4) return false
+        const p = this.ptr()
+
+        return  (p[0]=='t' or p[0]=='T') and
+                (p[1]=='r' or p[1]=='R') and
+                (p[2]=='u' or p[2]=='U') and
+                (p[3]=='e' or p[3]=='E')
+    }
     pub fn toInt(int default) {
         var value = 0
         var mul   = 1
@@ -120,6 +129,7 @@ pub struct string( // 16 bytes
         return value
     }
     pub fn toFloat(float default) {
+        // todo
         assert false
     }
 }

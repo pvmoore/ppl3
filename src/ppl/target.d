@@ -9,7 +9,7 @@ private:
     enum TargetType { NOTSET, FUNC, VAR, STRUCTVAR, STRUCTFUNC }
 
     Module module_;
-    TargetType ttype;
+    TargetType ttype = TargetType.NOTSET;
     Variable var;
     Function func;
 public:

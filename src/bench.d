@@ -1,9 +1,9 @@
 module bench;
 
-import core.memory : GC;
-import std.stdio : writefln;
-import std.datetime.stopwatch : StopWatch, benchmark;
-import std.file : read;
+import core.memory              : GC;
+import std.stdio                : writefln;
+import std.datetime.stopwatch   : StopWatch, benchmark;
+import std.file                 : read;
 import ppl;
 
 void main() {

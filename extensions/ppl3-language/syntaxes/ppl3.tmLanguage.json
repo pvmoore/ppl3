@@ -46,15 +46,15 @@
 				},
 				{
 					"name": "storage.type.ppl3",
-					"match": "\\b(bool|byte|short|int|long|float|half|double|void|struct|class|enum|fn|alias)(\\*+|\\b)"
+					"match": "\\b(string|bool|byte|short|int|long|float|half|double|void|struct|class|enum|fn|alias)(\\*+|\\b)"
 				},
 				{
 					"name": "storage.modifier.public.ppl3",
-					"match": "\\b(pub)(\\*+|\\b)"
+					"match": "\\b(pub|extern|static)(\\*+|\\b)"
 				},
 				{
 					"name" : "storage.modifier.ppl3",
-					"match": "\\b(extern|static)\\b"
+					"match": "\\b(blahblah)\\b"
 				},
 				{
 					"name" : "support.function.ppl3",

@@ -1,11 +1,14 @@
 @echo off
 cls
+chcp 65001
 
 if "%1"=="" (
     set NAME=projects\test
 ) else (
     set NAME=projects\%1
 )
+
+rem cd ..
 
 
 del /Q %NAME%\.target\*.exe

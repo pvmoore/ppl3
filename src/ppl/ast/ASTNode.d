@@ -307,6 +307,13 @@ public:
         return parent.getRoot();
     }
     //================================================================================= Dump
+    final string dumpToString(string indent = "") {
+        string s = "%s%s\n".format(indent, this.toString());
+        foreach(ch; this.children) {
+            s ~= ch.dumpToString(indent ~ "  ");
+        }
+        return s;
+    }
     final void dumpToConsole(string indent="") {
         //dd(this.id);
         dd("[% 4s] %s".format(this.line+1, indent ~ this.toString()));
