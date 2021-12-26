@@ -133,8 +133,10 @@ public:
 
     final bool isEthereal() {
         return this.id.isOneOf(
-            NodeID.COMPOSITE, NodeID.CONSTRUCTOR,
-            NodeID.INITIALISER, NodeID.PARAMETERS);
+            NodeID.COMPOSITE,
+            NodeID.CONSTRUCTOR,
+            NodeID.INITIALISER,
+            NodeID.PARAMETERS);
     }
 
     final Position getEndPosition() {

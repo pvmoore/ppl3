@@ -1,14 +1,14 @@
 module ppl.ast.expr.LiteralTuple;
 
 import ppl.internal;
-///
-/// literal_tuple ::= "[" tuple_param { "," tuple_param } "]"
-/// tuple_param   ::= expression | name "=" expression
-///
-/// LiteralTuple
-///     expression
-///     expression etc...
-///
+
+/**
+ *  LiteralTuple
+ *      { Expression }
+ *
+ *  literal_tuple ::= "[" tuple_param { "," tuple_param } "]"
+ *  tuple_param   ::= Expression | name "=" Expression
+ */
 final class LiteralTuple : Expression {
     Type type;
 
@@ -17,7 +17,7 @@ final class LiteralTuple : Expression {
     }
 
 /// ASTNode
-    override bool isResolved()    { return type.isKnown; }
+    override bool isResolved()    { return type.isKnown(); }
     override NodeID id() const    { return NodeID.LITERAL_TUPLE; }
     override Type getType()       { return type; }
 
@@ -59,11 +59,11 @@ final class LiteralTuple : Expression {
         return cast(Expression[])children[];
     }
     Type[] elementTypes() {
-        return elements().map!(it=>it.getType).array;
+        return elements().map!(it=>it.getType()).array;
     }
     bool allValuesSpecified() {
-        assert(isResolved);
-        return elements().length == type.getTuple.numMemberVariables;
+        assert(isResolved());
+        return elements().length == type.getTuple().numMemberVariables();
     }
 
     override string toString() {

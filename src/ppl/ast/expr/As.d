@@ -1,16 +1,19 @@
 module ppl.ast.expr.As;
 
 import ppl.internal;
-///
-/// As
-///    expr
-///    type
-///
+
+/**
+ *  As
+ *      Expression
+ *      TypeExpression
+ */
 final class As : Expression {
+public:
 /// ASTNode
-    override bool isResolved()    { return left().isResolved && getType.isKnown; }
+    override bool isResolved()    { return left().isResolved() && getType().isKnown(); }
     override NodeID id() const    { return NodeID.AS; }
     override Type getType()       { return rightType(); }
+
 /// Expression
     override int priority() const { return 3; }
     override CT comptime()        { return left().comptime(); }

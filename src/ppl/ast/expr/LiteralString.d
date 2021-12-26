@@ -10,6 +10,9 @@ import ppl.internal;
 /// r - regex string with no escapes eg. r"\bregex\w"
 /// f - formatted string
 ///
+/**
+ *  LiteralString
+ */
 class LiteralString : Expression {
 protected:
     LLVMValueRef  _llvmValue;
@@ -47,7 +50,7 @@ public:
     }
 
 /// ASTNode
-    override bool isResolved()    { return type.isKnown; }
+    override bool isResolved()    { return type.isKnown(); }
     override NodeID id() const    { return NodeID.LITERAL_STRING; }
     override Type getType()       { return type; }
 

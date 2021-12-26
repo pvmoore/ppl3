@@ -2,6 +2,9 @@ module ppl.ast.expr.LiteralNull;
 
 import ppl.internal;
 
+/**
+ *  LiteralNull
+ */
 final class LiteralNull : Expression, CompileTimeConstant {
     Type type;
 
@@ -26,7 +29,7 @@ final class LiteralNull : Expression, CompileTimeConstant {
     }
 
 /// ASTNode
-    override bool isResolved()    { return type.isKnown; }
+    override bool isResolved()    { return type.isKnown(); }
     override NodeID id() const    { return NodeID.LITERAL_NULL; }
     override Type getType()       { return type; }
 

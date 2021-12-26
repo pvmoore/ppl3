@@ -55,10 +55,10 @@ public:
                      .array;
     }
 
-    string getOptimisedIR(string canonicalName)   { return optimisedIr.get(canonicalName, null); }
-    string getUnoptimisedIR(string canonicalName) { return unoptimisedIr.get(canonicalName, null); }
-    string getLinkedIR()                          { return linkedIr; }
-    string getLinkedASM()                         { return linkedASM; }
+    // string getOptimisedIR(string canonicalName)   { return optimisedIr.get(canonicalName, null); }
+    // string getUnoptimisedIR(string canonicalName) { return unoptimisedIr.get(canonicalName, null); }
+    // string getLinkedIR()                          { return linkedIr; }
+    // string getLinkedASM()                         { return linkedASM; }
 
     this(LLVMWrapper llvmWrapper, Config config) {
         this.llvmWrapper            = llvmWrapper;
@@ -73,10 +73,10 @@ public:
         //this.refInfo                = new ReferenceInformation(this);
     }
     /// Tasks
-    bool tasksOutstanding()       { return !taskQueue.empty; }
-    int tasksRemaining()          { return taskQueue.length; }
-    string getNextTask()          { return taskQueue.pop; }
-    void addTask(string t)        { taskQueue.push(t); }
+    bool tasksOutstanding() { return !taskQueue.empty; }
+    int tasksRemaining()    { return taskQueue.length; }
+    string getNextTask()    { return taskQueue.pop; }
+    void addTask(string t)  { taskQueue.push(t); }
 
     void addError(CompileError e, bool canContinue) {
         string key = e.getKey();
@@ -221,7 +221,7 @@ public:
 
         GC.collect();
 
-        receiver("\nOK");
+        receiver("\n✅");
         receiver("");
         receiver("Active modules ......... %s".format(allModules.length));
         receiver("Inactive modules ....... %s".format(removedModules.length));
@@ -290,10 +290,11 @@ protected:
     void parseAndResolve() {
         logState("[✓] parseAndResolve");
 
+        enum MAX_LOOPS      = 100;
         auto prevUnresolved = new Set!int;
         bool stalemate      = false;
 
-        for(int loop=1; loop<100; loop++) {
+        for(int loop=1; loop<MAX_LOOPS; loop++) {
 
             /// Process all pending tasks
             while(tasksOutstanding()) {
@@ -331,13 +332,14 @@ protected:
 
             prevUnresolved = unresolved;
         }
+
         /// If we get here we couldn't resolve something
         if(!hasErrors()) {
             convertUnresolvedNodesIntoErrors();
         }
     }
     void parseModules() {
-        foreach(m; allModules) {
+        foreach(m; allModules()) {
             if(!m.isParsed) {
                 m.parser.parse();
             }
@@ -349,7 +351,7 @@ protected:
 
         int numUnresolvedModules = 0;
 
-        foreach(m; allModules) {
+        foreach(m; allModules()) {
             bool resolved  = m.resolver.resolve(resolveStalemate);
             nodesModified |= m.resolver.isModified();
 
@@ -368,8 +370,8 @@ protected:
     }
     void allModulesResolved() {
         logState("[✓] All modules resolved");
-         Module largestM;
-        foreach(m; modules.values) {
+        Module largestM;
+        foreach(m; allModules()) {
             if(largestM is null || m.resolver.getCurrentIteration > largestM.resolver.getCurrentIteration) {
                 largestM = m;
             }
@@ -393,7 +395,7 @@ protected:
     }
     void semanticCheck() {
         logState("[✓] semantic");
-        foreach(m; allModules) {
+        foreach(m; allModules()) {
             //dd(m.canonicalName);
             m.checker.check();
         }
@@ -405,7 +407,7 @@ protected:
     bool generateIR() {
         logState("[✓] generating IR");
         bool allOk = true;
-        foreach(m; allModules) {
+        foreach(m; allModules()) {
             allOk &= m.gen.generate();
 
             if(config.collectOutput) {
@@ -415,7 +417,7 @@ protected:
         return allOk;
     }
     void convertUnresolvedNodesIntoErrors() {
-        foreach(m; modules.values) {
+        foreach(m; allModules()) {
             foreach(n; m.resolver.getUnresolvedNodes()) with(NodeID) {
 
                 if(n.id==IDENTIFIER) {
@@ -430,13 +432,13 @@ protected:
             }
         }
         if(!hasErrors()) {
-            auto m = mainModule ? mainModule : modules.values[0];
+            auto m = mainModule ? mainModule : allModules()[0];
             addError(new UnknownError(m, "There were unresolved symbols but no errors were added"), true);
         }
     }
     void dumpAST() {
         logState("[✓] dumpAST");
-        foreach(m; allModules) {
+        foreach(m; allModules()) {
             m.resolver.writeAST();
         }
     }

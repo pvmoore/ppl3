@@ -1,9 +1,10 @@
 module ppl.ast.expr.Calloc;
 
 import ppl.internal;
-///
-/// Allocate a type on the heap
-///
+
+/**
+ *  Calloc
+ */
 final class Calloc : Expression {
 private:
     Type ptrType;
@@ -16,7 +17,7 @@ public:
     override Type getType() {
         if(!ptrType) {
             auto t = Pointer.of(valueType, 1);
-            if(!valueType.isAlias) ptrType = t;
+            if(!valueType.isAlias()) ptrType = t;
             return t;
         }
         return ptrType;

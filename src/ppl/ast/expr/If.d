@@ -12,12 +12,14 @@ import ppl.internal;
 /// int a = if(b > c) 3 else 4
 /// int a = if(b > c) { callSomeone(); 3 } else if(c > d) 4 else 5
 ///
-/// If
-///    [0] initExprs (Composite)
-///    [1] condition (Expression)
-///    [2] thenStmt  (Composite)
-///    [3] elseStmt // optional (Composite)
-///
+
+/**
+ *  If
+ *      [0] (Composite)  // initExprs
+ *      [1] (Expression) // condition
+ *      [2] (Composite)  // thenStmt
+ *      [3] (Composite)  // elseStmt - optional
+ */
 final class If : Expression {
     Type type;
 
@@ -26,7 +28,7 @@ final class If : Expression {
     }
 
 /// ASTNode
-    override bool isResolved() { return type.isKnown; }
+    override bool isResolved() { return type.isKnown(); }
     override NodeID id() const { return NodeID.IF; }
     override Type getType() { return type; }
 
@@ -52,11 +54,11 @@ final class If : Expression {
     Composite elseStmt()   { return children[3].as!Composite; }
 
     Type thenType() { return thenStmt().getType(); }
-    Type elseType() { assert(hasElse); return elseStmt().getType(); }
+    Type elseType() { assert(hasElse()); return elseStmt().getType(); }
 
-    bool hasInitExpr() { return first().hasChildren; }
-    bool hasThen()     { return thenStmt().hasChildren; }
-    bool hasElse()     { return numChildren > 3 && elseStmt().hasChildren; }
+    bool hasInitExpr() { return first().hasChildren(); }
+    bool hasThen()     { return thenStmt().hasChildren(); }
+    bool hasElse()     { return numChildren() > 3 && elseStmt().hasChildren(); }
 
     bool isExpr() {
         auto p = parent;
@@ -67,8 +69,8 @@ final class If : Expression {
             case LOOP:
                 return false;
             case SELECT:
-                if(parent.isComposite) {
-                    if(parent.last().nid == nid) return p.as!Select.isExpr;
+                if(parent.isComposite()) {
+                    if(parent.last().nid == nid) return p.as!Select.isExpr();
                 } else {
                     assert(false, "implement me");
                 }
@@ -89,16 +91,16 @@ final class If : Expression {
         }
     }
     bool thenBlockEndsWithReturn() {
-        if(thenStmt.numChildren==0) return false;
-        return thenStmt().last().isReturn;
+        if(thenStmt.numChildren()==0) return false;
+        return thenStmt().last().isReturn();
     }
     bool elseBlockEndsWithReturn() {
-        assert(hasElse);
-        return elseStmt().last().isReturn;
+        assert(hasElse());
+        return elseStmt().last().isReturn();
     }
 
     override string toString(){
-        string e = parent ? (isExpr ? "EXPR" : "STMT") : "";
+        string e = parent ? (isExpr() ? "EXPR" : "STMT") : "";
         return "If %s (type=%s)".format(e, getType());
     }
 }

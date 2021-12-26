@@ -2,15 +2,17 @@ module ppl.ast.stmt.Variable;
 
 import ppl.internal;
 
-///
-/// variable ::= type identifier [ "=" expression ]
-///
-/// Possible children: 0, 1 or 2:
-///
-/// Variable
-///     Initialiser
-///
+/**
+ * Variable
+ *     Initialiser
+ *
+ * variable ::= type identifier [ "=" expression ]
+ *
+ * Possible children: 0, 1 or 2:
+ *
+ */
 final class Variable : Statement, VariableOrFunction {
+public:
     Type type;
     string name;
     bool isConst;
@@ -22,14 +24,14 @@ final class Variable : Statement, VariableOrFunction {
     LLVMValueRef llvmValue;
 
 /// ASTNode
-    override bool isResolved() { return type.isKnown; }
+    override bool isResolved() { return type.isKnown(); }
     override NodeID id() const { return NodeID.VARIABLE; }
     override Type getType()    { return type; }
 
 
     bool isLocalAlloc() {
-        return !isParameter &&
-               !isTupleVar &&
+        return !isParameter() &&
+               !isTupleVar() &&
                cast(Type)parent is null &&
                getContainer().id()==NodeID.LITERAL_FUNCTION;
     }
@@ -54,7 +56,7 @@ final class Variable : Statement, VariableOrFunction {
         return parent.isA!Parameters;
     }
     bool isFunctionPtr() {
-        return type.isKnown && type.isFunction;
+        return type.isKnown() && type.isFunction();
     }
 
 
@@ -65,13 +67,13 @@ final class Variable : Statement, VariableOrFunction {
     }
 
     bool hasInitialiser() {
-        return children[].any!(it=>it.isInitialiser);
+        return children[].any!(it=>it.isInitialiser());
     }
     Initialiser initialiser() {
-        assert(numChildren>0);
+        assert(numChildren()>0);
 
         foreach(ch; children) {
-            if(ch.isInitialiser) {
+            if(ch.isInitialiser()) {
                 return ch.as!Initialiser;
             }
         }
@@ -97,7 +99,7 @@ final class Variable : Statement, VariableOrFunction {
         assert(isParameter());
         auto bd = getAncestor!LiteralFunction();
         assert(bd);
-        if(bd.isLambda) return bd.getLambda();
+        if(bd.isLambda()) return bd.getLambda();
         return bd.getFunction();
     }
 
@@ -110,13 +112,13 @@ final class Variable : Statement, VariableOrFunction {
     }
 
     override string toString() {
-        string mod = isStatic ? "static " : "";
-        mod ~= isConst ? "const ":"";
+        string mod = (isStatic ? "static " : "") ~
+                     (isConst  ? "const "  : "");
 
-        string loc = isParameter  ? "PARAM" :
-                     isLocalAlloc ? "LOCAL" :
-                     isGlobal     ? "GLOBAL" :
-                                    "STRUCT";
+        string loc = isParameter()  ? "PARAM" :
+                     isLocalAlloc() ? "LOCAL" :
+                     isGlobal()     ? "GLOBAL" :
+                                      "STRUCT";
 
         if(name) {
             return "'%s' Variable[refs=%s] (type=%s%s) %s %s".format(name, numRefs, mod, type, loc, access);

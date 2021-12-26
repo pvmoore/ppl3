@@ -8,7 +8,10 @@ pub struct List <T>(
     pub fn new(int reserve) {
         this.expand(reserve)
     }
-    pub fn ptr() { return this.array }
+
+    pub fn ptr() {
+        return this.array
+    }
     pub fn empty() {
         return this.length==0
     }
@@ -41,7 +44,7 @@ pub struct List <T>(
             closure(this.array[i])
         }
     }
-    pub fn each(fn(int,T return void) closure) {
+    pub fn each(fn(int, T return void) closure) {
         loop(var i = 0; i<this.length; i+=1) {
             closure(i,this.array[i])
         }
@@ -51,15 +54,18 @@ pub struct List <T>(
             closure(this.array[i])
         }
     }
-    pub fn eachReverse(fn(int,T return void) closure) {
+    pub fn eachReverse(fn(int, T return void) closure) {
         loop(var i = this.length-1; i>=0; i-=1) {
             closure(i, this.array[i])
         }
     }
     pub fn removeAt(int index) {
-
+        // todo
+        assert false
     }
     pub fn insertAt(int index, T value) {
+        // todo
+        assert false
         return this
     }
     pub fn clear() {
@@ -68,10 +74,11 @@ pub struct List <T>(
     }
     pub fn pack() {
         // todo
+        assert false
         return this
     }
     pub fn reversed() {
-        var copy = List<T>(this.length)
+        const copy = List<T>(this.length)
         loop(var dest = 0, var src=this.length-1; src>=0; src -= 1) {
             copy.array[dest] := this.array[src]
         }
@@ -79,6 +86,7 @@ pub struct List <T>(
     }
     fn expand(int required) {
         if(required < 1) return
+
         if(not this.array) {
             this.arrayLength := required + 7
             this.array       := malloc(this.arrayLength*@sizeOf(T)) as T*

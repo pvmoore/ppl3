@@ -205,7 +205,7 @@ Expression initExpression(Type t) {
         case HALF:
         case FLOAT:
         case DOUBLE:
-            return LiteralNumber.makeConst(0, t);
+            return LiteralNumber.makeConst("0", t);
     }
 }
 string toString(Type[] types) {

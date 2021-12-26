@@ -333,12 +333,10 @@ fn testTemplates() {
 fn testCore() {
     import core_::console,
            core_::list,
-           core_::string,
-           core_::unsigned
+           core_::string
 
     testConsole()
     testList()
     testString()
-    testUnsigned()
 }
 

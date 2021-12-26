@@ -28,12 +28,6 @@ import ppl.misc.toml;
 import ppl.type.IType;
 
 
-T min(T)(T a, T b) {
-    return a < b ? a : b;
-}
-T max(T)(T a, T b) {
-    return a > b ? a: b;
-}
 
 /// Debug logging
 void dd(A...)(A args) {

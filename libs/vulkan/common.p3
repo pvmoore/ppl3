@@ -1,17 +1,17 @@
 
 /** */
 
-struct VkInstance {
-    
+pub struct VkInstance {
+
 }
-struct VkPhysicalDevice {
-    
+pub struct VkPhysicalDevice {
+
 }
-struct VkDevice {
-    
+pub struct VkDevice {
+
 }
-enum VkFormat {
+pub enum VkFormat {
     UNDEFINED       = 0,
-    R8G8B8A8_UNORM  = 37  
+    R8G8B8A8_UNORM  = 37
 }
 

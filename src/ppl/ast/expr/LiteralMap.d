@@ -2,11 +2,15 @@ module ppl.ast.expr.LiteralMap;
 
 import ppl.internal;
 
+/**
+ *  LiteralMap
+ *      todo
+ */
 final class LiteralMap : Expression {
     Type type;
 
 /// ASTNode
-    override bool isResolved() { return type.isKnown; }
+    override bool isResolved() { return type.isKnown(); }
     override NodeID id() const { return NodeID.LITERAL_MAP; }
     override Type getType()    { return type; }
 

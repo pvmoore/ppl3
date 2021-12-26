@@ -27,7 +27,7 @@ final class Constructor : Expression {
     bool isRewritten = false;
 
 /// ASTNode
-    override bool isResolved() { return isRewritten && type.isKnown; }
+    override bool isResolved() { return isRewritten && type.isKnown(); }
     override NodeID id() const { return NodeID.CONSTRUCTOR; }
     override Type getType()    { return type; }
 
@@ -41,9 +41,9 @@ final class Constructor : Expression {
     }
 
     string getName() {
-        return (type.isStructOrClass()) ? type.getStruct.name : type.getAlias.name;
+        return (type.isStructOrClass()) ? type.getStruct().name : type.getAlias().name;
     }
     override string toString() {
-        return "Constructor %s%s".format(getName(), type.isPtr ? "*":"");
+        return "Constructor %s%s".format(getName(), type.isPtr() ? "*":"");
     }
 }

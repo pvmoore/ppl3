@@ -15,11 +15,11 @@ private:
     ControlFlow controlFlow;
 public:
     this(Module module_) {
-        this.module_            = module_;
-        this.stringSet          = new Set!string;
-        this.escapeAnalysis     = new EscapeAnalysis(module_);
-        this.controlFlow        = new ControlFlow(module_);
-        this.idTargetFinder     = new IdentifierTargetFinder(module_);
+        this.module_        = module_;
+        this.stringSet      = new Set!string;
+        this.escapeAnalysis = new EscapeAnalysis(module_);
+        this.controlFlow    = new ControlFlow(module_);
+        this.idTargetFinder = new IdentifierTargetFinder(module_);
     }
     void clearState() {
         watch.reset();
@@ -49,12 +49,12 @@ public:
         }
     }
     void visit(As n) {
-        Type fromType = n.leftType;
-        Type toType   = n.rightType;
+        Type fromType = n.leftType();
+        Type toType   = n.rightType();
 
-        if(fromType.isPtr && toType.isPtr) {
+        if(fromType.isPtr() && toType.isPtr()) {
             /// ok - bitcast pointers
-        } else if(fromType.isPtr && !toType.isInteger) {
+        } else if(fromType.isPtr() && !toType.isInteger()) {
             errorBadExplicitCast(module_, n, fromType, toType);
         } else if(!fromType.isInteger && toType.isPtr) {
             errorBadExplicitCast(module_, n, fromType, toType);
@@ -62,18 +62,18 @@ public:
     }
     void visit(Binary n) {
 
-        auto lt = n.leftType;
-        auto rt = n.rightType;
+        auto lt = n.leftType();
+        auto rt = n.rightType();
 
-        assert(n.numChildren==2, "Binary numChildren=%s. Expecting 2".format(n.numChildren));
+        assert(n.numChildren()==2, "Binary numChildren=%s. Expecting 2".format(n.numChildren()));
 
 
-        if(n.left.isTypeExpr) {
-            module_.addError(n.left, "Expecting a non-type expression", true);
+        if(n.left.isTypeExpr()) {
+            module_.addError(n.left(), "Expecting a non-type expression", true);
             return;
         }
-        if(n.right.isTypeExpr) {
-            module_.addError(n.right, "Expecting a non-type expression", true);
+        if(n.right.isTypeExpr()) {
+            module_.addError(n.right(), "Expecting a non-type expression", true);
             return;
         }
 
@@ -81,24 +81,24 @@ public:
         if(n.isPtrArithmetic) {
 
         } else {
-            if(!areCompatible(n.rightType, n.leftType)) {
-                module_.addError(n, "Types are incompatible: %s and %s".format(n.leftType, n.rightType), true);
+            if(!areCompatible(rt, lt)) {
+                module_.addError(n, "Types are incompatible: %s and %s".format(lt, rt), true);
             }
         }
 
-        if(n.op.isAssign) {
+        if(n.op.isAssign()) {
 
-            if(n.op!=Operator.ASSIGN && n.op!=Operator.REASSIGN && n.leftType.isPtr && n.rightType.isInteger) {
+            if(n.op!=Operator.ASSIGN && n.op!=Operator.REASSIGN && lt.isPtr() && rt.isInteger()) {
                 /// int* a = 10
                 /// a += 10
-            } else if(!n.rightType.canImplicitlyCastTo(n.leftType)) {
-                errorBadImplicitCast(module_, n, n.rightType, n.leftType);
+            } else if(!rt.canImplicitlyCastTo(lt)) {
+                errorBadImplicitCast(module_, n, rt, lt);
             }
 
             /// Check whether we are modifying a const variable
-            if(!n.parent.isInitialiser) {
+            if(!n.parent.isInitialiser()) {
                 auto id = n.left().getIdentifier();
-                if(id && id.target.isVariable && id.target.getVariable.isConst) {
+                if(id && id.target.isVariable() && id.target.getVariable().isConst) {
                     module_.addError(n, "Cannot modify const %s".format(id.name), true);
                 }
             }
@@ -116,15 +116,15 @@ public:
     void visit(BuiltinFunc n) {
         switch(n.name) {
             case "expect":
-                if(n.numChildren!=2) {
+                if(n.numChildren()!=2) {
                     module_.addError(n, "Expecting two integer expressions", true);
                 } else {
                     auto types = n.exprTypes();
 
-                    if(!(types[0].isInteger || types[0].isBool) || !types[0].isValue) {
+                    if(!(types[0].isInteger() || types[0].isBool()) || !types[0].isValue()) {
                         module_.addError(n.children[0], "Expecting an integer expression", true);
                     }
-                    if(!(types[1].isInteger || types[1].isBool) || !types[1].isValue) {
+                    if(!(types[1].isInteger() || types[1].isBool()) || !types[1].isValue()) {
                         module_.addError(n.children[1], "Expecting an integer expression", true);
                     }
 
@@ -155,11 +155,11 @@ public:
         }
 
         /// Check access
-        if(n.target.isMemberFunction) {
-            checkMemberFunctionAccess(n, n.target.getFunction);
+        if(n.target.isMemberFunction()) {
+            checkMemberFunctionAccess(n, n.target.getFunction());
         }
-        if(n.target.isMemberVariable) {
-            checkMemberVariableAccess(n, n.target.getVariable);
+        if(n.target.isMemberVariable()) {
+            checkMemberVariableAccess(n, n.target.getVariable());
         }
     }
     void visit(Case n) {
@@ -196,9 +196,9 @@ public:
     }
     void visit(Function n) {
 
-        if(n.isTemplateBlueprint) return;
+        if(n.isTemplateBlueprint()) return;
 
-        auto retType = n.getType.getFunctionType.returnType;
+        auto retType = n.getType().getFunctionType().returnType();
 
         if(n.isVisibleToOtherModules()) {
             checkForExposingPrivateType(n, retType, "Public function return type");
@@ -207,24 +207,24 @@ public:
         switch(n.name) {
             case "operator==":
             case "operator!=":
-                if(retType.isPtr || !retType.isBool) {
+                if(retType.isPtr() || !retType.isBool()) {
                     module_.addError(n, "%s must return bool".format(n.name), true);
                 }
                 break;
             case "operator[]":
-                if(n.params.numParams==2) {
+                if(n.params().numParams()==2) {
                     /// get
-                    if(retType.isValue && retType.isVoid) {
+                    if(retType.isValue() && retType.isVoid()) {
                         module_.addError(n, "operator:(this,int) must not return void", true);
                     }
-                } else if(n.params.numParams==3) {
+                } else if(n.params().numParams()==3) {
                     /// set
 
                 }
                 break;
             case "__user_main":
-                if(retType.isVoid && retType.isValue) break; // void ok
-                if(retType.category()==Type.INT && retType.isValue) break; // int ok
+                if(retType.isVoid() && retType.isValue()) break; // void ok
+                if(retType.category()==Type.INT && retType.isValue()) break; // int ok
 
                 module_.addError(n, "main/WinMain can only return int or void", true);
                 break;
@@ -242,8 +242,8 @@ public:
     void visit(Identifier n) {
 
         /// Check struct static variables
-        if(n.target.isVariable) {
-            auto var = n.target.getVariable;
+        if(n.target.isVariable()) {
+            auto var = n.target.getVariable();
             if(var.isStatic) {
                 checkStaticVariableAccess(n, var);
                 checkReadOnlyModification(n, var);
@@ -251,22 +251,22 @@ public:
         }
 
         /// Check struct member variables
-        if(n.target.isMemberVariable) {
+        if(n.target.isMemberVariable()) {
 
-            auto var = n.target.getVariable;
+            auto var = n.target.getVariable();
             checkMemberVariableAccess(n, var);
             checkReadOnlyModification(n, var);
 
             /// Check for static access to non-static variable
             if(!var.isStatic) {
                 ///
-                if(n.parent.isDot) {
+                if(n.parent.isDot()) {
                     auto s = n.previous();
                     // todo
                 } else {
-                    auto con = n.getContainer;
-                    if(con.isFunction) {
-                        if(con.as!LiteralFunction.getFunction.isStatic) {
+                    auto con = n.getContainer();
+                    if(con.isFunction()) {
+                        if(con.as!LiteralFunction.getFunction().isStatic) {
                             module_.addError(n, "Static access to non-static variable", true);
                         }
                     } else assert(false, "todo");
@@ -275,14 +275,14 @@ public:
         }
     }
     void visit(If n) {
-        if(n.isExpr) {
+        if(n.isExpr()) {
             /// Type must not be void
-            if(n.type.isVoid && n.type.isValue) {
+            if(n.type.isVoid() && n.type.isValue()) {
                 module_.addError(n, "If must not have void result", true);
             }
 
             /// Both then and else are required
-            if(!n.hasThen || !n.hasElse) {
+            if(!n.hasThen() || !n.hasElse()) {
                 module_.addError(n, "If must have both a then and an else result", true);
             }
 
@@ -301,8 +301,8 @@ public:
         auto lit = n.index().as!LiteralNumber;
         if(lit) {
             /// Index is a const. Check the bounds
-            if(n.isArrayIndex) {
-                Array array = n.exprType().getArrayType;
+            if(n.isArrayIndex()) {
+                Array array = n.exprType().getArrayType();
                 assert(array);
 
                 auto count = array.countExpr().as!LiteralNumber;
@@ -311,9 +311,9 @@ public:
                 if(lit.value.getInt() >= count.value.getInt()) {
                     module_.addError(n, "Array bounds error. %s >= %s".format(lit.value.getInt(), count.value.getInt()), true);
                 }
-            } else if(n.isTupleIndex) {
+            } else if(n.isTupleIndex()) {
 
-                Tuple tuple = n.exprType().getTuple;
+                Tuple tuple = n.exprType().getTuple();
                 assert(tuple);
 
                 auto count = tuple.numMemberVariables();
@@ -327,13 +327,13 @@ public:
 
             }
         } else {
-            if(n.isTupleIndex) {
+            if(n.isTupleIndex()) {
                 module_.addError(n, "Tuple index must be a const number", true);
             }
 
             /// We could add a runtime check here in debug mode
         }
-        if(n.exprType.isKnown) {
+        if(n.exprType().isKnown()) {
 
         }
     }
@@ -378,7 +378,7 @@ public:
                         module_.addError(v, "Variable '%s' is declared more than once in this scope (Previous declaration is on line %s)"
                                .format(v.name, v2.line+1), true);
 
-                    } else if(v.isLocalAlloc) {
+                    } else if(v.isLocalAlloc()) {
 
                         /// Check for shadowing
                         auto res = idTargetFinder.find(v.name, v.previous());
@@ -422,17 +422,17 @@ public:
 
     }
     void visit(LiteralTuple n) {
-        Tuple tuple = n.type.getTuple;
+        Tuple tuple = n.type.getTuple();
         assert(tuple);
 
         auto structTypes = tuple.memberVariableTypes();
 
         /// Check for too many values
-        if(n.numElements > tuple.numMemberVariables) {
+        if(n.numElements() > tuple.numMemberVariables()) {
             module_.addError(n, "Too many values specified", true);
         }
 
-        if(n.numElements==0) {
+        if(n.numElements()==0) {
 
         }
 
@@ -464,7 +464,7 @@ public:
     void visit(Parameters n) {
         /// Check that all arg names are unique
         stringSet.clear();
-        foreach(i, a; n.paramNames) {
+        foreach(i, a; n.paramNames()) {
             if(stringSet.contains(a)) {
                 module_.addError(n.getParam(i), "Duplicate parameter name", true);
             }
@@ -476,7 +476,7 @@ public:
     }
     void visit(Return n) {
         /// Check return type can convert to function return type
-        if(n.hasExpr) {
+        if(n.hasExpr()) {
             auto retType = n.getReturnType();
             if(!n.expr().getType.canImplicitlyCastTo(retType)) {
                 errorBadImplicitCast(module_, n.expr(), n.expr().getType, retType);
@@ -491,7 +491,7 @@ public:
         foreach(c; n.cases()) {
             foreach(expr; c.conds()) {
                 if(!expr.getType.canImplicitlyCastTo(valueType)) {
-                    errorBadImplicitCast(module_, expr, expr.getType, valueType);
+                    errorBadImplicitCast(module_, expr, expr.getType(), valueType);
                 }
             }
         }
@@ -499,7 +499,7 @@ public:
         foreach(c; n.cases()) {
             foreach(expr; c.conds()) {
                 auto lit = expr.as!LiteralNumber;
-                if(!lit || (!lit.getType.isInteger && !lit.getType.isBool)) {
+                if(!lit || (!lit.getType().isInteger() && !lit.getType().isBool())) {
                     module_.addError(expr, "Switch-style Select clauses must be of const integer type", true);
                 }
             }
@@ -545,14 +545,14 @@ public:
 
         if(et.isValue()) {
             module_.addError(n, "Cannot dereference value type", true);
-        } else if(et.isClass && et.getPtrDepth()==1) {
+        } else if(et.isClass() && et.getPtrDepth()==1) {
             module_.addError(n, "Cannot dereference a class type", true);
         }
     }
     void visit(Variable n) {
         if(n.isConst) {
 
-            if(!n.isGlobal && !n.isStructVar()) {
+            if(!n.isGlobal() && !n.isStructVar()) {
 
                 /// Initialiser must be const
                 //auto ini = n.initialiser();
@@ -570,14 +570,14 @@ public:
 
             auto struct_ = n.getStruct();
 
-            if(struct_.isPOD && !n.access.isPublic) {
+            if(struct_.isPOD() && !n.access.isPublic()) {
                 module_.addError(n, "POD struct member variables must be public", true);
             }
-            if(struct_.isVisibleToOtherModules() && n.access.isPublic) {
+            if(struct_.isVisibleToOtherModules() && n.access.isPublic()) {
                 checkForExposingPrivateType(n, n.getType(), "Public struct property");
             }
         }
-        if(n.isTupleVar) {
+        if(n.isTupleVar()) {
             auto tuple_ = n.getTuple();
 
 
@@ -587,16 +587,16 @@ public:
                 module_.addError(n, "Static variables are only allowed in a struct", true);
             }
         }
-        if(n.type.isStruct) {
+        if(n.type.isStruct()) {
 
         }
 
-        if(n.type.isTuple) {
+        if(n.type.isTuple()) {
             auto tuple = n.type.getTuple();
 
             /// Tuples must only contain variable declarations
             foreach(v; tuple.children) {
-                if(!v.isVariable) {
+                if(!v.isVariable()) {
                     module_.addError(n, "A tuple must only contain variable declarations", true);
                 } else {
                     auto var = cast(Variable)v;

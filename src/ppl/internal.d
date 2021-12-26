@@ -2,22 +2,22 @@ module ppl.internal;
 
 public:
 
-import core.atomic     : atomicLoad, atomicStore;
-import core.memory     : GC;
-import core.sync.mutex : Mutex;
+import core.atomic              : atomicLoad, atomicStore;
+import core.memory              : GC;
+import core.sync.mutex          : Mutex;
 
-import std.stdio               : writefln, writeln;
-import std.format              : format;
-import std.string              : toLower, indexOf, lastIndexOf, leftJustify, rightJustify;
-import std.conv                : to;
-import std.array               : Appender, appender, array, join;
-import std.range               : takeOne;
-import std.json                : JSONValue, toJSON, JSONOptions;
-import std.datetime.stopwatch  : StopWatch;
+import std.stdio                : writefln, writeln;
+import std.format               : format;
+import std.string               : toLower, indexOf, lastIndexOf, leftJustify, rightJustify;
+import std.conv                 : to;
+import std.array                : Appender, appender, array, join;
+import std.range                : takeOne;
+import std.json                 : JSONValue, toJSON, JSONOptions;
+import std.datetime.stopwatch   : StopWatch;
 
-import std.algorithm.iteration : each, map, filter, sum;
-import std.algorithm.searching : any, all, count, startsWith;
-import std.algorithm.sorting   : sort;
+import std.algorithm.iteration  : each, map, filter, sum;
+import std.algorithm.searching  : any, all, count, startsWith;
+import std.algorithm.sorting    : sort;
 
 import common : DynamicArray = Array;
 import common : IQueue, makeSPSCQueue;
@@ -94,6 +94,11 @@ import ppl.check.CheckModule;
 import ppl.check.ControlFlow;
 import ppl.check.EscapeAnalysis;
 
+import ppl.eval.DeadCodeEliminator;
+import ppl.eval.EvalBinaryUnary;
+import ppl.eval.EvalModule;
+import ppl.eval.FoldUnreferenced;
+
 import ppl.error.CompilationAborted;
 import ppl.error.CompileError;
 
@@ -152,8 +157,6 @@ import ppl.resolve.ResolveUnary;
 import ppl.resolve.ResolveVariable;
 
 import ppl.resolve.misc.Callable;
-import ppl.resolve.misc.DeadCodeEliminator;
-import ppl.resolve.misc.FoldUnreferenced;
 import ppl.resolve.misc.FunctionFinder;
 import ppl.resolve.misc.ImportFinder;
 import ppl.resolve.misc.OverloadCollector;

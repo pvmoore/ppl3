@@ -80,7 +80,7 @@ private:
                     return;
                 }
 
-                auto lit = LiteralNumber.makeConst(value, n.elementType);
+                auto lit = LiteralNumber.makeConst(value.to!string, n.elementType);
                 em.add(lit);
 
                 resolver.setModified(em);

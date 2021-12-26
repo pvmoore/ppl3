@@ -2,12 +2,15 @@ module ppl.ast.expr.ModuleAlias;
 
 import ppl.internal;
 
+/**
+ *  ModuleAlias
+ */
 final class ModuleAlias : Expression {
     Module mod;
     Import imp;
 
 /// ASTNode
-    override bool isResolved()    { return mod.isParsed; }
+    override bool isResolved()    { return mod.isParsed(); }
     override NodeID id() const    { return NodeID.MODULE_ALIAS; }
     override Type getType()       { return TYPE_VOID; }
 

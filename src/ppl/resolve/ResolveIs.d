@@ -151,7 +151,7 @@ private:
     void rewriteToConstBool(Is n, bool result) {
         result ^= n.negate;
 
-        auto lit = LiteralNumber.makeConst(result ? TRUE : FALSE, TYPE_BOOL);
+        auto lit = LiteralNumber.makeConst(result ? TRUE_STR : FALSE_STR, TYPE_BOOL);
 
         foldUnreferenced.fold(n, lit);
     }
@@ -173,10 +173,10 @@ private:
         auto call = builder.call("memcmp", null);
         call.add(builder.addressOf(n.left()));
         call.add(builder.addressOf(n.right()));
-        call.add(LiteralNumber.makeConst(n.leftType.size, TYPE_INT));
+        call.add(LiteralNumber.makeConst(n.leftType.size.to!string, TYPE_INT));
 
         auto op = n.negate ? Operator.BOOL_NE : Operator.BOOL_EQ;
-        auto ne = builder.binary(op, call, LiteralNumber.makeConst(0, TYPE_INT));
+        auto ne = builder.binary(op, call, LiteralNumber.makeConst("0", TYPE_INT));
 
         foldUnreferenced.fold(n, ne);
     }

@@ -2,6 +2,9 @@ module ppl.ast.stmt.Break;
 
 import ppl.internal;
 
+/**
+ *  Break
+ */
 final class Break : Statement {
     Loop loop;
 

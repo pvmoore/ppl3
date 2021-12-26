@@ -2,6 +2,9 @@ module ppl.ast.stmt.Continue;
 
 import ppl.internal;
 
+/**
+ *  Continue
+ */
 final class Continue : Statement {
     Loop loop;
 

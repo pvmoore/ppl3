@@ -182,15 +182,15 @@ private:
             case "length":
                 if(prevType.isArray) {
                     int len = prevType.getArrayType.countAsInt();
-                    foldUnreferenced.fold(dot, LiteralNumber.makeConst(len, TYPE_INT));
+                    foldUnreferenced.fold(dot, LiteralNumber.makeConst(len.to!string, TYPE_INT));
                     return;
                 } else if(prevType.isTuple) {
                     int len = prevType.getTuple.numMemberVariables();
-                    foldUnreferenced.fold(dot, LiteralNumber.makeConst(len, TYPE_INT));
+                    foldUnreferenced.fold(dot, LiteralNumber.makeConst(len.to!string, TYPE_INT));
                     return;
                 } else if(prevType.isEnum) {
                     int len = prevType.getEnum.numChildren;
-                    foldUnreferenced.fold(dot, LiteralNumber.makeConst(len, TYPE_INT));
+                    foldUnreferenced.fold(dot, LiteralNumber.makeConst(len.to!string, TYPE_INT));
                     return;
                 }
                 break;
@@ -309,7 +309,7 @@ private:
             if(module_.config.nullChecks) {
                 if(prevType.isPtr && prev.isIdentifier) {
                     auto id = prev.getIdentifier();
-                    
+
                     module_.nodeBuilder.addNullCheck(id);
                 }
             }

@@ -1,9 +1,11 @@
 module ppl.ast.expr.Initialiser;
 
 import ppl.internal;
-///
-/// Variable initialiser.
-///
+
+/**
+ *  Initialiser
+ *      Expression
+ */
 final class Initialiser : Expression {
 private:
     bool astGenerated;
@@ -17,9 +19,9 @@ public:
     override Type getType() {
         assert(var);
 
-        if(var.type.isKnown) return var.type;
-        if(hasChildren && last().isResolved) {
-            return last().getType;
+        if(var.type.isKnown()) return var.type;
+        if(hasChildren() && last().isResolved()) {
+            return last().getType();
         }
         return TYPE_UNKNOWN;
     }
@@ -49,7 +51,7 @@ public:
         if(!areResolved(children[])) return;
 
         /// Generate initialisation AST for our parent Variable
-        assert(numChildren==1);
+        assert(numChildren()==1);
 
         convertToAssignment();
 
@@ -58,7 +60,7 @@ public:
 
     override string toString() {
         assert(var);
-        return "Initialiser var=%s, type=%s".format(var.name, getType);
+        return "Initialiser var=%s, type=%s".format(var.name, getType());
     }
 private:
     ///

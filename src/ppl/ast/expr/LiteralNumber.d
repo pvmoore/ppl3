@@ -2,6 +2,9 @@ module ppl.ast.expr.LiteralNumber;
 
 import ppl.internal;
 
+/**
+ *  LiteralNumber
+ */
 final class LiteralNumber : Expression, CompileTimeConstant {
 private:
     Type _type;
@@ -11,6 +14,11 @@ public:
 
     this() {
         _type = TYPE_UNKNOWN;
+    }
+    void set(string strValue, Type type) {
+        this.str = strValue;
+        this._type = type;
+        this.value = Value(this);
     }
 
     Type type() {
@@ -22,18 +30,18 @@ public:
         _type = t;
     }
 
-    static LiteralNumber makeConst(long num, Type t=TYPE_UNKNOWN) {
+    static LiteralNumber makeConst(string strValue, Type t) {
         auto lit  = makeNode!LiteralNumber;
-        lit.str   = num.to!string;
+        lit.str   = strValue;
         lit._type = t;
         if(t.isUnknown) {
             lit.determineType();
         } else {
-            lit. value = Value(lit);
+            lit.value = Value(lit);
         }
         return lit;
     }
-    /// <CompileTimeConstant>
+/// CompileTimeConstant
     LiteralNumber copy() {
         auto c   = makeNode!LiteralNumber;
         //c.line   = line;
@@ -48,7 +56,7 @@ public:
     }
 
 /// ASTNode
-    override bool isResolved()    { return _type.isKnown; }
+    override bool isResolved()    { return _type.isKnown(); }
     override NodeID id() const    { return NodeID.LITERAL_NUMBER; }
     override Type getType()       { return _type; }
 
@@ -91,32 +99,33 @@ struct Value {
     void changeType(Type from, Type to) {
         if(to.isBool) {
             i = getLong() == 0 ? FALSE : TRUE;
-        } else if(from.isReal && to.isInteger) {
+        } else if(from.isReal() && to.isInteger()) {
             i = cast(long)f;
-        } else if(from.isInteger && to.isReal) {
+        } else if(from.isInteger() && to.isReal()) {
             f = cast(double)i;
         }
     }
     Type type()        { return lit._type; }
     bool getBool()     { return getLong() != FALSE; }
     int getInt()       { return cast(int)getLong(); }
-    long getLong()     { if(type.isReal) return cast(long)f; return i; }
-    double getDouble() { if(!type.isReal) return cast(double)i; return f; }
-    string getString() { return type.isReal ? "%f".format(getDouble()) : "%s".format(getLong()); }
+    long getLong()     { if(type.isReal()) return cast(long)f; return i; }
+    ulong getUlong()   { return getLong().as!ulong; }
+    double getDouble() { if(!type.isReal()) return cast(double)i; return f; }
+    string getString() { return type.isReal() ? "%f".format(getDouble()) : "%s".format(getLong()); }
 
     bool applyUnary(Operator op) {
 
         switch(op.id) with(Operator) {
             case BOOL_NOT.id:
-                if(type.isReal) return false;
+                if(type.isReal()) return false;
                 i = ~getLong();
                 break;
             case BIT_NOT.id:
-                if(type.isReal) return false;
+                if(type.isReal()) return false;
                 i = ~getLong();
                 break;
             case NEG.id:
-                if(type.isReal) {
+                if(type.isReal()) {
                     f = -getDouble();
                 } else {
                     i = -getLong();
@@ -134,8 +143,17 @@ struct Value {
         Type calcType = getBestFit(type, right.type);
         lit.setType(calcType);
 
-        if(calcType.isInteger || calcType.isBool) {
+        if(calcType.isInteger() || calcType.isBool()) {
             switch(op.id) with(Operator) {
+
+                case UDIV.id: i = getUlong() / right.getUlong(); break;
+                case UMOD.id: i = getUlong() % right.getUlong(); break;
+
+                case ULT.id:  i = (getUlong() <  right.getUlong()) ? TRUE : FALSE; break;
+                case ULTE.id: i = (getUlong() >  right.getUlong()) ? TRUE : FALSE; break;
+                case UGT.id:  i = (getUlong() <= right.getUlong()) ? TRUE : FALSE; break;
+                case UGTE.id: i = (getUlong() >= right.getUlong()) ? TRUE : FALSE; break;
+
                 case DIV.id: i = getLong() / right.getLong(); break;
                 case MUL.id: i = getLong() * right.getLong(); break;
                 case MOD.id: i = getLong() % right.getLong(); break;
@@ -144,7 +162,7 @@ struct Value {
 
                 case SHL.id: i  = getLong() << right.getLong(); break;
                 case SHR.id:
-                    switch(type.category) with(Type) {
+                    switch(type.category()) with(Type) {
                         case BYTE:  i = cast(byte) ((getLong() | 0xffffffff_ffffff00) >> right.getInt()); break;
                         case SHORT: i = cast(short)((getLong() | 0xffffffff_ffff0000) >> right.getInt()); break;
                         case INT:   i = cast(int)  ((getLong() | 0xffffffff_00000000) >> right.getInt()); break;
@@ -152,7 +170,7 @@ struct Value {
                     }
                     break;
                 case USHR.id:
-                    switch(type.category) with(Type) {
+                    switch(type.category()) with(Type) {
                         case BYTE:  i = cast(ubyte) ((getLong() & 0xff)       >> right.getInt()); break;
                         case SHORT: i = cast(ushort)((getLong() & 0xffff)     >> right.getInt()); break;
                         case INT:   i = cast(uint)  ((getLong() & 0xffffffff) >> right.getInt()); break;
@@ -220,7 +238,7 @@ struct Value {
         return true;
     }
     void as(Type t) {
-        switch(t.category) with(Type) {
+        switch(t.category()) with(Type) {
             case BOOL:  i = getLong() == 0 ? FALSE : TRUE; break;
             case BYTE:  i = cast(byte)getLong(); break;
             case SHORT: i = cast(short)getLong(); break;

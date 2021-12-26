@@ -16,7 +16,7 @@ final class ExpressionRef : Expression {
 /// ASTNode
     override bool isResolved()    { return reference.isResolved(); }
     override NodeID id() const    { return reference.id(); }
-    override Type getType()       { return reference.getType; }
+    override Type getType()       { return reference.getType(); }
 
 /// Expression
     override int priority() const { return reference.priority(); }

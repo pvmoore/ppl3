@@ -138,9 +138,7 @@ final class NodeBuilder {
         i.add(right);
         return i;
     }
-    Expression integer(int value) {
-        return LiteralNumber.makeConst(value, TYPE_INT);
-    }
+
     Return return_(Expression expr) {
         auto ret = makeNode!Return;
         ret.add(expr);
@@ -192,7 +190,7 @@ final class NodeBuilder {
         Call call = call("new");
             call.add(addressOf(identifier(var.name)));
             call.add(lit);
-            call.add(LiteralNumber.makeConst(lit.calculateLength(), TYPE_INT));
+            call.add(LiteralNumber.makeConst(lit.calculateLength().to!string, TYPE_INT));
 
         //auto dot = dot(identifier(var.name), call);
 
@@ -222,12 +220,12 @@ final class NodeBuilder {
     */
     void addNullCheck(Expression e) {
         auto p = e.parent;
-        auto dummy = LiteralNumber.makeConst(0, TYPE_INT);
+        auto dummy = LiteralNumber.makeConst("0", TYPE_INT);
         p.replaceChild(e, dummy);
         //p.dumpToConsole();
 
         auto moduleName = module_.moduleNameLiteral.copy();
-        auto line = LiteralNumber.makeConst(e.line+1, TYPE_INT);
+        auto line = LiteralNumber.makeConst((e.line+1).to!string, TYPE_INT);
 
         auto call = this.call("__nullCheckFail")
             .add(moduleName)
@@ -241,6 +239,24 @@ final class NodeBuilder {
         p.replaceChild(dummy, if_);
 
         //p.dumpToConsole();
+    }
+
+    LiteralNumber makeBool(bool value) {
+        return makeNumber(value ? TRUE_STR : FALSE_STR, TYPE_BOOL);
+    }
+    LiteralNumber makeInt(int value) {
+        return makeNumber(value.to!string, TYPE_INT);
+    }
+    LiteralNumber makeFloat(float value) {
+        return makeNumber(value.to!string, TYPE_FLOAT);
+    }
+    LiteralNumber makeDouble(double value) {
+        return makeNumber(value.to!string, TYPE_DOUBLE);
+    }
+    LiteralNumber makeNumber(string valueStr, Type type) {
+        auto lit  = makeNode!LiteralNumber;
+        lit.set(valueStr, type);
+        return lit;
     }
 }
 

@@ -28,10 +28,14 @@ __gshared Type TYPE_BOOL    = new BasicType(Type.BOOL);
 __gshared Type TYPE_BYTE    = new BasicType(Type.BYTE);
 __gshared Type TYPE_INT     = new BasicType(Type.INT);
 __gshared Type TYPE_LONG    = new BasicType(Type.LONG);
+__gshared Type TYPE_FLOAT   = new BasicType(Type.FLOAT);
+__gshared Type TYPE_DOUBLE  = new BasicType(Type.DOUBLE);
 __gshared Type TYPE_VOID    = new BasicType(Type.VOID);
 
 __gshared const TRUE  = -1;
 __gshared const FALSE = 0;
+enum TRUE_STR  = "-1";
+enum FALSE_STR = "0";
 
 __gshared Callable CALLABLE_NOT_READY;
 

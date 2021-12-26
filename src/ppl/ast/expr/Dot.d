@@ -1,16 +1,18 @@
 module ppl.ast.expr.Dot;
 
 import ppl.internal;
-///
-/// dot ::= expression "." expression
-///
+/**
+ *  Dot
+ *      Expression
+ *      Expression
+ */
 final class Dot : Expression {
 /// ASTNode
-    override bool isResolved()    { return getType.isKnown && left().isResolved && right().isResolved; }
-    override NodeID id() const    { return NodeID.DOT; }
+    override bool isResolved() { return getType.isKnown() && left().isResolved() && right().isResolved(); }
+    override NodeID id() const { return NodeID.DOT; }
     override Type getType() {
         if(right() is null) return TYPE_UNKNOWN;
-        return right().getType;
+        return right().getType();
     }
 
 /// Expression
@@ -23,13 +25,13 @@ final class Dot : Expression {
     }
 
 
-    Expression left()  { return cast(Expression)first(); }
-    Expression right() { return cast(Expression)last(); }
+    Expression left()  { return first().as!Expression; }
+    Expression right() { return last().as!Expression; }
 
-    Type leftType()  { return left().getType; }
-    Type rightType() { return right().getType; }
+    Type leftType()  { return left().getType(); }
+    Type rightType() { return right().getType(); }
 
     override string toString() {
-        return "Dot (type=%s)".format(getType);
+        return "Dot (type=%s)".format(getType());
     }
 }

@@ -2,11 +2,15 @@ module ppl.version_;
 
 public:
 
-enum VERSION = "3.50.0";
+enum VERSION = "3.51.0";
 
 /*
 
 // todo -
+        // Implement LiteralMap @mapOf(string,int, key=value, key=value)
+
+        // No need for Access. Use bool isPublic instead
+
         // Don't use Logger for writing .ast files. Change the extension to .ast3 and
         // copy the extension from ppl4
 
@@ -17,7 +21,6 @@ enum VERSION = "3.50.0";
 
         // Remove 'var' and 'const'. Or just remove const and assume name = Expression is const
 
-        // Change attributes from --xxx to something better
 
 
 
@@ -51,6 +54,8 @@ enum VERSION = "3.50.0";
         - IDE: Requires evaluation refactor otherwise certain positions in the code cannot provide suggestions
             because they have been folded away.
 
+
+3.51.0 -
 
 3.50.0 - Fix parenthesis required bug
 

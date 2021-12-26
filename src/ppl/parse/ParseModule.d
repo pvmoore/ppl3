@@ -166,7 +166,7 @@ private:
             /// fn foo()
             /// extern fn foo()
             /// fn foo<T>()
-            /// Don't match fn()type which is a variable decl
+            /// Don't match fn() which is a variable decl
 
             if(t.isKeyword("extern")) return true;
             if(t.isKeyword("fn") && t.peek(1).type!=TT.LBRACKET) return true;
@@ -249,9 +249,7 @@ private:
             "core::core",
             "core::assert",
             "core::string",
-            "core::unsigned",
             "core::sequence",
-
 
             "std::optional",
             "std::console",
@@ -329,7 +327,7 @@ private:
     }
     /**
      *  Rename main function to __user_main
-     *  Add main {void->int} function that calls __user_main
+     *  Add main|WinMain (void return int) function that calls __user_main
      *  Add __runModuleConstructors function to module
      *  Call __runModuleConstructors
      *

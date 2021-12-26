@@ -1,4 +1,4 @@
-module ppl.resolve.misc.DeadCodeEliminator;
+module ppl.eval.DeadCodeEliminator;
 
 import ppl.internal;
 ///

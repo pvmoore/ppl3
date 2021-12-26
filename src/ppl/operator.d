@@ -49,7 +49,7 @@ enum Operator : Op {
 
     /// As    = 3
 
-    NEG      = Op(2, 5, " neg"),    /// the space in the value is important
+    NEG      = Op(2, 5, "neg"),
     BIT_NOT  = Op(3, 5, "~"),
     BOOL_NOT = Op(4, 5, "not"),
 
@@ -60,41 +60,50 @@ enum Operator : Op {
     MUL      = Op(6, 6, "*"),
     MOD      = Op(7, 6, "%"),
 
-    ADD      = Op(8,  7, "+"),
-    SUB      = Op(9,  7, "-"),
-    SHL      = Op(10, 7, "<<"),
-    SHR      = Op(11, 7, ">>"),
-    USHR     = Op(12, 7, ">>>"),
-    BIT_AND  = Op(13, 7, "&"),
-    BIT_XOR  = Op(14, 7, "^"),
-    BIT_OR   = Op(15, 7, "|"),
+    UDIV     = Op(8, 6, "%"),
+    UMOD     = Op(9, 6, "%"),
 
-    LT        = Op(16, 9, "<"),
-    GT        = Op(17, 9, ">"),
-    LTE       = Op(18, 9, "<="),
-    GTE       = Op(19, 9, ">="),
-    BOOL_EQ   = Op(20, 9, "=="),
-    BOOL_NE   = Op(21, 9, "!="),
+    ADD      = Op(10, 7, "+"),
+    SUB      = Op(11, 7, "-"),
+    SHL      = Op(12, 7, "<<"),
+    SHR      = Op(13, 7, ">>"),
+    USHR     = Op(14, 7, ">>>"),
+    BIT_AND  = Op(15, 7, "&"),
+    BIT_XOR  = Op(16, 7, "^"),
+    BIT_OR   = Op(17, 7, "|"),
+
+    LT        = Op(18, 9, "<"),
+    GT        = Op(19, 9, ">"),
+    LTE       = Op(20, 9, "<="),
+    GTE       = Op(21, 9, ">="),
+
+    ULT       = Op(22, 9, "u<"),
+    UGT       = Op(23, 9, "u>"),
+    ULTE      = Op(24, 9, "u<="),
+    UGTE      = Op(25, 9, "u>="),
+
+    BOOL_EQ   = Op(26, 9, "=="),
+    BOOL_NE   = Op(27, 9, "!="),
     /// Is = 9
 
-    BOOL_AND = Op(23, 11, "and"),
-    BOOL_OR  = Op(24, 11, "or"),
+    BOOL_AND    = Op(28, 11, "and"),
+    BOOL_OR     = Op(29, 11, "or"),
 
     /// assignments below here
-    ADD_ASSIGN     = Op(25, 14, "+="),
-    SUB_ASSIGN     = Op(26, 14, "-="),
-    MUL_ASSIGN     = Op(27, 14, "*="),
-    DIV_ASSIGN     = Op(28, 14, "/="),
-    MOD_ASSIGN     = Op(29, 14, "%="),
-    BIT_AND_ASSIGN = Op(30, 14, "&="),
-    BIT_XOR_ASSIGN = Op(31, 14, "^="),
-    BIT_OR_ASSIGN  = Op(32, 14, "|="),
+    ADD_ASSIGN     = Op(30, 14, "+="),
+    SUB_ASSIGN     = Op(31, 14, "-="),
+    MUL_ASSIGN     = Op(32, 14, "*="),
+    DIV_ASSIGN     = Op(33, 14, "/="),
+    MOD_ASSIGN     = Op(34, 14, "%="),
+    BIT_AND_ASSIGN = Op(35, 14, "&="),
+    BIT_XOR_ASSIGN = Op(36, 14, "^="),
+    BIT_OR_ASSIGN  = Op(37, 14, "|="),
 
-    SHL_ASSIGN     = Op(33, 14, "<<="),
-    SHR_ASSIGN     = Op(34, 14, ">>="),
-    USHR_ASSIGN    = Op(35, 14, ">>>="),
-    ASSIGN         = Op(36, 14, "="),
-    REASSIGN       = Op(36, 14, ":=")
+    SHL_ASSIGN     = Op(38, 14, "<<="),
+    SHR_ASSIGN     = Op(39, 14, ">>="),
+    USHR_ASSIGN    = Op(40, 14, ">>>="),
+    ASSIGN         = Op(41, 14, "="),
+    REASSIGN       = Op(42, 14, ":=")
 
     /// Calloc      = 15
     /// Lambda      = 15
@@ -137,10 +146,16 @@ bool isBool(Operator o) {
         case BOOL_NOT.id:
         case BOOL_EQ.id:
         case BOOL_NE.id:
+
         case LT.id:
         case GT.id:
         case LTE.id:
         case GTE.id:
+
+        case ULT.id:
+        case UGT.id:
+        case ULTE.id:
+        case UGTE.id:
             return true;
         default:
             return false;
@@ -154,6 +169,12 @@ Operator switchLeftRightBool(Operator o) {
         case GT.id: return LTE;
         case LTE.id: return GT;
         case GTE.id: return LT;
+
+        case ULT.id: return UGTE;
+        case UGT.id: return ULTE;
+        case ULTE.id: return UGT;
+        case UGTE.id: return ULT;
+
         default:
             assert(false, "not a bool");
     }

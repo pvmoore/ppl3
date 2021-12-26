@@ -53,6 +53,14 @@ final class GenerateBinary {
                 lt_eq(cmpType, left, right);
             } else if(b.op is Operator.GTE) {
                 gt_eq(cmpType, left, right);
+            } else if(b.op is Operator.ULT) {
+                ult(cmpType, left, right);
+            } else if(b.op is Operator.ULTE) {
+                ulte(cmpType, left, right);
+            } else if(b.op is Operator.UGT) {
+                ugt(cmpType, left, right);
+            } else if(b.op is Operator.UGTE) {
+                ugte(cmpType, left, right);
             }
             gen.rhs = gen.castI1ToI8(gen.rhs);
         } else if(b.isPtrArithmetic) {
@@ -153,6 +161,7 @@ private:
         else
             gen.rhs = builder.icmp(LLVMIntPredicate.LLVMIntNE, left, right);
     }
+
     void lt(Type cmpType, LLVMValueRef left, LLVMValueRef right) {
         if(cmpType.isReal)
             gen.rhs = builder.fcmp(LLVMRealPredicate.LLVMRealOLT, left, right);
@@ -180,6 +189,19 @@ private:
         else {
             gen.rhs = builder.icmp(LLVMIntPredicate.LLVMIntSGE, left, right);
         }
+    }
+
+    void ult(Type cmpType, LLVMValueRef left, LLVMValueRef right) {
+        gen.rhs = builder.icmp(LLVMIntPredicate.LLVMIntULT, left, right);
+    }
+    void ugt(Type cmpType, LLVMValueRef left, LLVMValueRef right) {
+        gen.rhs = builder.icmp(LLVMIntPredicate.LLVMIntUGT, left, right);
+    }
+    void ulte(Type cmpType, LLVMValueRef left, LLVMValueRef right) {
+        gen.rhs = builder.icmp(LLVMIntPredicate.LLVMIntULE, left, right);
+    }
+    void ugte(Type cmpType, LLVMValueRef left, LLVMValueRef right) {
+        gen.rhs = builder.icmp(LLVMIntPredicate.LLVMIntUGE, left, right);
     }
 
     auto ptrArithmetic(Binary b, LLVMValueRef left, LLVMValueRef right) {

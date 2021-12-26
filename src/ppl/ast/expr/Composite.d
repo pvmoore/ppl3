@@ -2,9 +2,11 @@ module ppl.ast.expr.Composite;
 
 import ppl.internal;
 
-///
-/// Wrap one or more nodes to appear as one single node.
-///
+/**
+ *  Composite
+ *
+ *  Wrap one or more nodes to appear as one single node.
+ */
 final class Composite : Expression {
     /// INNER_*     -> The composite children are treated as if they are in an inner scope
     /// INLINE_*    -> The composite children are treated as if they are in the same scope
@@ -40,7 +42,7 @@ final class Composite : Expression {
     override NodeID id() const    { return NodeID.COMPOSITE; }
     /// The type is the type of the last element
     override Type getType() {
-        if(hasChildren) return last().getType();
+        if(hasChildren()) return last().getType();
         return TYPE_VOID;
     }
 
@@ -58,16 +60,16 @@ final class Composite : Expression {
     bool isInner()  { return !isInline(); }
 
     bool endsWithReturn() {
-        return numChildren > 0 && last().isReturn;
+        return numChildren() > 0 && last().isReturn();
     }
 
     Expression expr() {
-        if(!hasChildren) return null;
-        if(last().isExpression) return last().as!Expression;
+        if(!hasChildren()) return null;
+        if(last().isExpression()) return last().as!Expression;
         return null;
     }
 
     override string toString() {
-        return "Composite %s (type=%s)".format(usage, getType);
+        return "Composite %s (type=%s)".format(usage, getType());
     }
 }

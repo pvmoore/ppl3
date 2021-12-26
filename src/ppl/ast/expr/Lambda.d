@@ -1,10 +1,11 @@
 module ppl.ast.expr.Lambda;
 
 import ppl.internal;
-///
-/// Lambda
-///     LiteralFunction
-///
+
+/**
+ *  Lambda
+ *      LiteralFunction
+ */
 final class Lambda : Expression {
     string name;
 

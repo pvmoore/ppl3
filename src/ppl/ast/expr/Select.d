@@ -1,24 +1,22 @@
 module ppl.ast.expr.Select;
 
 import ppl.internal;
-/// Select switch:
-///     select_expr ::= "select" "(" [ var  ";" ] expr ")" "{" { ( case | else_case ) } "}"
-///     case        ::= const_expr ":" ( stmt | "{" { stmt } "}" )
-///     else_case   ::= "else"     ":" ( stmt | "{" { stmt } "}" )
-///
-///     Children:
-///         [0]    init statements  (Composite)
-///         [1]    value expression (Expression)
-///         [2..$] case expressions (Case[]) | default case (Composite)
-///
+/**
+ *  Select
+ *      [0]    Composite    // init statements
+ *      [1]    Expression   // value expression
+ *      [2..$] { Case } | Composite     // case expressions or default case
+ *
+ *  select_expr ::= "select" "(" [ var  ";" ] expr ")" "{" { ( case | else_case ) } "}"
+ *  case        ::= const_expr ":" ( stmt | "{" { stmt } "}" )
+ *  else_case   ::= "else"     ":" ( stmt | "{" { stmt } "}" )
+ */
+
 /// Select Statement:
 ///     select    ::= "select" "{" { ( case | else_case ) } "}"
 ///     case      ::= expr   ":" ( stmt | "{" { stmt } "}" )
 ///     else_case ::= "else" ":" ( stmt | "{" { stmt } "}" )
-///
-///     Children:
-///         [0..$] case expressions (Case[]) | default case (Composite)
-///
+
 final class Select : Expression {
     Type type;
     bool isSwitch;
@@ -29,7 +27,7 @@ final class Select : Expression {
 
 /// ASTNode
     override bool isResolved() {
-        return isExpr() ? type.isKnown : true;
+        return isExpr() ? type.isKnown() : true;
     }
     override NodeID id() const    { return NodeID.SELECT; }
     override Type getType()       { return type; }
@@ -49,7 +47,7 @@ final class Select : Expression {
     }
 
 
-    bool hasInitExpr() { assert(isSwitch); return first().hasChildren; }
+    bool hasInitExpr() { assert(isSwitch); return first().hasChildren(); }
 
     bool isExpr() {
         auto p = parent;
@@ -83,7 +81,7 @@ final class Select : Expression {
     }
     Type valueType() {
         assert(isSwitch);
-        return valueExpr().getType;
+        return valueExpr().getType();
     }
 
     /// All cases except the default case
@@ -94,7 +92,7 @@ final class Select : Expression {
         } else {
             nodes = children[];
         }
-        return cast(Case[])nodes.filter!(it=>it.isCase).array;
+        return cast(Case[])nodes.filter!(it=>it.isCase()).array;
     }
     /// The default case or null
     Composite defaultStmts() {
@@ -104,7 +102,7 @@ final class Select : Expression {
         } else {
             nodes = children[];
         }
-        return nodes.filter!(it=>it.isComposite).frontOrNull!Composite;
+        return nodes.filter!(it=>it.isComposite()).frontOrNull!Composite;
     }
     Expression[] casesIncludingDefault() {
         return cast(Expression[])(isSwitch ? children[2..$] : children[]);
@@ -122,7 +120,7 @@ final class Case : Expression {
 /// ASTNode
     override bool isResolved()    { return true; }
     override NodeID id() const    { return NodeID.CASE; }
-    override Type getType()       { return stmts().getType; }
+    override Type getType()       { return stmts().getType(); }
 
 /// Expression
     override int priority() const { return 15; }
@@ -134,7 +132,7 @@ final class Case : Expression {
     Composite stmts()    { return children[$-1].as!Composite; }
 
     Type getSelectType() {
-        assert(parent.isSelect);
+        assert(parent.isSelect());
         return parent.as!Select.valueType();
     }
     bool isCond(Expression e) {
@@ -143,6 +141,6 @@ final class Case : Expression {
     }
 
     override string toString() {
-        return "Case (type=%s)".format(getType);
+        return "Case (type=%s)".format(getType());
     }
 }

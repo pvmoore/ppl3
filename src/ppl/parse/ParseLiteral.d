@@ -148,8 +148,8 @@ public:
         auto thisPtr = b.addressOf(b.identifier(var.name));
         call.add(thisPtr);
         call.add(s);
-        call.add(LiteralNumber.makeConst(0, TYPE_INT));
-        call.add(LiteralNumber.makeConst(s.calculateLength(), TYPE_INT));
+        call.add(LiteralNumber.makeConst("0", TYPE_INT));
+        call.add(LiteralNumber.makeConst(s.calculateLength().to!string, TYPE_INT));
 
         auto dot = b.dot(b.identifier(var.name), call);
 

@@ -1,49 +1,48 @@
 module ppl.ast.expr.Index;
 
 import ppl.internal;
-///
-/// index_expr ::= expression ":" expression
-///
-/// Index
-///     index
-///     ArrayType | Tuple | Pointer
-///
+
+/**
+ *  Index
+ *      Expression  // index
+ *      Expression  // ArrayType | Tuple | Pointer
+ */
 final class Index : Expression {
 
 /// ASTNode
     override bool isResolved() {
-        if(!expr().isResolved) return false;
+        if(!expr().isResolved()) return false;
         if(isArrayIndex()) {
-            return index().isResolved;
+            return index().isResolved();
         }
-        if(isPtrIndex) {
+        if(isPtrIndex()) {
             return true;
         }
-        if(exprType().isStruct) {
+        if(exprType().isStruct()) {
             /// Check if we are waiting to be rewritten to operator:
-            auto ns = exprType().getStruct;
+            auto ns = exprType().getStruct();
             assert(ns);
             if(ns.hasOperatorOverload(Operator.INDEX)) return false;
         }
         /// Struct index must be a const number
-        return index().isResolved && index().isA!LiteralNumber;
+        return index().isResolved() && index().isA!LiteralNumber;
     }
     override NodeID id() const {
         return NodeID.INDEX;
     }
     override Type getType() {
         /// This might happen if an error is thrown
-        if(numChildren < 2) return TYPE_UNKNOWN;
+        if(numChildren() < 2) return TYPE_UNKNOWN;
 
         auto t       = exprType();
-        auto struct_ = t.getStruct;
-        auto tuple   = t.getTuple;
-        auto array   = t.getArrayType;
+        auto struct_ = t.getStruct();
+        auto tuple   = t.getTuple();
+        auto array   = t.getArrayType();
 
-        if(t.isPtr) {
+        if(t.isPtr()) {
             return Pointer.of(t, -1);
         }
-        if(t.isStruct) {
+        if(t.isStruct()) {
             assert(struct_);
 
             if(struct_.hasOperatorOverload(Operator.INDEX)) {
@@ -54,7 +53,7 @@ final class Index : Expression {
         }
         if(array) {
             /// Check for bounds error
-            if(array.isResolved && index().isResolved && index().isA!LiteralNumber) {
+            if(array.isResolved() && index().isResolved() && index().isA!LiteralNumber) {
                 auto i = getIndexAsInt();
                 if(i >= array.countAsInt()) {
                     getModule.addError(index(), "Array bounds error. %s >= %s".format(i, array.countAsInt()), true);
@@ -64,7 +63,7 @@ final class Index : Expression {
             return array.subtype;
         }
         if(tuple) {
-            if(index().isResolved && index().isA!LiteralNumber) {
+            if(index().isResolved() && index().isA!LiteralNumber) {
                 auto i = getIndexAsInt();
                 /// Check for bounds error
                 if(i >= tuple.numMemberVariables()) {
@@ -87,14 +86,14 @@ final class Index : Expression {
     }
 
 
-    bool isArrayIndex() { return exprType().isValue && exprType().isArray; }
-    bool isTupleIndex() { return exprType().isValue && exprType().isTuple; }
-    bool isPtrIndex()   { return exprType().isPtr; }
+    bool isArrayIndex() { return exprType().isValue() && exprType().isArray(); }
+    bool isTupleIndex() { return exprType().isValue() && exprType().isTuple(); }
+    bool isPtrIndex()   { return exprType().isPtr(); }
 
     Expression expr()  { return cast(Expression)children[1]; }
     Expression index() { return cast(Expression)children[0]; }
 
-    Type exprType() { return expr().getType; }
+    Type exprType() { return expr().getType(); }
 
     int getIndexAsInt() {
         assert(index().isA!LiteralNumber);

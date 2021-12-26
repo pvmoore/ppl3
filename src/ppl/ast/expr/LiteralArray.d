@@ -4,21 +4,22 @@ import ppl.internal;
 ///
 /// literal_array  ::= "[" init_expr { "," init_expr } "]"
 /// init_expr ::= [digits"="] expression | [digits"="] expression
-///
-/// LiteralArray
-///     expr
-///     expr etc...
+
+/**
+ *  LiteralArray
+ *     { Expression }   // elements
+ */
 final class LiteralArray : Expression {
     Array type;
 
     this() {
         type         = makeNode!Array;
         type.subtype = TYPE_UNKNOWN;
-        type.add(LiteralNumber.makeConst(0, TYPE_INT));
+        type.add(LiteralNumber.makeConst("0", TYPE_INT));
     }
 
 /// ASTNode
-    override bool isResolved() { return type.isKnown; }
+    override bool isResolved() { return type.isKnown(); }
     override NodeID id() const { return NodeID.LITERAL_ARRAY; }
     override Type getType() { return type; }
 
@@ -56,7 +57,7 @@ final class LiteralArray : Expression {
         return cast(Expression[])children[];
     }
     Type[] elementTypes() {
-        return elementValues().map!(it=>it.getType).array;
+        return elementValues().map!(it=>it.getType()).array;
     }
 
     override string toString() {
@@ -71,7 +72,7 @@ private:
     /// If there is no super type then return null
     ///
     Type calculateCommonElementType() {
-        if(numChildren==0) return TYPE_UNKNOWN;
+        if(numChildren()==0) return TYPE_UNKNOWN;
 
         auto et = elementTypes();
 

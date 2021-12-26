@@ -2,9 +2,13 @@ module ppl.ast.stmt.Function;
 
 import ppl.internal;
 import common : contains;
-///
-///  function::= identifier "=" [template params] function_literal
-///
+
+/**
+ *  Function
+ *      [ LiteralFunction ]
+ *
+ *  function::= "fn" identifier [template params] function_literal
+ */
 final class Function : Statement, VariableOrFunction {
 private:
     string _mangledName;
@@ -34,7 +38,7 @@ public:
         this.externType = TYPE_UNKNOWN;
     }
 /// ASTNode
-    override bool isResolved() { return getType.isKnown; }
+    override bool isResolved() { return getType.isKnown(); }
     override NodeID id() const { return NodeID.FUNCTION; }
     override Type getType() {
         if(isExtern) return externType;
@@ -43,7 +47,7 @@ public:
         if(!hasChildren()) return TYPE_VOID;
 
         /// Return type of body
-        return getBody().getType;
+        return getBody().getType();
     }
 ///
     bool isStructFunc() {
@@ -61,7 +65,7 @@ public:
     bool isDefaultConstructor() {
         if(isImport || isExtern) return false;
         if(name!="new") return false;
-        return params().numParams==0 || (params().numParams==1 && params().paramNames[0]=="this");
+        return params().numParams()==0 || (params().numParams()==1 && params().paramNames[0]=="this");
     }
     bool isModuleConstructor() {
         return name=="new" && isGlobal();

@@ -2,9 +2,10 @@ module ppl.ast.stmt.Assert;
 
 import ppl.internal;
 
-/// Assert
-///     expr
-///
+/**
+ *  Assert
+ *      Expression
+ */
 final class Assert : Statement {
 
     override bool isResolved() { return false; }

@@ -984,7 +984,7 @@ private:
         bif.name = t.value;
         t.next;
 
-        /// ( or {
+        /// (
         if(t.type==TT.LBRACKET) {
             t.skip(TT.LBRACKET);
 
@@ -1009,16 +1009,16 @@ private:
             /// )
             t.skip(TT.RBRACKET);
 
-        } else if(t.type==TT.LCURLY) {
-            t.skip(TT.LCURLY);
+        // } else if(t.type==TT.LCURLY) {
+        //     t.skip(TT.LCURLY);
 
-            auto c = Composite.make(bif, Composite.Usage.INNER_KEEP);
-            bif.add(c);
+            // auto c = Composite.make(bif, Composite.Usage.INNER_KEEP);
+            // bif.add(c);
 
-            while(t.type!=TT.RCURLY) {
-                stmtParser.parse(t, c);
-            }
-            t.skip(TT.RCURLY);
+            // while(t.type!=TT.RCURLY) {
+            //     stmtParser.parse(t, c);
+            // }
+            //t.skip(TT.RCURLY);
         }
 
         bif.setEndPos(t);

@@ -1,15 +1,16 @@
 module ppl.ast.expr.Is;
 
 import ppl.internal;
-///
-/// TypeExpr   is TypeExpr
-/// Identifier is TypeExpr
-/// Identifier is Identifier
-///
-/// Is
-///     left
-///     right
-///
+
+/**
+ *  Is
+ *      Expression
+ *      Expression
+ *
+ * TypeExpr   is TypeExpr
+ * Identifier is TypeExpr
+ * Identifier is Identifier
+ */
 final class Is : Expression {
 private:
 
@@ -19,7 +20,7 @@ public:
 /// ASTNode
     override bool isResolved() {
         /// Everything other than ptr is ptr will be rewritten to some other node
-        return leftType.isPtr && rightType.isPtr;
+        return leftType.isPtr() && rightType.isPtr();
     }
     override NodeID id() const { return NodeID.IS; }
     override Type getType() { return TYPE_BOOL; }
@@ -32,8 +33,8 @@ public:
     Expression left()  { return children[0].as!Expression; }
     Expression right() { return children[1].as!Expression; }
 
-    Type leftType() { return left().getType; }
-    Type rightType() { return right().getType; }
+    Type leftType() { return left().getType(); }
+    Type rightType() { return right().getType(); }
 
     Type oppositeSideType(Expression node) {
         if(left().nid==node.nid) {

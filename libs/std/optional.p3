@@ -1,6 +1,6 @@
 --module_priority=-100000
 
-/*
+/**
  *
  */
 pub struct Optional<T>(
@@ -12,16 +12,16 @@ pub struct Optional<T>(
         this.value  := value
     }
 
-    pub fn get() {
+    pub fn get(return T) {
         return if(this.exists) this.value else @initOf(T)
     }
-    pub fn getOr(T other) {
+    pub fn getOr(T other return T) {
         return if(this.exists) this.value else other
     }
     pub fn else(fn(return void) doThis) {
         if(not this.exists) doThis()
     }
-    pub fn then(fn(T t return void) doThis) {
+    pub fn then(fn(T t return void) doThis return void) {
         if(this.exists) doThis(this.value)
     }
 }

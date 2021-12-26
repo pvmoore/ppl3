@@ -2,12 +2,15 @@ module ppl.ast.expr.Identifier;
 
 import ppl.internal;
 
+/**
+ *  Identifier
+ */
 final class Identifier : Expression {
     string name;
     Target target;
 
 /// ASTNode
-    override bool isResolved() { return target.isResolved; }
+    override bool isResolved() { return target.isResolved(); }
     override NodeID id() const { return NodeID.IDENTIFIER; }
     override Type getType() { return target.getType(); }
 
@@ -17,10 +20,10 @@ final class Identifier : Expression {
     }
     override CT comptime() {
 
-        if(!isResolved) return CT.UNRESOLVED;
+        if(!isResolved()) return CT.UNRESOLVED;
 
-        if(target.isVariable) {
-            auto var = target.getVariable;
+        if(target.isVariable()) {
+            auto var = target.getVariable();
             if(var.isConst) {
                 return var.initialiser().getExpr().comptime();
             }

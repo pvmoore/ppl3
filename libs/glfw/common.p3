@@ -5,26 +5,26 @@ pub alias GLFWwindow  = void
 pub struct GLFWimage {
     int width
     int height
-    byte* pixels   
+    byte* pixels
 }
 
-pub extern fn glfwInit() int 
-pub extern fn glfwTerminate() void
-pub extern fn glfwGetVersion(int* major, int* minor, int* rev) void 
-pub extern fn glfwGetVersionString() byte* 
+pub extern fn glfwInit(return int)
+pub extern fn glfwTerminate(return void)
+pub extern fn glfwGetVersion(int* major, int* minor, int* rev return void)
+pub extern fn glfwGetVersionString(return byte*)
 
 // Window functions
-pub extern fn glfwCreateWindow(int width, int height, byte* title, GLFWmonitor* monitor, GLFWwindow* share) GLFWwindow* 
-pub extern fn glfwDestroyWindow(GLFWwindow* window) void 
-pub extern fn glfwWindowHint(int hint, int value) void 
-pub extern fn glfwWindowShouldClose(GLFWwindow* window) int 
-pub extern fn glfwSetWindowShouldClose(GLFWwindow* window, int value) void 
-pub extern fn glfwShowWindow(GLFWwindow* window) void 
-pub extern fn glfwHideWindow(GLFWwindow* window) void 
-pub extern fn glfwIconifyWindow(GLFWwindow* window) void 
-pub extern fn glfwMaximizeWindow(GLFWwindow* window) void 
-pub extern fn glfwSetWindowTitle(GLFWwindow* window, byte* title) void 
-pub extern fn glfwPollEvents() void
+pub extern fn glfwCreateWindow(int width, int height, byte* title, GLFWmonitor* monitor, GLFWwindow* share return GLFWwindow*)
+pub extern fn glfwDestroyWindow(GLFWwindow* window return void)
+pub extern fn glfwWindowHint(int hint, int value return void)
+pub extern fn glfwWindowShouldClose(GLFWwindow* window return int)
+pub extern fn glfwSetWindowShouldClose(GLFWwindow* window, int value return void)
+pub extern fn glfwShowWindow(GLFWwindow* window return void)
+pub extern fn glfwHideWindow(GLFWwindow* window return void)
+pub extern fn glfwIconifyWindow(GLFWwindow* window return void)
+pub extern fn glfwMaximizeWindow(GLFWwindow* window return void)
+pub extern fn glfwSetWindowTitle(GLFWwindow* window, byte* title return void)
+pub extern fn glfwPollEvents(return void)
 
 pub int GLFW_NOT_INITIALIZED = 0x00010001
 

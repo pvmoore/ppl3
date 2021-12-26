@@ -10,7 +10,7 @@ abstract class Expression : Statement {
     abstract CT comptime();
 
     final bool isStartOfChain() {
-        if(!parent.isDot) return true;
+        if(!parent.isDot()) return true;
         if(index()!=0) return false;
 
         return parent.as!Dot.isStartOfChain();
@@ -19,14 +19,14 @@ abstract class Expression : Statement {
     /// Get the previous link in the chain. Assumes there is one.
     ///
     final Expression prevLink() {
-        if(!parent.isDot) return null;
+        if(!parent.isDot()) return null;
         if(isStartOfChain()) return null;
 
         auto prev = prevSibling();
         if(prev) {
             return prev.as!Expression;
         }
-        assert(parent.parent.isDot);
+        assert(parent.parent.isDot());
         return parent.parent.as!Dot.left();
     }
 

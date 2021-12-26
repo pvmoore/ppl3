@@ -2,6 +2,9 @@ module ppl.ast.stmt.Import;
 
 import ppl.internal;
 
+/**
+ *  Import
+ */
 final class Import : Statement {
     string aliasName;   /// eg. cc
     string moduleName;  /// eg. core::c
@@ -28,7 +31,7 @@ final class Import : Statement {
     }
     Alias getAlias(string name) {
         foreach(c; children) {
-            if(!c.isAlias) continue;
+            if(!c.isAlias()) continue;
             auto a = c.as!Alias;
             if(a.name==name) return a;
         }

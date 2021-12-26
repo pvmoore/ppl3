@@ -73,7 +73,7 @@ private:
         } else if(exprType.isBool) {
             value = n.expr();
         } else {
-            value = b.binary(Operator.BOOL_NE, n.expr(), LiteralNumber.makeConst(0));
+            value = b.binary(Operator.BOOL_NE, n.expr(), LiteralNumber.makeConst("0", TYPE_INT));
         }
         c.add(value);
 
@@ -82,7 +82,7 @@ private:
         c.add(module_.moduleNameLiteral.copy());
 
         /// line
-        c.add(LiteralNumber.makeConst(n.line+1, TYPE_INT));
+        c.add(LiteralNumber.makeConst((n.line+1).to!string, TYPE_INT));
 
         foldUnreferenced.fold(n, c);
     }

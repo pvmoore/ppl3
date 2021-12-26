@@ -2,14 +2,18 @@ module ppl.ast.expr.ValueOf;
 
 import ppl.internal;
 
+/**
+ *  ValueOf
+ *      Expression
+ */
 final class ValueOf : Expression {
     private Type type;
 
 /// ASTNode
-    override bool isResolved()    { return expr.isResolved; }
+    override bool isResolved()    { return expr.isResolved(); }
     override NodeID id() const    { return NodeID.VALUE_OF; }
     override Type getType() {
-        if(!expr().isResolved) return TYPE_UNKNOWN;
+        if(!expr().isResolved()) return TYPE_UNKNOWN;
 
         if(type) {
             // Catch this error in CheckModule

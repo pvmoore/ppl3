@@ -31,7 +31,7 @@ public:
             auto b = module_.nodeBuilder;
 
             auto dot = b.callStatic("GC", "calloc", n);
-            dot.second().add(b.integer(n.valueType.size));
+            dot.second().add(b.makeInt(n.valueType.size));
 
             auto as = b.as(dot, n.getType);
 

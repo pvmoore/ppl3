@@ -4,9 +4,10 @@ import ppl.internal;
 
 /**
  *  Call
- *      [ args ]
+ *      { Expression }      // args
  */
 final class Call : Expression {
+public:
     string name;
     Target target;
     string[] paramNames;        /// optional. eg. name:value
@@ -21,7 +22,7 @@ final class Call : Expression {
         return numChildren();
     }
     Expression arg(int index) {
-        assert(index<numChildren);
+        assert(index<numChildren());
         return args()[index];
     }
     Expression[] args() {
@@ -33,11 +34,11 @@ final class Call : Expression {
     bool isTemplated() { return templateTypes.length>0 ;}
 
 /// ASTNode
-    override bool isResolved() { return target.isResolved; }
+    override bool isResolved() { return target.isResolved(); }
     override NodeID id() const { return NodeID.CALL; }
     override Type getType() {
-        if(!target.isResolved) return TYPE_UNKNOWN;
-        return target.getType().getFunctionType.returnType;
+        if(!target.isResolved()) return TYPE_UNKNOWN;
+        return target.getType().getFunctionType().returnType();
     }
 /// Expression
     override int priority() const { return 2; }
@@ -63,7 +64,7 @@ final class Call : Expression {
     }
 
     override string toString() {
-        if(target.isResolved){
+        if(target.isResolved()){
             return "Call %s %s".format(name, target);
         }
         return "Call %s".format(name);

@@ -18,7 +18,7 @@ public:
         auto rt = n.rightType();
 
         /// We need the types before we can continue
-        if(lt.isUnknown || rt.isUnknown) {
+        if(lt.isUnknown() || rt.isUnknown()) {
             return;
         }
 
@@ -27,7 +27,7 @@ public:
 
         /// Handle operator overloading
         if((lt.isStruct) || (rt.isStruct)) {
-            if(n.op.isOverloadable) {
+            if(n.op.isOverloadable()) {
                 if(rewriteToOperatorOverloadCall(n)) {
 
                 }
@@ -53,32 +53,30 @@ public:
             }
         }
 
-        if(n.type.isUnknown) {
+        if(n.type.isUnknown()) {
 
             /// If we are assigning then take the type of the lhs expression
-            if(n.op.isAssign) {
+            if(n.op.isAssign()) {
                 n.type = lt;
 
-                if(n.op.isPtrArithmetic && lt.isPtr && rt.isInteger) {
+                if(n.op.isPtrArithmetic() && lt.isPtr() && rt.isInteger()) {
                     n.isPtrArithmetic = true;
                 }
 
-            } else if(n.op.isBool) {
+            } else if(n.op.isBool()) {
                 n.type = TYPE_BOOL;
             } else {
 
-                if(n.op.isPtrArithmetic && lt.isPtr && rt.isInteger) {
+                if(n.op.isPtrArithmetic() && lt.isPtr() && rt.isInteger()) {
                     /// ptr +/- integer
                     n.type = lt;
                     n.isPtrArithmetic = true;
-                } else if(n.op.isPtrArithmetic && lt.isInteger && rt.isPtr) {
+                } else if(n.op.isPtrArithmetic() && lt.isInteger() && rt.isPtr()) {
                     /// integer +/- ptr
                     n.type = rt;
                     n.isPtrArithmetic = true;
                 } else {
                     /// Set to largest of left or right type
-
-
 
                     auto t = getBestFit(lt, rt);
 

@@ -42,7 +42,7 @@
             "problemMatcher": []
         },
         {
-            "label": "**** Run projects/test.exe ****",
+            "label": "**** RUN projects/test.exe ****",
             "type": "shell",
             "windows": {
                 "command": "scripts\\run.bat"

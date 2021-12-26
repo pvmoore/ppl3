@@ -2,6 +2,9 @@ module ppl.ast.expr.TypeExpr;
 
 import ppl.internal;
 
+/**
+ *  TypeExpr
+ */
 final class TypeExpr : Expression {
     Type type;
 
@@ -12,7 +15,7 @@ final class TypeExpr : Expression {
     }
 
 /// ASTNode
-    override bool isResolved()    { return type && type.isKnown; }
+    override bool isResolved()    { return type && type.isKnown(); }
     override NodeID id() const    { return NodeID.TYPE_EXPR; }
     override Type getType()       { return type; }
 
