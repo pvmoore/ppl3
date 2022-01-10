@@ -21,10 +21,6 @@ node_modules/
 *.dll
 *.log
 
-# Visual studio project files
-*.vcxproj*
-*.sln
-
 dscanner_report.txt
 
 update_extension.bat
