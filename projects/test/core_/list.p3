@@ -5,7 +5,7 @@ pub fn testList() {
 
     List<int> list
 
-    assert list.empty()
+    assert list.isEmpty()
     assert list.length==0
 
     list.add(1)

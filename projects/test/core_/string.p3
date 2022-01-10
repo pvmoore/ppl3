@@ -2,7 +2,7 @@
 pub fn testString() {
     const emptyString = || {
         string s
-        assert s.empty()
+        assert s.isEmpty()
         assert s.length==0
         assert s.ptr() as long == 0
 
@@ -10,7 +10,7 @@ pub fn testString() {
     }
     const basicString = || {
         string s = "hello"
-        assert not s.empty()
+        assert not s.isEmpty()
         assert s.length==5
     }
     const indexing = || {

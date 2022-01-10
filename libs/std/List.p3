@@ -12,7 +12,7 @@ pub struct List <T>(
     pub fn ptr() {
         return this.array
     }
-    pub fn empty() {
+    pub fn isEmpty() {
         return this.length==0
     }
     pub fn add(T value) {

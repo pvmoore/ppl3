@@ -7,6 +7,9 @@ pub struct Optional<T>(
     T value,
     pub bool exists)
 {
+    pub fn new() {
+        // empty
+    }
     pub fn new(T value) {
         this.exists := true
         this.value  := value
@@ -18,10 +21,12 @@ pub struct Optional<T>(
     pub fn getOr(T other return T) {
         return if(this.exists) this.value else other
     }
+
+    pub fn then(fn(T t return void) doThis return Optional<T>) {
+        if(this.exists) doThis(this.value)
+        return *this
+    }
     pub fn else(fn(return void) doThis) {
         if(not this.exists) doThis()
-    }
-    pub fn then(fn(T t return void) doThis return void) {
-        if(this.exists) doThis(this.value)
     }
 }
