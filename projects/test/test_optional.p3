@@ -5,11 +5,16 @@ pub fn testOptional() {
     assert not opt.exists   // set to non existing by default
     assert opt.get() == 0   // default value of int
 
+    const opt1 = Optional<int>()
+    assert not opt1.exists
+
     const opt2 = Optional<int>(3)
     assert opt2.exists
     assert opt2.get() == 3
 
     opt2.then |v| { println("opt2 value exists") }
+        .then |v| { println("hello") }
+        .else || { println("not here") }
 
     // fixme
     //opt2.then |int v| { println("opt2 value exists") }

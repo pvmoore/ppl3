@@ -36,10 +36,10 @@ pub struct string( // 16 bytes
 
         return string(list.ptr(), 0, list.length)
     }
-    pub fn ptr()   { return this.basePtr + this.offset }
-    pub fn empty() { return this.length==0 }
-    pub fn first() { assert not this.empty(); return this.ptr()[0] }
-    pub fn last()  { assert not this.empty(); return this.ptr()[this.length-1] }
+    pub fn ptr()     { return this.basePtr + this.offset }
+    pub fn isEmpty() { return this.length==0 }
+    pub fn first()   { assert not this.isEmpty(); return this.ptr()[0] }
+    pub fn last()    { assert not this.isEmpty(); return this.ptr()[this.length-1] }
 
     pub fn cstr() {
         if(this.length==0) return EMPTY_CSTR
@@ -80,7 +80,7 @@ pub struct string( // 16 bytes
         return if(p) (p-this.ptr()) as int else -1
     }
     pub fn indexOf(string s, int startIndex) {
-        if(s.empty()) return -1
+        if(s.isEmpty()) return -1
         if(startIndex<0) return -1
 
         const end = this.length-s.length
