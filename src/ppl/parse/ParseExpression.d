@@ -531,7 +531,7 @@ private:
         if(t.type==TT.LBRACKET) {
             t.skip(TT.LBRACKET);
 
-            import common : contains;
+            import common.utils : contains;
 
             /// Add args to a Parenthesis to act as a ceiling so that
             /// the operator precedence never moves them above the call
@@ -687,7 +687,7 @@ private:
         auto parens = makeNode!Parenthesis(t);
         call.add(parens);
 
-        import common : contains;
+        import common.utils : contains;
 
         while(t.type!=TT.RBRACKET) {
 

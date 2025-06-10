@@ -1,7 +1,7 @@
 module ppl.resolve.misc.FunctionFinder;
 
 import ppl.internal;
-import common : contains;
+import common.utils : contains;
 
 __gshared bool doChat = false;
 
@@ -352,7 +352,7 @@ private:
     ///     paramNames must match actual param names
     ///     paramNames are unique
     void filterOverloads(Call call) {
-        import common : indexOf;
+        import common.utils : indexOf;
 
         funcTemplates.clear();
 
@@ -426,7 +426,7 @@ private:
     ///
     void selectExactMatch(Call call, DynamicArray!Callable overloads) {
         assert(overloads.length>0);
-        import common : indexOf;
+        import common.utils : indexOf;
 
         void filter(bool delegate(Type,Type) matcher) {
             lp:foreach(callable; overloads[]) {

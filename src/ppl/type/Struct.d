@@ -27,7 +27,7 @@ public:
         return blueprint !is null;
     }
     bool isTemplateInstance()  {
-        import common : contains;
+        import common.utils : contains;
         return name.contains('<');
     }
 /// end of template stuff

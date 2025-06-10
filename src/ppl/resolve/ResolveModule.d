@@ -38,7 +38,7 @@ public:
     bool isResolved = false;
 
     ulong getElapsedNanos()        { return watch.peek().total!"nsecs"; }
-    ASTNode[] getUnresolvedNodes() { return unresolved.values; }
+    ASTNode[] getUnresolvedNodes() { return unresolved.keys(); }
     bool isModified()              { return modified; }
     bool isStalemate()             { return stalemate; }
     int getCurrentIteration()      { return iteration; }
@@ -112,7 +112,7 @@ public:
 
         foldUnreferenced.processModule();
 
-        this.isResolved = unresolved.length==0 && modified==false && tokensModified==false;
+        this.isResolved = unresolved.size()==0 && modified==false && tokensModified==false;
 
         return isResolved;
     }
@@ -355,9 +355,9 @@ public:
         module_.dump(f);
 
         f.log("==============================================");
-        f.log("======================== Unresolved Nodes (%s)", unresolved.length);
+        f.log("======================== Unresolved Nodes (%s)", unresolved.size());
 
-        foreach (i, n; unresolved.values) {
+        foreach (i, n; unresolved.keys()) {
             f.log("\t[%s] Line %s %s", i, n.line, n.id);
         }
         f.log("==============================================");

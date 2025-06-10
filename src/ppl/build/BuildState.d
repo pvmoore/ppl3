@@ -224,7 +224,7 @@ public:
         receiver("\n✅");
         receiver("");
         receiver("Active modules ......... %s".format(allModules.length));
-        receiver("Inactive modules ....... %s".format(removedModules.length));
+        receiver("Inactive modules ....... %s".format(removedModules.size()));
         receiver("Parser time ............ %.2f ms".format(allModules.map!(it=>it.parser.getElapsedNanos).sum() * 1e-6));
         receiver("Resolver time .......... %.2f ms".format(allModules.map!(it=>it.resolver.getElapsedNanos).sum() * 1e-6));
         receiver("DCE time ............... %.2f ms".format(dce.getElapsedNanos() * 1e-6));
@@ -314,7 +314,7 @@ protected:
             parseModules();
             runResolvePass(unresolved, nodesModified, stalemate);
 
-            if(unresolved.length==0 && !tasksOutstanding() && !nodesModified) {
+            if(unresolved.size()==0 && !tasksOutstanding() && !nodesModified) {
                 /// This is our successful exit point
                 allModulesResolved();
                 return;
@@ -347,7 +347,7 @@ protected:
     }
     void runResolvePass(Set!int unresolved, ref bool nodesModified, bool resolveStalemate) {
         assert(nodesModified==false);
-        assert(unresolved.length==0);
+        assert(unresolved.size()==0);
 
         int numUnresolvedModules = 0;
 

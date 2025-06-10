@@ -74,7 +74,7 @@ private:
         }
     }
     void addToHash(string proxy, Type type) {
-        import common : containsKey;
+        import common.utils : containsKey;
 
         if(hash.containsKey(proxy)) {
             Type old = hash[proxy];

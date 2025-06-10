@@ -1,7 +1,7 @@
 module ppl.templates.ImplicitTemplates;
 
 import ppl.internal;
-import common : contains;
+import common.utils : contains;
 
 final class ImplicitTemplates {
 private:

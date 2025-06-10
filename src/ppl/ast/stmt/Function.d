@@ -1,7 +1,7 @@
 module ppl.ast.stmt.Function;
 
 import ppl.internal;
-import common : contains;
+import common.utils : contains;
 
 /**
  *  Function

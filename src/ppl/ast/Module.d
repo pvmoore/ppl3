@@ -121,11 +121,11 @@ public:
     void addLiteralString(LiteralString s) { literalStrings[s.value] ~= s; }
 
     void addImport(Import imp) { imports.add(imp.moduleName); }
-    string[] getImports() { return imports.values; }
+    string[] getImports() { return imports.keys(); }
 
     Lambda[] getLambdas()       { return lambdas; }
     void addLambda(Lambda c)    { lambdas ~= c; }
-    void removeLambda(Lambda c) { import common : remove; lambdas.remove(c); }
+    void removeLambda(Lambda c) { import common.utils : remove; lambdas.remove(c); }
 
     void appendTokensFromTemplate(ASTNode afterNode, Token[] tokens) {
         parser.appendTokensFromTemplate(afterNode, tokens);
@@ -263,7 +263,7 @@ public:
         foreach(call; array) {
             set.add(call.getCall().target.getFunction());
         }
-        return set.values;
+        return set.keys();
     }
     ///
     /// Find and return all variables defined in other modules.
@@ -282,7 +282,7 @@ public:
         foreach(v; array) {
             set.add(v.getIdentifier().target.getVariable());
         }
-        return set.values;
+        return set.keys();
     }
 
     ///
@@ -303,7 +303,7 @@ public:
             m.add(f.getModule);
         }
         m.remove(this);
-        return m.values;
+        return m.keys();
     }
 
     Statement[] getStatementsOnLine(int line) {

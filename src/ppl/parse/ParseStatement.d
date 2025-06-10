@@ -341,14 +341,14 @@ private: //=====================================================================
             imp.mod = module_.buildState.getOrCreateModule(imp.moduleName);
 
             /// For each exported function and type, add proxies to this module
-            foreach(f; imp.mod.parser.publicFunctions.values) {
+            foreach(f; imp.mod.parser.publicFunctions.keys()) {
                 auto fn       = makeNode!Function;
                 fn.name       = f;
                 fn.moduleName = imp.moduleName;
                 fn.isImport   = true;
                 imp.add(fn);
             }
-            foreach(d; imp.mod.parser.publicTypes.values) {
+            foreach(d; imp.mod.parser.publicTypes.keys()) {
                 auto def        = Alias.make();
                 def.name        = d;
                 def.type        = TYPE_UNKNOWN;

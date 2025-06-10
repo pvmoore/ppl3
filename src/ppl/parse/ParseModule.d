@@ -60,7 +60,7 @@ public:
     /// Set/reset the source text.
     ///
     void setSourceText(string src) {
-        assert(false==From!"common".contains(src, "\t"));
+        assert(false==From!"common.utils".contains(src, "\t"));
 
         this.sourceTextHash = Hasher.sha1(src);
         this.sourceText     = src;

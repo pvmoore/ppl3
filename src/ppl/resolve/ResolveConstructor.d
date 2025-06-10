@@ -88,7 +88,7 @@ private:
         }
 
         Variable _makeVariable() {
-            import common : contains;
+            import common.utils : contains;
             auto prefix = n.getName();
             if(prefix.contains("__")) prefix = "constructor";
             return b.variable(module_.makeTemporary(prefix), n.type, false);

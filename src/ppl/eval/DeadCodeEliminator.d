@@ -150,7 +150,7 @@ private:
                 }
             }
         );
-        return structs.values;
+        return structs.keys();
     }
     Enum[] getAllReferencedEnums(Module m) {
         auto enums = new Set!Enum;
@@ -167,7 +167,7 @@ private:
                 }
             }
         );
-        return enums.values;
+        return enums.keys();
     }
     void removeAllUnreferencedPrivateStructs() {
         auto allDeclaredStructs = new Set!Struct;
@@ -176,7 +176,7 @@ private:
             allDeclaredStructs.add(getAllDeclaredStructs(m));
             allReferencedStructs.add(getAllReferencedStructs(m));
         }
-        foreach(s; allDeclaredStructs.values) {
+        foreach(s; allDeclaredStructs.keys()) {
             if(!allReferencedStructs.contains(s)) {
                 //dd("removing struct", s.getModule.canonicalName, s.name);
                 if(s.access.isPrivate) {
@@ -200,7 +200,7 @@ private:
             allDeclaredEnums.add(getAllDeclaredEnums(m));
             allReferencedEnums.add(getAllReferencedEnums(m));
         }
-        foreach(e; allDeclaredEnums.values) {
+        foreach(e; allDeclaredEnums.keys()) {
             if(!allReferencedEnums.contains(e)) {
                 if(e.access.isPrivate) {
                     //dd("removing enum", e.getModule.canonicalName, e.name);

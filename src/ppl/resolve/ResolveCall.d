@@ -1,7 +1,7 @@
 module ppl.resolve.ResolveCall;
 
 import ppl.internal;
-import common : contains;
+import common.utils : contains;
 
 ///
 /// Resolve a call.
@@ -213,7 +213,7 @@ public:
                     return;
                 }
 
-                import common : indexOf;
+                import common.utils : indexOf;
                 auto targetNames = n.target.paramNames();
                 auto args        = new Expression[n.numArgs];
 

@@ -134,7 +134,7 @@ private:
         auto set = new Set!string;
         set.add(modulesModified[0..num]);
 
-        writefln("Modified modules: %s", set.values);
+        writefln("Modified modules: %s", set.keys());
 
         // what do we need to clear here for a partial rebuild?
 
@@ -158,14 +158,14 @@ private:
             }
         }
 
-        foreach(name; set.values) {
+        foreach(name; set.keys()) {
             auto canonicalName = config.getCanonicalName(name);
             _check(canonicalName);
         }
 
-        writefln("\tchange set = [%s]", changeSet.values.map!(it=>it).join(","));
+        writefln("\tchange set = [%s]", changeSet.keys().map!(it=>it).join(","));
 
-        foreach(change; changeSet.values) {
+        foreach(change; changeSet.keys()) {
             // TODO - remove templates in any module that were added by any of the removed modules
             writefln("\tRemoving module %s from the cache", change);
             modules.remove(change);
@@ -217,7 +217,7 @@ private:
         while(running) {
             set.add(watcher.getEvents());
 
-            foreach (event; set.values) {
+            foreach (event; set.keys()) {
 
                 writefln("event: %s", event);
 
